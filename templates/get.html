@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% include 'link_css.html' %}
+{% block content %}
+
+ <div class="radio">
+    <form  action="{% url 'getData' %}" method="get" xmlns="http://www.w3.org/1999/html">
+        <!--input type="text" name="username"-->
+
+        <label class="radio-inline">
+            <input type="radio" name="username" value="spike">spike
+        </label>
+        <label class="radio-inline">
+            <input type="radio" name="username" value="bulma">bulma
+        </label>
+        <label class="radio-inline">
+            <input type="radio" name="username" value="ezdelivery">ezdelivery
+         </label>
+         <label class="radio-inline">
+            <input type="checkbox" name="username" value="ezdelivery">ezdelivery
+         </label>
+        <br/>
+        <input type="submit" value="确定">
+    </form>
+ </div>
+
+{% endblock %}
+</html>
