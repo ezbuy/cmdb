@@ -1,4 +1,5 @@
 from asset.models import *
+from asset import models
 import os,time,commands
 
 class goPublish:
@@ -11,20 +12,31 @@ class goPublish:
 
 
 
-    def spike(self):
-        spikeServices = spike.objects.all()
+    def deployGo(self,env,name):
+        self.env = env
+        self.name = name
+        if self.name == 'spike':
+            projectServices = spike.objects.all()
+        elif self.name == 'account':
+            projectServices = account.objects.all()
+
+        Project = []
+        for name in projectServices:
+            if name.env == int(self.env):
+                Project.append(name.name)
+
         line = '-' * 100
         os.system('echo "%s" >> /tmp/test.txt' % line)
         for i in self.host:
             currentTime = self.getNowTime()
-            message = "salt %s cmd.run mv /srv/spike/spike /tmp/spike_%s" %(i,currentTime)
+            message = "salt %s cmd.run mv /srv/%s/%s /tmp/%s_%s" %(i,self.name,self.name,self.name,currentTime)
             #print message
             os.system('echo "%s" >> /tmp/test.txt' % message)
-            os.system("salt '%s' cmd.run 'mv /srv/spike/spike /tmp/spike_%s && ls /tmp' >> /tmp/test.txt" %(i,currentTime))
-            message = "salt '%s' cmd.run 'svn update /srv/spike'" % (i)
+            os.system("salt '%s' cmd.run 'mv /srv/%s/%s /tmp/%s_%s && ls /tmp' >> /tmp/test.txt" %(i,self.name,self.name,self.name,currentTime))
+            message = "salt '%s' cmd.run 'svn update /srv/%s'" % (i,self.name)
             os.system("echo %s >> /tmp/test.txt" % message)
-            os.system("salt '%s' cmd.run 'svn update --username=deploy --password=ezbuyisthebest --non-interactive /srv/spike' >> /tmp/test.txt" % i)
-            for s in spikeServices:
+            os.system("salt '%s' cmd.run 'svn update --username=deploy --password=ezbuyisthebest --non-interactive /srv/%s' >> /tmp/test.txt" %(i,self.name))
+            for s in Project:
                 message ="salt '%s' cmd.run 'supervisorctl restart %s'" % (i,s)
                 os.system("echo %s >> /tmp/test.txt" % message)
                 os.system("salt '%s' cmd.run 'supervisorctl restart %s' >> /tmp/test.txt" % (i, s))
@@ -48,7 +60,6 @@ class goServicesni:
         a = self.projectName
         print '------------',a
         services = spike.objects.all()
-        #print services
         return services
 
     def account(self):

@@ -4,61 +4,22 @@
 <style>
     .div-height{height: 200px;}
 </style>
-  <form action="{% url 'goServices' %}" method="get">
- <div class="btn-group" role="group" aria-label="..." >
-
-  <button type="submit" class="btn btn-default" name="projectName" value="spike">实例列表: spike</button>
-  <button type="submit" class="btn btn-default" name="projectName" value="account">account</button>
-  <button type="submit" class="btn btn-default" name="projectName" value="bulma">bulma</button>
-  <button type="submit" class="btn btn-default" name="projectName" value="champagne">champagne</button>
-  <button type="submit" class="btn btn-default" name="projectName" value="ezdelivery">ezdelivery</button>
-  <button type="submit" class="btn btn-default" name="projectName" value="featurecollection">featurecollection</button>
-  <button type="submit" class="btn btn-default" name="projectName" value="homepage">homepage</button>
-  <button type="submit" class="btn btn-default" name="projectName" value="parcelforce">parcelforce</button>
-  <button type="submit" class="btn btn-default" name="projectName" value="popupAdmin">popupAdmin</button>
-   <button type="submit" class="btn btn-default" name="projectName" value="voucherAdmin">voucherAdmin</button>
-</div>
-    </form>
-
-<!--div class="row">
-
-  <form action="{#% url 'getServices' %#}" method="get">
-    <div class="col-md-6 div-height">Account:
-        {#% for services in accountProject %#}
-            <label class="checkbox">
-                <input type="checkbox" name="servicesName" value="{#  #}{ services }}">
-                    {#  #}{ services }}
-            </label>
-        {#% endfor %#}
+<form action="{% url 'goServices' %}" method="get">
+    <div class="btn-group" role="group">
+      <button type="submit" class="btn btn-default" name="projectName" value="spike">实例列表: spike</button>
+      <button type="submit" class="btn btn-default" name="projectName" value="account">account</button>
+      <button type="submit" class="btn btn-default" name="projectName" value="bulma">bulma</button>
+      <button type="submit" class="btn btn-default" name="projectName" value="champagne">champagne</button>
+      <button type="submit" class="btn btn-default" name="projectName" value="ezdelivery">ezdelivery</button>
+      <button type="submit" class="btn btn-default" name="projectName" value="featurecollection">featurecollection</button>
+      <button type="submit" class="btn btn-default" name="projectName" value="homepage">homepage</button>
+      <button type="submit" class="btn btn-default" name="projectName" value="parcelforce">parcelforce</button>
+      <button type="submit" class="btn btn-default" name="projectName" value="popupAdmin">popupAdmin</button>
+       <button type="submit" class="btn btn-default" name="projectName" value="voucherAdmin">voucherAdmin</button>
     </div>
+</form>
 
-    <div class="col-md-6 div-height">Spike:
-        {#% for services in spikeProject %#}
-            <label class="checkbox">
-                <input type="checkbox" name="servicesName" value="{#  #}{ services }}">
-                    {#  #}{ services }}
-            </label>
-        {#% endfor %#}
-     </div>
 
-      <div class="col-md-6 div-height">Account:
-        {#% for services in accountProject %#}
-            <label class="checkbox">
-                <input type="checkbox" name="servicesName" value="{#  #}{ services }}">
-                    {#  #}{ services }}
-            </label>
-        {#% endfor %#}
-
-    </div>
-    <div class="col-md-6 div-height">.col-md-4</div>
-      <br/>
-    <input class="btn btn-danger" type="submit" value="Deploy">
-    </form>
-</div>
-<!--div class="row">
-  <div class="col-md-6">.col-md-8</div>
-  <div class="col-md-6">.col-md-4</div>
-</div-->
 
 
     <div class="wrapper wrapper-content animated fadeInRight">

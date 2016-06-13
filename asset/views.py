@@ -17,18 +17,19 @@ def get(request):
     return render_to_response('get.html')
 
 def getData(request):
-    data = request.GET['username']
+    data = request.GET['goProject']
+    env = request.GET['env']
 
-    if data == 'spike':
+    #if data == 'spike':
         #message = os.popen('ls /tmp')
         #a = 'sqlcmd -S 192.168.199.105 -U pengzihe -P pzh000 -d 2016 -Q "select * from class"'
         #message = sudo("salt t-slq-uat-testdb-1 cmd.run '%s'" % a)
-        host = ['test4']
-        spikePublish = goPublish(host)
-        result = spikePublish.spike()
-        print result
-    else:
-        return HttpResponse('No services!!')
+    host = ['test4']
+    spikePublish = goPublish(host)
+    result = spikePublish.deployGo(env, data)
+    print result
+    #else:
+    #    return HttpResponse('No services!!')
     return render_to_response('getdata.html',{'result':result})
     #return HttpResponse(message)
 
