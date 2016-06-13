@@ -103,14 +103,18 @@ class AssetRecord(models.Model):
 
 
 class spike(models.Model):
+    ip = models.CharField(max_length=32, blank=True, null=True, verbose_name=u"主机IP")
     name = models.CharField(max_length=32, verbose_name=u'spike services name')
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
 
     def __unicode__(self):
         return self.name
 
 
 class account(models.Model):
+    ip = models.CharField(max_length=32, blank=True, null=True, verbose_name=u"主机IP")
     name = models.CharField(max_length=32, verbose_name=u'account services name')
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
 
     def __unicode__(self):
         return self.name

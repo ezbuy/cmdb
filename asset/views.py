@@ -6,15 +6,6 @@ from asset.utils import *
 from salt.client import LocalClient
 
 
-from fabric.api import (
-    env,
-    hosts,
-    execute,
-    run,
-    settings,
-    sudo,
-    task,
-)
 
 
 import os,commands,re
@@ -36,19 +27,42 @@ def getData(request):
         spikePublish = goPublish(host)
         result = spikePublish.spike()
         print result
+    else:
+        return HttpResponse('No services!!')
     return render_to_response('getdata.html',{'result':result})
     #return HttpResponse(message)
 
 def goServices(request):
     name = 'spike'
     go = goServicesni(name)
-    spikeProject = go.spike()
-    accountProject = go.account()
+    data = request.GET.get('projectName')
+    print data
+    if data is not None:
+        if data =="spike":
+            project = go.spike()
+        elif data == "account":
+            project = go.account()
+        else:
+            return HttpResponse("i am mico!")
+    else:
+        project = go.spike()
     #return HttpResponse(project)
-    return render_to_response('goservices.html',{'spikeProject':spikeProject,'accountProject':accountProject})
+    return render_to_response('goservices.html',{'project':project})
 
 def getServices(request):
-    data = request.GET.getlist('servicesName')
+    data = request.GET.getlist('id')
+
     print data
-    print type(data)
-    return HttpResponse(data)
+    host=['test4']
+    for i in host:
+        for s in data:
+            message = "salt '%s' cmd.run 'supervisorctl restart %s'" % (i, s)
+            os.system("echo %s >> /tmp/test.txt" % message)
+            os.system("salt '%s' cmd.run 'supervisorctl restart %s' >> /tmp/test.txt" % (i, s))
+    f = open('/tmp/test.txt', 'r')
+    result = f.readlines()
+    #return HttpResponse(data)
+
+
+    os.system('rm /tmp/test.txt')
+    return render_to_response('getservices.html',{'result':result})
