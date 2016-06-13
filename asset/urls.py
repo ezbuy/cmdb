@@ -7,4 +7,6 @@ urlpatterns = patterns('',
     url(r'^get/$', get, name='get'),
     url(r'^goServices/$', goServices, name='goServices'),
     url(r'^getData/$', getData, name='getData'),
+    url(r'^getServices/$', getServices, name='getServices'),
+
 )

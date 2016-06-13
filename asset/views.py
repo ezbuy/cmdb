@@ -46,3 +46,9 @@ def goServices(request):
     accountProject = go.account()
     #return HttpResponse(project)
     return render_to_response('goservices.html',{'spikeProject':spikeProject,'accountProject':accountProject})
+
+def getServices(request):
+    data = request.GET.getlist('servicesName')
+    print data
+    print type(data)
+    return HttpResponse(data)

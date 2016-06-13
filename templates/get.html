@@ -2,11 +2,11 @@
 {% include 'link_css.html' %}
 {% block content %}
 
- <div class="radio">
-    <form  action="{% url 'getData' %}" method="get" xmlns="http://www.w3.org/1999/html">
+ <!--div class="input-prepend input-append text-center">
+    <form  action="{% url 'getData' %}" method="get">
         <!--input type="text" name="username"-->
 
-        <label class="radio-inline">
+        <!--label class="radio-inline">
             <input type="radio" name="username" value="spike">spike
         </label>
         <label class="radio-inline">
@@ -17,11 +17,43 @@
          </label>
          <label class="radio-inline">
             <input type="checkbox" name="username" value="ezdelivery">ezdelivery
-         </label>
-        <br/>
-        <input type="submit" value="确定">
+         </label-->
+
+
+
+
+ <!--span class="add-on" >项目名称</span>
+ <select  class="span2" id="appendedPrependedInput" name="username">
+    <option value="spike">spike</option>
+    <option value="account">account</option>
+    <option value="bulma">bulma</option>
+    <option value="ezdelivery">ezdelivery</option>
+     <option value="featurecollection">featurecollection</option>
+
+  </select>
+  <br/>
+    <input class="btn btn-danger" type="submit" value="Deploy">
     </form>
- </div>
+</div-->
+
+<div class="text-center">
+<form class="col-lg-12" action="{% url 'getData' %}" method="get">
+  <div class="input-group my-group text-center">
+    <span class="input-group-btn">
+      <button class="btn btn-default active" type="submit">项目名称</button>
+    </span>
+    <select id="lunch" class="selectpicker form-control" data-live-search="true" name="username" title="Please select a lunch ...">
+      <option>account</option>
+      <option>spike</option>
+      <option>bulma</option>
+      <option>ezdelivery</option>
+      <option>homepage</option>
+    </select>
+  </div>
+<br/>
+    <input class="btn btn-danger" type="submit" value="Deploy">
+</form>
+</div>
 
 {% endblock %}
 </html>

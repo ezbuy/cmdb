@@ -1,14 +1,48 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    .div-height{height: 200px;}
+</style>
 
+<div class="row">
 
+  <form action="{% url 'getServices' %}" method="get">
+    <div class="col-md-6 div-height">Account:
+        {% for services in accountProject %}
+            <label class="checkbox">
+                <input type="checkbox" name="servicesName" value="{{ services }}">
+                    {{ services }}
+            </label>
+        {% endfor %}
+    </div>
 
-<pre>
-{% for v in accountProject %}
-{{ v }}
-{% endfor %}
-</pre>
+    <div class="col-md-6 div-height">Spike:
+        {% for services in spikeProject %}
+            <label class="checkbox">
+                <input type="checkbox" name="servicesName" value="{{ services }}">
+                    {{ services }}
+            </label>
+        {% endfor %}
+     </div>
 
+      <div class="col-md-6 div-height">Account:
+        {% for services in accountProject %}
+            <label class="checkbox">
+                <input type="checkbox" name="servicesName" value="{{ services }}">
+                    {{ services }}
+            </label>
+        {% endfor %}
+    </div>
+    <div class="col-md-6 div-height">.col-md-4</div>
+      <br/>
+    <input class="btn btn-danger" type="submit" value="Deploy">
+    </form>
+</div>
+<!--div class="row">
+  <div class="col-md-6">.col-md-8</div>
+  <div class="col-md-6">.col-md-4</div>
+</div-->
 {% endblock %}
+
 </html>
