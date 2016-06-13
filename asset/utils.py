@@ -19,6 +19,8 @@ class goPublish:
             projectServices = spike.objects.all()
         elif self.name == 'account':
             projectServices = account.objects.all()
+        else:
+            return "hi,i am mico!"
 
         Project = []
         for name in projectServices:
