@@ -119,3 +119,56 @@ class account(models.Model):
     def __unicode__(self):
         return self.name
 
+
+class bulma(models.Model):
+    ip = models.GenericIPAddressField()
+    name = models.CharField(max_length=32, verbose_name=u'bulma services name')
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+
+    def __unicode__(self):
+        return self.name
+
+
+
+class ezdelivery(models.Model):
+    ip = models.GenericIPAddressField()
+    name = models.CharField(max_length=32, verbose_name=u'ezdelivery services name')
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+
+    def __unicode__(self):
+        return self.name
+
+
+
+class featurecollection(models.Model):
+    ip = models.GenericIPAddressField()
+    name = models.CharField(max_length=32, verbose_name=u'featurecollection services name')
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+
+    def __unicode__(self):
+        return self.name
+
+class homepage(models.Model):
+    ip = models.GenericIPAddressField()
+    name = models.CharField(max_length=32, verbose_name=u'homepage services name')
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+
+    def __unicode__(self):
+        return self.name
+
+
+class popupadmin(models.Model):
+    ip = models.GenericIPAddressField()
+    name = models.CharField(max_length=32, verbose_name=u'popupadmin services name')
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+
+    def __unicode__(self):
+        return self.name
+
+class voucheradmin(models.Model):
+    ip = models.GenericIPAddressField()
+    name = models.CharField(max_length=32, verbose_name=u'voucheradmin services name')
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+
+    def __unicode__(self):
+        return self.name
