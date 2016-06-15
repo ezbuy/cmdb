@@ -1,6 +1,7 @@
 from django.shortcuts import render,render_to_response,HttpResponse
 from asset.models import *
 from asset.utils import *
+from django.contrib.auth.decorators import login_required
 
 
 from salt.client import LocalClient
@@ -56,6 +57,7 @@ def goServices(request):
             project = go.spike()
         elif data == "account":
             project = go.account()
+            #project = go.data()
         elif data == "bulma":
             project = go.bulma()
         else:

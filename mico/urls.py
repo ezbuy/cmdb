@@ -16,11 +16,14 @@ Including another URLconf
 from django.conf.urls import url,include
 from django.contrib import admin
 from cmdb.views import *
+from web.views import *
 import asset
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$',index,name='index'),
     url(r'^asset/', include('asset.urls')),
+    url(r'^login/',login,name='login'),
+    url(r'^logout/',logout,name='logout'),
 
 ]
