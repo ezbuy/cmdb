@@ -15,6 +15,7 @@ class goPublish:
     def deployGo(self,env,name):
         self.env = env
         self.name = name
+
         if self.name == 'spike':
             projectServices = spike.objects.all()
         elif self.name == 'account':
@@ -87,7 +88,15 @@ class goServicesni:
     def __init__(self,projectName):
         self.projectName = projectName
 
+
     def spike(self):
+        groupname = gogroup.objects.all()
+        for group in groupname:
+
+
+            if self.projectName == group.name:
+                print group.name
+                print group.id
         services = spike.objects.all()
         return services
 

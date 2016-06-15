@@ -26,6 +26,12 @@ ASSET_TYPE = (
     )
 
 
+class gogroup(models.Model):
+    name = models.CharField(max_length=32,verbose_name=u"go group name")
+
+    def __unicode__(self):
+        return self.name
+
 class AssetGroup(models.Model):
     GROUP_TYPE = (
         ('P', 'PRIVATE'),
@@ -169,6 +175,43 @@ class voucheradmin(models.Model):
     ip = models.GenericIPAddressField()
     name = models.CharField(max_length=32, verbose_name=u'voucheradmin services name')
     env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+    #group = models.ForeignKey(gogroup)
 
     def __unicode__(self):
         return self.name
+
+
+
+class abc(models.Model):
+    ip = models.GenericIPAddressField()
+    name = models.CharField(max_length=32, verbose_name=u'abc services name')
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+    group = models.ForeignKey(gogroup)
+
+    def __unicode__(self):
+        return self.name
+
+
+
+class zero(models.Model):
+    ip = models.GenericIPAddressField()
+    name = models.CharField(max_length=32, verbose_name=u'zero services name')
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+    group = models.ForeignKey(gogroup)
+
+    def __unicode__(self):
+        return self.name
+
+
+class goservices(models.Model):
+    ip = models.GenericIPAddressField()
+    name = models.CharField(max_length=32, verbose_name=u'zero services name')
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+    group = models.ForeignKey(gogroup)
+
+    def __unicode__(self):
+        return self.name
+
+
+
+
