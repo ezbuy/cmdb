@@ -13,11 +13,12 @@ def login(request):
             auth.login(request,user)
             return HttpResponseRedirect('/')
         else:
-            return render_to_response('login.html')
+            return render_to_response('login.html',{'login_err':'Wrong username or password!'})
 
     else:
         return render_to_response('login.html')
 
+@login_required
 def logout(request):
     auth.logout(request)
     return HttpResponseRedirect('/login/')

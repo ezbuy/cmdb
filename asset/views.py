@@ -1,27 +1,25 @@
 from django.shortcuts import render,render_to_response,HttpResponse
+from django.contrib.auth.decorators import login_required
 from asset.models import *
 from asset.utils import *
-from django.contrib.auth.decorators import login_required
-
-
 from salt.client import LocalClient
-
-
-
-
 import os,commands,re
+
+
+
+@login_required
 def asset_list(request):
     asset_list = Asset.objects.all()
     return render_to_response('jasset/asset_list.html',{'asset_list':asset_list})
 
 
-
+@login_required
 def get(request):
     return render_to_response('get.html')
 
 
 
-
+@login_required
 def getData(request):
     data = request.GET['goProject']
     env = request.GET['env']
@@ -44,7 +42,7 @@ def getData(request):
 
 
 
-
+@login_required
 def goServices(request):
     name = 'spike'
     go = goServicesni(name)
@@ -71,7 +69,7 @@ def goServices(request):
 
 
 
-
+@login_required
 def getServices(request):
     data = request.GET.getlist('id')
 
@@ -91,10 +89,12 @@ def getServices(request):
     return render_to_response('getservices.html',{'result':result})
 
 
+@login_required
 def goRevert(request):
     return render_to_response('gorevert.html')
 
 
+@login_required
 def goRevertResult(request):
     data = request.GET['goProject']
     env = request.GET['env']
