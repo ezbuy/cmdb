@@ -15,20 +15,15 @@ class goPublish:
     def deployGo(self,env,name):
         self.env = env
         self.name = name
-
-        if self.name == 'spike':
-            projectServices = spike.objects.all()
-        elif self.name == 'account':
-            projectServices = account.objects.all()
-        elif self.name == 'bulma':
-            projectServices = bulma.objects.all()
-        else:
-            return "hi,i am mico!"
-
         Project = []
-        for name in projectServices:
-            if name.env == int(self.env):
-                Project.append(name.name)
+        groupname = gogroup.objects.all()
+        for name in groupname:
+            if self.name == name.name:
+                for obj in goservices.objects.filter(env=self.env).filter(group_id=name.id):
+                    Project.append(obj)
+
+
+
 
         line = '-' * 100
         os.system('echo "%s" >> /tmp/test.txt' % line)
@@ -50,14 +45,12 @@ class goPublish:
                 os.system("echo %s >> /tmp/test.txt" % message)
                 os.system("salt '%s' cmd.run 'supervisorctl restart %s' >> /tmp/test.txt" % (i, s))
 
-            #print line
-            #revert = commands.getoutput("salt 'test4' cmd.run \"ls -lt /tmp | awk 'NR==2' | awk '{print \$NF}'\"")
-            #print revert.split()[1]
+
             os.system('echo "%s" >> /tmp/test.txt' % line)
         f = open('/tmp/test.txt', 'r')
         result = f.readlines()
 
-        #print result
+
         os.system('rm /tmp/test.txt')
         return result
 
@@ -78,7 +71,7 @@ class goPublish:
             revertFile = revertFile.split()[-1]
             result = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(h,self.project,revertFile,self.project,self.project))
 
-        #print revertFile
+
         if result[0] == 0:
             print 'revert to last version is success.'
 
@@ -88,25 +81,15 @@ class goServicesni:
     def __init__(self,projectName):
         self.projectName = projectName
 
-
-    def spike(self):
+    def getServiceName(self):
+        services = []
         groupname = gogroup.objects.all()
         for group in groupname:
-
-
             if self.projectName == group.name:
-                print group.name
-                print group.id
-        services = spike.objects.all()
+                for obj in goservices.objects.filter(group=group.id):
+                    services.append(obj)
+
         return services
-
-    def account(self):
-        accountServices = account.objects.all()
-        return accountServices
-
-    def bulma(self):
-        bulmaServices = bulma.objects.all()
-        return  bulmaServices
 
 
 

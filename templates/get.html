@@ -10,11 +10,10 @@
       <button class="btn btn-default active" type="submit">项目名称</button>
     </span>
     <select id="lunch" class="selectpicker form-control" data-live-search="true" name="goProject" title="Please select a lunch ...">
-      <option>spike</option>
-      <option>account</option>
-      <option>bulma</option>
-      <option>ezdelivery</option>
-      <option>homepage</option>
+        {% for name in groupname %}
+            <option>{{ name.name }}</option>
+        {% endfor %}
+
     </select>
   </div>
 

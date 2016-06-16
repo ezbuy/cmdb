@@ -205,7 +205,7 @@ class zero(models.Model):
 
 class goservices(models.Model):
     ip = models.GenericIPAddressField()
-    name = models.CharField(max_length=32, verbose_name=u'zero services name')
+    name = models.CharField(max_length=32, verbose_name=u'goservices services name')
     env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
     group = models.ForeignKey(gogroup)
 

@@ -15,7 +15,8 @@ def asset_list(request):
 
 @login_required
 def get(request):
-    return render_to_response('get.html')
+    groupname = gogroup.objects.all()
+    return render_to_response('get.html',{'groupname':groupname})
 
 
 
@@ -31,10 +32,7 @@ def getData(request):
     host = ['test4']
     Publish = goPublish(host)
     result = Publish.deployGo(env, data)
-    #print Publish.go_revert('spike')
-    print result
-    #else:
-    #    return HttpResponse('No services!!')
+
     return render_to_response('getdata.html',{'result':result})
     #return HttpResponse(message)
 
@@ -45,23 +43,18 @@ def getData(request):
 @login_required
 def goServices(request):
     name = 'spike'
-    go = goServicesni(name)
+
     data = request.GET.get('projectName')
-    print data
+    go = goServicesni(data)
+    #print data
 
 
     if data is not None:
-        if data =="spike":
-            project = go.spike()
-        elif data == "account":
-            project = go.account()
-            #project = go.data()
-        elif data == "bulma":
-            project = go.bulma()
-        else:
-            return HttpResponse("i am mico!")
+
+        project = go.getServiceName()
+
     else:
-        project = go.spike()
+        project = go.getServiceName()
     #return HttpResponse(project)
     return render_to_response('goservices.html',{'project':project})
 
@@ -81,8 +74,7 @@ def getServices(request):
             os.system("echo %s >> /tmp/test.txt" % message)
             os.system("salt '%s' cmd.run 'supervisorctl restart %s' >> /tmp/test.txt" % (i, s))
     f = open('/tmp/test.txt', 'r')
-    result = f.readlines()
-    #return HttpResponse(data)
+
 
 
     os.system('rm /tmp/test.txt')
