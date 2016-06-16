@@ -67,16 +67,28 @@ class goPublish:
         return result
 
     def go_revert(self,env,project):
-
+        self.env = env
         self.project = project
+        print self.env
+        print self.project
         #commands.getstatusoutput('ls -t /tmp/spike')
         projectPwd = "/srv/" + self.project + "/" + self.project
         currentTime = self.getNowTime()
 
         rename = "/tmp/revert/" + self.project + '_revert_' + currentTime
         runCmd = "'mv " + projectPwd + " " + rename + "'"
+        print runCmd
+        hostname = []
+        for obj in goservices.objects.filter(env=self.env):
+            print type(obj.group.name)
+        #for e in goservices.objects.filter(env=self.env):
+            if obj.group.name == self.project:
+                print obj.saltminion
+                hostname.append(str(obj.saltminion.saltname))
 
-        for h in self.host:
+        hostname = list(set(hostname))
+        print hostname
+        for h in hostname:
             os.system("salt %s state.sls logs.revert" % h)
             os.system("salt '%s' cmd.run %s" %(h,runCmd))
             revertFile = commands.getoutput("salt '%s' cmd.run \'ls -lt /tmp/%s | awk \'NR==2\' | awk \"{print \$NF}\"\'" % (h,self.project))

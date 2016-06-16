@@ -84,14 +84,17 @@ def getServices(request):
 
 @login_required
 def goRevert(request):
-    return render_to_response('gorevert.html')
+    groupname = gogroup.objects.all()
+    return render_to_response('gorevert.html',{'groupname':groupname})
 
 
 @login_required
 def goRevertResult(request):
     data = request.GET['goProject']
     env = request.GET['env']
-    host = ['test4']
-    Publish = goPublish(host)
+    print data
+    print env
+    #host = ['test4']
+    Publish = goPublish()
     result = Publish.go_revert(env, data)
     return HttpResponse(result)
