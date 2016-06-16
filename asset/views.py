@@ -74,6 +74,7 @@ def getServices(request):
             os.system("echo %s >> /tmp/test.txt" % message)
             os.system("salt '%s' cmd.run 'supervisorctl restart %s' >> /tmp/test.txt" % (i, s))
     f = open('/tmp/test.txt', 'r')
+    result = f.readlines()
 
 
 
