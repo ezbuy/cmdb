@@ -51,7 +51,7 @@
                                         <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('asset_form')">
                                     </th>
                                     <th class="text-center"> 实例名称 </th>
-                                    <th class="text-center"> 运行环境(1.生产环境  2.测试环境) </th>
+                                    <th class="text-center"> 运行环境 </th>
                                     <th class="text-center"> IP地址 </th>
                                     <th class="text-center"> 所属组 </th>
                                     <th class="text-center"> 操作系统 </th>
@@ -68,7 +68,7 @@
                                         <input name="id" value="{{ services.name }}" type="checkbox" class="i-checks">
                                     </td>
                                     <td class="text-center"> <a href="#">{{ services.name }}</a></td>
-                                    <td class="text-center"> {{ services.env }} </td>
+                                    <td class="text-center"> {{ services.get_env_display }} </td>
                                     <td class="text-center"> {{ services.ip }} </td>
                                     <td class="text-center">{{ asset.group.get }}</td>
                                     <td class="text-center">{{ asset.system_type }}{{ asset.system_version }}</td>

@@ -29,8 +29,8 @@ def getData(request):
         #message = os.popen('ls /tmp')
         #a = 'sqlcmd -S 192.168.199.105 -U pengzihe -P pzh000 -d 2016 -Q "select * from class"'
         #message = sudo("salt t-slq-uat-testdb-1 cmd.run '%s'" % a)
-    host = ['test4']
-    Publish = goPublish(host)
+    #host = ['test4']
+    Publish = goPublish()
     result = Publish.deployGo(env, data)
 
     return render_to_response('getdata.html',{'result':result})

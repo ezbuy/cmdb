@@ -4,6 +4,7 @@ import datetime
 from django.db import models
 
 
+
 ASSET_ENV = (
     (1, U'生产环境'),
     (2, U'测试环境')
@@ -28,7 +29,6 @@ ASSET_TYPE = (
 
 class gogroup(models.Model):
     name = models.CharField(max_length=32,verbose_name=u"go group name")
-
     def __unicode__(self):
         return self.name
 
@@ -108,99 +108,11 @@ class AssetRecord(models.Model):
     comment = models.TextField(null=True, blank=True)
 
 
-class spike(models.Model):
-    ip = models.CharField(max_length=32, blank=True, null=True, verbose_name=u"主机IP")
-    name = models.CharField(max_length=32, verbose_name=u'spike services name')
-    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+class minion(models.Model):
+    saltname = models.CharField(max_length=32, verbose_name=u'salt minion name')
 
     def __unicode__(self):
-        return self.name
-
-
-class account(models.Model):
-    ip = models.CharField(max_length=32, blank=True, null=True, verbose_name=u"主机IP")
-    name = models.CharField(max_length=32, verbose_name=u'account services name')
-    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
-
-    def __unicode__(self):
-        return self.name
-
-
-class bulma(models.Model):
-    ip = models.GenericIPAddressField()
-    name = models.CharField(max_length=32, verbose_name=u'bulma services name')
-    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
-
-    def __unicode__(self):
-        return self.name
-
-
-
-class ezdelivery(models.Model):
-    ip = models.GenericIPAddressField()
-    name = models.CharField(max_length=32, verbose_name=u'ezdelivery services name')
-    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
-
-    def __unicode__(self):
-        return self.name
-
-
-
-class featurecollection(models.Model):
-    ip = models.GenericIPAddressField()
-    name = models.CharField(max_length=32, verbose_name=u'featurecollection services name')
-    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
-
-    def __unicode__(self):
-        return self.name
-
-class homepage(models.Model):
-    ip = models.GenericIPAddressField()
-    name = models.CharField(max_length=32, verbose_name=u'homepage services name')
-    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
-
-    def __unicode__(self):
-        return self.name
-
-
-class popupadmin(models.Model):
-    ip = models.GenericIPAddressField()
-    name = models.CharField(max_length=32, verbose_name=u'popupadmin services name')
-    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
-
-    def __unicode__(self):
-        return self.name
-
-class voucheradmin(models.Model):
-    ip = models.GenericIPAddressField()
-    name = models.CharField(max_length=32, verbose_name=u'voucheradmin services name')
-    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
-    #group = models.ForeignKey(gogroup)
-
-    def __unicode__(self):
-        return self.name
-
-
-
-class abc(models.Model):
-    ip = models.GenericIPAddressField()
-    name = models.CharField(max_length=32, verbose_name=u'abc services name')
-    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
-    group = models.ForeignKey(gogroup)
-
-    def __unicode__(self):
-        return self.name
-
-
-
-class zero(models.Model):
-    ip = models.GenericIPAddressField()
-    name = models.CharField(max_length=32, verbose_name=u'zero services name')
-    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
-    group = models.ForeignKey(gogroup)
-
-    def __unicode__(self):
-        return self.name
+        return self.saltname
 
 
 class goservices(models.Model):
@@ -208,7 +120,7 @@ class goservices(models.Model):
     name = models.CharField(max_length=32, verbose_name=u'goservices services name')
     env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
     group = models.ForeignKey(gogroup)
-
+    saltminion = models.ForeignKey(minion)
     def __unicode__(self):
         return self.name
 
