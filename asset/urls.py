@@ -10,4 +10,6 @@ urlpatterns = patterns('',
     url(r'^getServices/$', getServices, name='getServices'),
     url(r'^goRevert/$', goRevert, name='goRevert'),
     url(r'^goRevertResult/$', goRevertResult, name='goRevertResult'),
+    url(r'^goRevertResulttwo/$',goRevertResulttwo,name='goRevertResulttwo'),
+    url(r'^revert/$',revert, name='revert'),
 )

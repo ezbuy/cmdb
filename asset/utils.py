@@ -70,11 +70,13 @@ class goPublish:
         os.system('rm /tmp/test.txt')
         return result
 
-    def go_revert(self,env,project):
+    def go_revert(self,env,project,revertFile):
         self.env = env
         self.project = project
+        self.revertFile = revertFile
         print self.env
         print self.project
+        print self.revertFile
         #commands.getstatusoutput('ls -t /tmp/spike')
         projectPwd = "/srv/" + self.project + "/" + self.project
         currentTime = self.getNowTime()
@@ -95,9 +97,9 @@ class goPublish:
         for h in hostname:
             os.system("salt %s state.sls logs.revert" % h)
             os.system("salt '%s' cmd.run %s" %(h,runCmd))
-            revertFile = commands.getoutput("salt '%s' cmd.run \'ls -lt /tmp/%s | awk \'NR==2\' | awk \"{print \$NF}\"\'" % (h,self.project))
-            revertFile = revertFile.split()[-1]
-            result = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(h,self.project,revertFile,self.project,self.project))
+            #revertFile = commands.getoutput("salt '%s' cmd.run \'ls -lt /tmp/%s | awk \'NR==2\' | awk \"{print \$NF}\"\'" % (h,self.project))
+            #revertFile = revertFile.split()[-1]
+            result = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(h,self.project,self.revertFile,self.project,self.project))
 
 
         if result[0] == 0:

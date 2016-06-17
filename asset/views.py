@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from asset.models import *
 from asset.utils import *
 from salt.client import LocalClient
-import os,commands,re
+import os,commands,re,json
 
 
 
@@ -84,7 +84,9 @@ def getServices(request):
 @login_required
 def goRevert(request):
     groupname = gogroup.objects.all()
-    return render_to_response('gorevert.html',{'groupname':groupname})
+
+    tt = {'mico':12,'steven':23,'zero':110,'spike':'spike1111'}
+    return render_to_response('gorevert.html',{'groupname':groupname,'tt':tt})
 
 
 @login_required
@@ -96,4 +98,35 @@ def goRevertResult(request):
     #host = ['test4']
     Publish = goPublish()
     result = Publish.go_revert(env, data)
+    return HttpResponse(result)
+
+
+def goRevertResulttwo(request):
+    data = request.GET['goProject']
+    env = request.GET['env']
+    print env
+    result = {}
+    fileName = commands.getstatusoutput('salt test4 cmd.run "ls -t /tmp/%s | head -n 10"' % data)[1].split()[1:]
+    if 'cannot' in fileName:
+        result = {}
+    else:
+        result[env]=fileName
+    return render_to_response('gorevert2.html',{'fileName':result})
+
+def revert(request):
+    data = request.GET['id']
+    data = data.split(',')
+
+    env = data[0]
+    revertFile = data[1]
+
+    print env
+    print revertFile
+    project = revertFile.split('_')[0]
+    #host = ['test4']
+    Publish = goPublish()
+    result = Publish.go_revert(env,project,revertFile)
+    #return HttpResponse(result)
+    #print data
+    #print data.split(',')[0]
     return HttpResponse(result)

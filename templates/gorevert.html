@@ -3,8 +3,8 @@
 {% block content %}
 
 
-<div class="text-center">
-<form class="col-lg-12" action="{% url 'goRevertResult' %}" method="get">
+<div class="text-center" xmlns="http://www.w3.org/1999/html">
+<form class="col-lg-12" action="{% url 'goRevertResulttwo' %}" method="get">
   <div class="input-group my-group text-center" style="margin: 0px 0px 100px;">
     <span class="input-group-btn">
       <button class="btn btn-default active" type="submit">项目名称</button>
@@ -14,22 +14,54 @@
             <option>{{ name.name }}</option>
         {% endfor %}
     </select>
+
   </div>
 
   <div class="input-group my-group text-center">
     <span class="input-group-btn">
       <button class="btn btn-default active" type="submit">运行环境</button>
     </span>
-    <select id="lunch" class="selectpicker form-control" data-live-search="true" name="env" title="Please select a lunch ...">
+    <select id="lunch2" class="selectpicker form-control" data-live-search="true" name="env" onchange="t(this)">
       <option value="1">生产环境</option>
       <option value="2">测试环境</option>
     </select>
+
   </div>
+  <select id="abc" style="display: none"/>
+    {% for i,v in tt.items %}
+        {% if i == 'spike' %}
+            <option>{{ v }}</option>
+        {% endif %}
+    {% endfor %}
+    </select>
 
 <br/>
-    <input class="btn btn-danger" type="submit" value="Revert">
+    <input class="btn btn-danger" type="submit" value="choice revert version">
 </form>
 </div>
 
+ <script>
+
+     console.log($('#lunch').val())
+     console.log($('#lunch2').get(0).selectedIndex)
+
+ function t(obj) {
+     if (obj.value=='2')
+     {
+         var ttt = "{{ tt|safe }}"
+         console.log(ttt)
+
+
+         var aa='sss'
+         console.log(aa)
+         document.getElementById("abc").style.display = ""
+
+
+     }
+     else
+         document.getElementById("abc").style.display = "none"
+
+ }
+ </script>
 {% endblock %}
 </html>
