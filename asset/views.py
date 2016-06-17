@@ -106,14 +106,39 @@ def goRevertResulttwo(request):
     env = request.GET['env']
     print env
     result = {}
-    fileName = commands.getstatusoutput('salt test4 cmd.run "ls -t /tmp/%s | head -n 10"' % data)[1].split()[1:]
-    if 'cannot' in fileName:
-        result = {}
+    hostname = []
+    value = 0
+
+    revertFile = {}
+    for obj in goservices.objects.filter(env=env):
+        print type(obj.group.name)
+        # for e in goservices.objects.filter(env=self.env):
+        if obj.group.name == data:
+            print obj.saltminion
+            hostname.append(str(obj.saltminion.saltname))
+
+    hostname = list(set(hostname))
+    for h in hostname:
+        fileName = commands.getstatusoutput('salt %s cmd.run "ls -t /tmp/%s | head -n 10"' % (h,data))[1].split()[1:]
+        print fileName
+        if 'no' in fileName:
+            pass
+        else:
+            value=1
+            revertFile[h]=fileName
+        print revertFile
+    if value == 1:
+        result[env] = revertFile
     else:
-        result[env]=fileName
+        result = {}
+    print result
     return render_to_response('gorevert2.html',{'fileName':result})
 
 def revert(request):
+
+    if not request.GET.keys():
+
+        return HttpResponse('mico!!')
     data = request.GET['id']
     data = data.split(',')
 
