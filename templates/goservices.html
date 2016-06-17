@@ -53,7 +53,7 @@
                                     <th class="text-center"> 实例名称 </th>
                                     <th class="text-center"> 运行环境 </th>
                                     <th class="text-center"> IP地址 </th>
-                                    <th class="text-center"> 所属组 </th>
+                                    <th class="text-center"> salt minion </th>
                                     <th class="text-center"> 操作系统 </th>
                                     <th class="text-center"> cpu核数 </th>
                                     <th class="text-center"> 内存 </th>
@@ -70,7 +70,7 @@
                                     <td class="text-center"> <a href="#">{{ services.name }}</a></td>
                                     <td class="text-center"> {{ services.get_env_display }} </td>
                                     <td class="text-center"> {{ services.ip }} </td>
-                                    <td class="text-center">{{ asset.group.get }}</td>
+                                    <td class="text-center">{{ services.saltminion.saltname }}</td>
                                     <td class="text-center">{{ asset.system_type }}{{ asset.system_version }}</td>
                                     <td class="text-center"> {{ asset.cpu }} </td>
                                     <td class="text-center"> {{ asset.memory }}{% if asset.memory %}G{% endif %}</td>

@@ -42,13 +42,9 @@ def getData(request):
 
 @login_required
 def goServices(request):
-    name = 'spike'
 
     data = request.GET.get('projectName')
     go = goServicesni(data)
-    #print data
-
-
     if data is not None:
 
         project = go.getServiceName()
@@ -67,12 +63,15 @@ def getServices(request):
     data = request.GET.getlist('id')
 
     print data
-    host=['test4']
-    for i in host:
-        for s in data:
-            message = "salt '%s' cmd.run 'supervisorctl restart %s'" % (i, s)
-            os.system("echo %s >> /tmp/test.txt" % message)
-            os.system("salt '%s' cmd.run 'supervisorctl restart %s' >> /tmp/test.txt" % (i, s))
+    #host=['test4']
+    #for i in host:
+    for goName in data:
+            for SN in goservices.objects.filter(name=goName):
+                saltHost = str(SN.saltminion.saltname)
+
+                message = "salt '%s' cmd.run 'supervisorctl restart %s'" % (saltHost,goName)
+                os.system("echo %s >> /tmp/test.txt" % message)
+                os.system("salt '%s' cmd.run 'supervisorctl restart %s' >> /tmp/test.txt" % (saltHost,goName))
     f = open('/tmp/test.txt', 'r')
     result = f.readlines()
 
