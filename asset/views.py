@@ -140,6 +140,7 @@ def revert(request):
 
         return HttpResponse('mico!!')
     data = request.GET['id']
+    print '111111',data
     data = data.split(',')
 
     env = data[0]
@@ -148,10 +149,8 @@ def revert(request):
     print env
     print revertFile
     project = revertFile.split('_')[0]
-    #host = ['test4']
+
     Publish = goPublish()
     result = Publish.go_revert(env,project,revertFile)
-    #return HttpResponse(result)
-    #print data
-    #print data.split(',')[0]
+
     return HttpResponse(result)

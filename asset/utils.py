@@ -102,8 +102,8 @@ class goPublish:
             result = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(h,self.project,self.revertFile,self.project,self.project))
 
 
-        if result[0] == 0:
-            print 'revert to last version is success.'
+       # if result[0] == 0:
+       #     print 'revert to last version is success.'
 
         return revertFile
 

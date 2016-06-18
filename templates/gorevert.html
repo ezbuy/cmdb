@@ -21,47 +21,19 @@
     <span class="input-group-btn">
       <button class="btn btn-default active" type="submit">运行环境</button>
     </span>
-    <select id="lunch2" class="selectpicker form-control" data-live-search="true" name="env" onchange="t(this)">
+    <select id="lunch2" class="selectpicker form-control" data-live-search="true" name="env">
       <option value="1">生产环境</option>
       <option value="2">测试环境</option>
     </select>
 
   </div>
-  <select id="abc" style="display: none"/>
-    {% for i,v in tt.items %}
-        {% if i == 'spike' %}
-            <option>{{ v }}</option>
-        {% endif %}
-    {% endfor %}
-    </select>
+
 
 <br/>
     <input class="btn btn-danger" type="submit" value="choice revert version">
 </form>
 </div>
 
- <script>
 
-     console.log($('#lunch').val())
-     console.log($('#lunch2').get(0).selectedIndex)
-
- function t(obj) {
-     if (obj.value=='2')
-     {
-         var ttt = "{{ tt|safe }}"
-         console.log(ttt)
-
-
-         var aa='sss'
-         console.log(aa)
-         document.getElementById("abc").style.display = ""
-
-
-     }
-     else
-         document.getElementById("abc").style.display = "none"
-
- }
- </script>
 {% endblock %}
 </html>

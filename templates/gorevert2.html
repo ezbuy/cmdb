@@ -34,18 +34,22 @@
                                     </th>
                                     <th class="text-center"> 实例名称 </th>
                                     <th class="text-center"> 运行环境 </th>
+                                    <th class="text-center"> salt minion </th>
 
                                 </tr>
                             </thead>
                             <tbody>
                             {% for env,f in fileName.items %}
-                                {% for v in f %}
+                                {% for salt,version in f.items %}
+                                    {% for instance in version %}
                                 <tr class="gradeX">
                                     <td class="text-center"  data-editable='false'>
-                                        <input name="id" value="{{ env }},{{ v }}" type="radio" class="i-checks">
+                                        <input name="id" value="{{ env }},{{ instance }}" type="radio" class="i-checks">
                                     </td>
-                                    <td name="file" class="text-center"> <a href="#">{{ v }}</a></td>
-                                    <td name="env" class="text-center"> <a href="#">{{ env }}</a></td>
+                                        <td class="text-center">{{ instance }}</a></td>
+                                        <td class="text-center">{{ env }}</a></td>
+                                        <td class="text-center">{{ salt }}</a></td>
+                                    {% endfor %}
                                 {% endfor %}
 
                                 </tr>
