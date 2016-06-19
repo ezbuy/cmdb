@@ -55,8 +55,7 @@ class goPublish:
                                 message = "salt '%s' cmd.run 'svn update /srv/%s'" % (i,self.name)
                                 os.system("echo %s >> /tmp/test.txt" % message)
                                 os.system("salt '%s' cmd.run 'svn update --username=deploy --password=ezbuyisthebest --non-interactive /srv/%s' >> /tmp/test.txt" %(i,self.name))
-                            #for s in Project:
-                            #for s in obj:
+
                             message ="salt '%s' cmd.run 'supervisorctl restart %s'" % (i,obj)
                             os.system("echo %s >> /tmp/test.txt" % message)
                             os.system("salt '%s' cmd.run 'supervisorctl restart %s' >> /tmp/test.txt" % (i, obj))
@@ -97,8 +96,6 @@ class goPublish:
         for h in hostname:
             os.system("salt %s state.sls logs.revert" % h)
             os.system("salt '%s' cmd.run %s" %(h,runCmd))
-            #revertFile = commands.getoutput("salt '%s' cmd.run \'ls -lt /tmp/%s | awk \'NR==2\' | awk \"{print \$NF}\"\'" % (h,self.project))
-            #revertFile = revertFile.split()[-1]
             result = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(h,self.project,self.revertFile,self.project,self.project))
 
 

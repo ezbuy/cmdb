@@ -100,7 +100,7 @@ def goRevertResult(request):
     result = Publish.go_revert(env, data)
     return HttpResponse(result)
 
-
+@login_required
 def goRevertResulttwo(request):
     data = request.GET['goProject']
     env = request.GET['env']
@@ -134,20 +134,23 @@ def goRevertResulttwo(request):
     print result
     return render_to_response('gorevert2.html',{'fileName':result})
 
+
+
+@login_required
 def revert(request):
 
     if not request.GET.keys():
 
         return HttpResponse('mico!!')
     data = request.GET['id']
-    print '111111',data
+    #print '111111',data
     data = data.split(',')
 
     env = data[0]
     revertFile = data[1]
 
-    print env
-    print revertFile
+    #print env
+    #print revertFile
     project = revertFile.split('_')[0]
 
     Publish = goPublish()
