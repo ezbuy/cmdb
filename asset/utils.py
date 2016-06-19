@@ -73,9 +73,9 @@ class goPublish:
         self.env = env
         self.project = project
         self.revertFile = revertFile
-        print self.env
-        print self.project
-        print self.revertFile
+        #print self.env
+        #print self.project
+        #print self.revertFile
         #commands.getstatusoutput('ls -t /tmp/spike')
         projectPwd = "/srv/" + self.project + "/" + self.project
         currentTime = self.getNowTime()
@@ -85,24 +85,28 @@ class goPublish:
         print runCmd
         hostname = []
         for obj in goservices.objects.filter(env=self.env):
-            print type(obj.group.name)
+            #print type(obj.group.name)
         #for e in goservices.objects.filter(env=self.env):
             if obj.group.name == self.project:
-                print obj.saltminion
+                #print obj.saltminion
                 hostname.append(str(obj.saltminion.saltname))
 
         hostname = list(set(hostname))
-        print hostname
+        #print hostname
         for h in hostname:
             os.system("salt %s state.sls logs.revert" % h)
             os.system("salt '%s' cmd.run %s" %(h,runCmd))
-            result = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(h,self.project,self.revertFile,self.project,self.project))
+            print '---------------------'
+            revertResult = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(h,self.project,self.revertFile,self.project,self.project))
+            print revertResult
 
+        if revertResult[0] == 0:
+            mes = 'revert to %s version is successful.' % revertFile
+            print mes
+        else:
+            mes = 'revert to %s version is failed.' % revertFile
 
-       # if result[0] == 0:
-       #     print 'revert to last version is success.'
-
-        return revertFile
+        return mes
 
 class goServicesni:
     def __init__(self,projectName):
