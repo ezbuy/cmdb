@@ -101,7 +101,7 @@ class goPublish:
             print revertResult
 
         if revertResult[0] == 0:
-            mes = 'revert to %s version is successful.' % revertFile
+            mes = 'revert to %s version is successful,but no restart all project,so you can restart project,please choose it...' % revertFile
             print mes
         else:
             mes = 'revert to %s version is failed.' % revertFile
