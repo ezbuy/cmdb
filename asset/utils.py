@@ -88,7 +88,7 @@ class goPublish:
                     os.system("salt %s cmd.run 'supervisorctl restart %s'"%(self.host,obj.name))
 
         if revertResult[0] == 0:
-            mes = 'revert to %s version is successful,but no restart all project,so you can restart project,please choose it...' % revertFile
+            mes = 'revert to %s version is successful.' % revertFile
         else:
             mes = 'revert to %s version is failed.' % revertFile
 

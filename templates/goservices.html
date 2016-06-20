@@ -1,23 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style>
-    .div-height{height: 200px;}
-</style>
+
 <form action="{% url 'goServices' %}" method="get">
     <div class="btn-group" role="group">
         {% for list in groupName %}
-      <button type="submit" class="btn btn-default" name="projectName" value="{{ list }}">{{ list }}</button>
+            <button type="submit" class="btn btn-default" name="projectName" value="{{ list }}">{{ list }}</button>
         {% endfor %}
-      <!--button type="submit" class="btn btn-default" name="projectName" value="account">account</button>
-      <button type="submit" class="btn btn-default" name="projectName" value="bulma">bulma</button>
-      <button type="submit" class="btn btn-default" name="projectName" value="champagne">champagne</button>
-      <button type="submit" class="btn btn-default" name="projectName" value="ezdelivery">ezdelivery</button>
-      <button type="submit" class="btn btn-default" name="projectName" value="featurecollection">featurecollection</button>
-      <button type="submit" class="btn btn-default" name="projectName" value="homepage">homepage</button>
-      <button type="submit" class="btn btn-default" name="projectName" value="parcelforce">parcelforce</button>
-      <button type="submit" class="btn btn-default" name="projectName" value="popupAdmin">popupAdmin</button>
-       <button type="submit" class="btn btn-default" name="projectName" value="voucherAdmin">voucherAdmin</button-->
     </div>
 </form>
 
@@ -56,11 +45,7 @@
                                     <th class="text-center"> 运行环境 </th>
                                     <th class="text-center"> IP地址 </th>
                                     <th class="text-center"> salt minion </th>
-                                    <th class="text-center"> 操作系统 </th>
-                                    <th class="text-center"> cpu核数 </th>
-                                    <th class="text-center"> 内存 </th>
-                                    <th class="text-center"> 硬盘 </th>
-                                    <th class="text-center"> 操作 </th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -73,11 +58,7 @@
                                     <td class="text-center"> {{ services.get_env_display }} </td>
                                     <td class="text-center"> {{ services.ip }} </td>
                                     <td class="text-center">{{ services.saltminion.saltname }}</td>
-                                    <td class="text-center">{{ asset.system_type }}{{ asset.system_version }}</td>
-                                    <td class="text-center"> {{ asset.cpu }} </td>
-                                    <td class="text-center"> {{ asset.memory }}{% if asset.memory %}G{% endif %}</td>
-                                    <td class="text-center"> {{ asset.disk }}{% if asset.disk %}G{% endif %}</td>
-
+                            
                                 </tr>
                             {% endfor %}
                             </tbody>

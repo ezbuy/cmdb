@@ -134,7 +134,7 @@ def revert(request):
     if not request.GET.keys():
         mes = 'argv is error,not revert version!!'
         return render_to_response('goRevertResult.html', {'mes': mes})
-    
+
     data = request.GET['id']
     data = data.split(',')
     env = data[0]
