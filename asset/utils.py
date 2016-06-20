@@ -13,7 +13,7 @@ class goPublish:
 
 
     def deployGo(self,name):
-        #self.env = env
+
         self.name = name
         Project = []
         salt = []
@@ -70,7 +70,7 @@ class goPublish:
         return result
 
     def go_revert(self,project,revertFile):
-        #self.env = env
+
         self.project = project
         self.revertFile = revertFile
 
@@ -92,13 +92,11 @@ class goPublish:
         for h in hostname:
             os.system("salt %s state.sls logs.revert" % h)
             os.system("salt '%s' cmd.run %s" %(h,runCmd))
-            print '---------------------'
             revertResult = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(h,self.project,self.revertFile,self.project,self.project))
-            print revertResult
+
 
         if revertResult[0] == 0:
             mes = 'revert to %s version is successful,but no restart all project,so you can restart project,please choose it...' % revertFile
-            print mes
         else:
             mes = 'revert to %s version is failed.' % revertFile
 
@@ -106,7 +104,6 @@ class goPublish:
 
 
     def goConf(self):
-        #self.env = env
         hostname = []
         if self.env == '1' or self.env == '2':
             for obj in goservices.objects.filter(env=self.env):
@@ -115,8 +112,7 @@ class goPublish:
         confCmd = "svn update --username=deploy --password=ezbuyisthebest --non-interactive /srv/goconf"
         for h in hostname:
             confResult =  os.system('salt %s cmd.run "%s" >> /tmp/goconf.txt' %(h,confCmd))
-            print confResult
-        print hostname
+
         f = file('/tmp/goconf.txt','r')
         result = f.readlines()
         f.close()

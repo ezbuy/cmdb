@@ -25,16 +25,12 @@ def getData(request):
     data = request.GET['goProject']
     env = request.GET['env']
 
-    #if data == 'spike':
-        #message = os.popen('ls /tmp')
-        #a = 'sqlcmd -S 192.168.199.105 -U pengzihe -P pzh000 -d 2016 -Q "select * from class"'
-        #message = sudo("salt t-slq-uat-testdb-1 cmd.run '%s'" % a)
-    #host = ['test4']
+
     Publish = goPublish(env)
     result = Publish.deployGo(data)
 
     return render_to_response('getdata.html',{'result':result})
-    #return HttpResponse(message)
+
 
 
 
@@ -52,7 +48,7 @@ def goServices(request):
 
     else:
         project = go.getServiceName()
-    #return HttpResponse(project)
+
     return render_to_response('goservices.html',{'project':project,'groupName':groupName})
 
 
@@ -63,9 +59,7 @@ def goServices(request):
 def getServices(request):
     data = request.GET.getlist('id')
 
-    print data
-    #host=['test4']
-    #for i in host:
+
     for goName in data:
             for SN in goservices.objects.filter(name=goName):
                 saltHost = str(SN.saltminion.saltname)
@@ -86,17 +80,15 @@ def getServices(request):
 def goRevert(request):
     groupname = gogroup.objects.all()
 
-    tt = {'mico':12,'steven':23,'zero':110,'spike':'spike1111'}
-    return render_to_response('gorevert.html',{'groupname':groupname,'tt':tt})
+
+    return render_to_response('gorevert.html',{'groupname':groupname})
 
 
 @login_required
 def goRevertResult(request):
     data = request.GET['goProject']
     env = request.GET['env']
-    print data
-    print env
-    #host = ['test4']
+
     Publish = goPublish(env)
     result = Publish.go_revert(data)
     return HttpResponse(result)
@@ -105,12 +97,11 @@ def goRevertResult(request):
 def goRevertResulttwo(request):
     data = request.GET['goProject']
     env = request.GET['env']
-    print env
+    revertFile = {}
     result = {}
     hostname = []
     value = 0
 
-    revertFile = {}
     for obj in goservices.objects.filter(env=env):
         print type(obj.group.name)
         # for e in goservices.objects.filter(env=self.env):
@@ -121,18 +112,18 @@ def goRevertResulttwo(request):
     hostname = list(set(hostname))
     for h in hostname:
         fileName = commands.getstatusoutput('salt %s cmd.run "ls -t /tmp/%s | head -n 10"' % (h,data))[1].split()[1:]
-        print fileName
+
         if 'no' in fileName:
             pass
         else:
             value=1
             revertFile[h]=fileName
-        print revertFile
+
     if value == 1:
         result[env] = revertFile
     else:
         result = {}
-    print result
+
     return render_to_response('gorevert2.html',{'fileName':result})
 
 
@@ -144,14 +135,9 @@ def revert(request):
         mes = 'argv is error,not revert version!!'
         return render_to_response('goRevertResult.html', {'mes': mes})
     data = request.GET['id']
-    #print '111111',data
     data = data.split(',')
-
     env = data[0]
     revertFile = data[1]
-
-    #print env
-    #print revertFile
     project = revertFile.split('_')[0]
 
     Publish = goPublish(env)
