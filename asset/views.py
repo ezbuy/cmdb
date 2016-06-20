@@ -134,14 +134,15 @@ def revert(request):
     if not request.GET.keys():
         mes = 'argv is error,not revert version!!'
         return render_to_response('goRevertResult.html', {'mes': mes})
+    
     data = request.GET['id']
     data = data.split(',')
     env = data[0]
     revertFile = data[1]
     project = revertFile.split('_')[0]
-
+    host = data[2]
     Publish = goPublish(env)
-    mes = Publish.go_revert(project,revertFile)
+    mes = Publish.go_revert(project,revertFile,host)
 
     return render_to_response('goRevertResult.html',{'mes':mes})
 

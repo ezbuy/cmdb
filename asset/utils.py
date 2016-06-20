@@ -69,31 +69,23 @@ class goPublish:
         os.system('rm /tmp/test.txt')
         return result
 
-    def go_revert(self,project,revertFile):
+    def go_revert(self,project,revertFile,host):
 
         self.project = project
         self.revertFile = revertFile
-
+        self.host = host
         projectPwd = "/srv/" + self.project + "/" + self.project
         currentTime = self.getNowTime()
 
         rename = "/tmp/revert/" + self.project + '_revert_' + currentTime
         runCmd = "'mv " + projectPwd + " " + rename + "'"
-        print runCmd
-        hostname = []
+
+        os.system("salt %s state.sls logs.revert" % self.host)
+        os.system("salt '%s' cmd.run %s" %(self.host,runCmd))
+        revertResult = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(self.host,self.project,self.revertFile,self.project,self.project))
         for obj in goservices.objects.filter(env=self.env):
-
-            if obj.group.name == self.project:
-
-                hostname.append(str(obj.saltminion.saltname))
-
-        hostname = list(set(hostname))
-
-        for h in hostname:
-            os.system("salt %s state.sls logs.revert" % h)
-            os.system("salt '%s' cmd.run %s" %(h,runCmd))
-            revertResult = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(h,self.project,self.revertFile,self.project,self.project))
-
+                if obj.group.name == self.project and self.host == obj.saltminion.saltname:
+                    os.system("salt %s cmd.run 'supervisorctl restart %s'"%(self.host,obj.name))
 
         if revertResult[0] == 0:
             mes = 'revert to %s version is successful,but no restart all project,so you can restart project,please choose it...' % revertFile
