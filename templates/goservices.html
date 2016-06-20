@@ -6,8 +6,10 @@
 </style>
 <form action="{% url 'goServices' %}" method="get">
     <div class="btn-group" role="group">
-      <button type="submit" class="btn btn-default" name="projectName" value="spike">实例列表: spike</button>
-      <button type="submit" class="btn btn-default" name="projectName" value="account">account</button>
+        {% for list in groupName %}
+      <button type="submit" class="btn btn-default" name="projectName" value="{{ list }}">{{ list }}</button>
+        {% endfor %}
+      <!--button type="submit" class="btn btn-default" name="projectName" value="account">account</button>
       <button type="submit" class="btn btn-default" name="projectName" value="bulma">bulma</button>
       <button type="submit" class="btn btn-default" name="projectName" value="champagne">champagne</button>
       <button type="submit" class="btn btn-default" name="projectName" value="ezdelivery">ezdelivery</button>
@@ -15,7 +17,7 @@
       <button type="submit" class="btn btn-default" name="projectName" value="homepage">homepage</button>
       <button type="submit" class="btn btn-default" name="projectName" value="parcelforce">parcelforce</button>
       <button type="submit" class="btn btn-default" name="projectName" value="popupAdmin">popupAdmin</button>
-       <button type="submit" class="btn btn-default" name="projectName" value="voucherAdmin">voucherAdmin</button>
+       <button type="submit" class="btn btn-default" name="projectName" value="voucherAdmin">voucherAdmin</button-->
     </div>
 </form>
 

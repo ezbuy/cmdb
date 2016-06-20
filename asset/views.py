@@ -45,6 +45,7 @@ def goServices(request):
 
     data = request.GET.get('projectName')
     go = goServicesni(data)
+    groupName = gogroup.objects.all()
     if data is not None:
 
         project = go.getServiceName()
@@ -52,7 +53,7 @@ def goServices(request):
     else:
         project = go.getServiceName()
     #return HttpResponse(project)
-    return render_to_response('goservices.html',{'project':project})
+    return render_to_response('goservices.html',{'project':project,'groupName':groupName})
 
 
 
