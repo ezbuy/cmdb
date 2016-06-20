@@ -3,8 +3,8 @@ from asset.models import *
 import os,time,commands
 
 class goPublish:
-    #def __init__(self,host):
-    #    self.host = host
+    def __init__(self,env):
+        self.env = env
 
 
     def getNowTime(self):
@@ -12,8 +12,8 @@ class goPublish:
 
 
 
-    def deployGo(self,env,name):
-        self.env = env
+    def deployGo(self,name):
+        #self.env = env
         self.name = name
         Project = []
         salt = []
@@ -69,14 +69,11 @@ class goPublish:
         os.system('rm /tmp/test.txt')
         return result
 
-    def go_revert(self,env,project,revertFile):
-        self.env = env
+    def go_revert(self,project,revertFile):
+        #self.env = env
         self.project = project
         self.revertFile = revertFile
-        #print self.env
-        #print self.project
-        #print self.revertFile
-        #commands.getstatusoutput('ls -t /tmp/spike')
+
         projectPwd = "/srv/" + self.project + "/" + self.project
         currentTime = self.getNowTime()
 
@@ -85,14 +82,13 @@ class goPublish:
         print runCmd
         hostname = []
         for obj in goservices.objects.filter(env=self.env):
-            #print type(obj.group.name)
-        #for e in goservices.objects.filter(env=self.env):
+
             if obj.group.name == self.project:
-                #print obj.saltminion
+
                 hostname.append(str(obj.saltminion.saltname))
 
         hostname = list(set(hostname))
-        #print hostname
+
         for h in hostname:
             os.system("salt %s state.sls logs.revert" % h)
             os.system("salt '%s' cmd.run %s" %(h,runCmd))
@@ -107,6 +103,26 @@ class goPublish:
             mes = 'revert to %s version is failed.' % revertFile
 
         return mes
+
+
+    def goConf(self):
+        #self.env = env
+        hostname = []
+        if self.env == '1' or self.env == '2':
+            for obj in goservices.objects.filter(env=self.env):
+                hostname.append(str(obj.saltminion.saltname))
+        hostname = list(set(hostname))
+        confCmd = "svn update --username=deploy --password=ezbuyisthebest --non-interactive /srv/goconf"
+        for h in hostname:
+            confResult =  os.system('salt %s cmd.run "%s" >> /tmp/goconf.txt' %(h,confCmd))
+            print confResult
+        print hostname
+        f = file('/tmp/goconf.txt','r')
+        result = f.readlines()
+        f.close()
+        os.system('rm /tmp/goconf.txt')
+        return result
+
 
 class goServicesni:
     def __init__(self,projectName):

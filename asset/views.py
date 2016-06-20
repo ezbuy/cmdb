@@ -30,8 +30,8 @@ def getData(request):
         #a = 'sqlcmd -S 192.168.199.105 -U pengzihe -P pzh000 -d 2016 -Q "select * from class"'
         #message = sudo("salt t-slq-uat-testdb-1 cmd.run '%s'" % a)
     #host = ['test4']
-    Publish = goPublish()
-    result = Publish.deployGo(env, data)
+    Publish = goPublish(env)
+    result = Publish.deployGo(data)
 
     return render_to_response('getdata.html',{'result':result})
     #return HttpResponse(message)
@@ -96,8 +96,8 @@ def goRevertResult(request):
     print data
     print env
     #host = ['test4']
-    Publish = goPublish()
-    result = Publish.go_revert(env, data)
+    Publish = goPublish(env)
+    result = Publish.go_revert(data)
     return HttpResponse(result)
 
 @login_required
@@ -140,7 +140,7 @@ def goRevertResulttwo(request):
 def revert(request):
 
     if not request.GET.keys():
-        mes = 'argv is error,no revert version!!'
+        mes = 'argv is error,not revert version!!'
         return render_to_response('goRevertResult.html', {'mes': mes})
     data = request.GET['id']
     #print '111111',data
@@ -153,7 +153,21 @@ def revert(request):
     #print revertFile
     project = revertFile.split('_')[0]
 
-    Publish = goPublish()
-    mes = Publish.go_revert(env,project,revertFile)
+    Publish = goPublish(env)
+    mes = Publish.go_revert(project,revertFile)
 
     return render_to_response('goRevertResult.html',{'mes':mes})
+
+
+
+@login_required
+def goConfHTML(request):
+    return render_to_response('goConf.html')
+
+
+@login_required
+def goConfResult(request):
+    env = request.GET['env']
+    Publish = goPublish(env)
+    mes = Publish.goConf()
+    return render_to_response('goConfResult.html',{'result':mes})

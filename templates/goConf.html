@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% include 'link_css.html' %}
+{% block content %}
+
+
+<div class="text-center">
+<form class="col-lg-12" action="{% url 'goConfResult' %}" method="get">
+
+
+  <div class="input-group my-group text-center">
+    <span class="input-group-btn">
+      <button class="btn btn-default active" type="submit">运行环境</button>
+    </span>
+    <select id="lunch" class="selectpicker form-control" data-live-search="true" name="env" title="Please select a lunch ...">
+      <option value="1">生产环境</option>
+      <option value="2">测试环境</option>
+    </select>
+  </div>
+
+<br/>
+    <input class="btn btn-danger" type="submit" value="Deploy">
+</form>
+</div>
+
+{% endblock %}
+</html>
