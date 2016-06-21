@@ -69,7 +69,7 @@ def getServices(request):
         getMes = saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%goName])
         result.append(getMes)
 
-    return render_to_response('getservices.html',{'result':result})
+    return render_to_response('getdata.html',{'result':result})
 
 
 @login_required
@@ -97,6 +97,7 @@ def goRevertResulttwo(request):
     result = {}
     hostname = []
     value = 0
+    print data,env
 
     for obj in goservices.objects.filter(env=env):
         print type(obj.group.name)
@@ -106,9 +107,10 @@ def goRevertResulttwo(request):
             hostname.append(str(obj.saltminion.saltname))
 
     hostname = list(set(hostname))
+    print hostname
     for h in hostname:
         fileName = commands.getstatusoutput('salt %s cmd.run "ls -t /tmp/%s | head -n 10"' % (h,data))[1].split()[1:]
-        if 'no' in fileName or 'No' in fileName:
+        if 'no' in fileName or 'No' in fileName or 'not' in fileName or 'Not' in fileName:   #minion is offline
             pass
         else:
             value=1
@@ -118,7 +120,7 @@ def goRevertResulttwo(request):
         result[env] = revertFile
     else:
         result = {}
-
+    print '2222',result
     return render_to_response('gorevert2.html',{'fileName':result})
 
 
@@ -139,7 +141,7 @@ def revert(request):
     Publish = goPublish(env)
     mes = Publish.go_revert(project,revertFile,host)
 
-    return render_to_response('goRevertResult.html',{'mes':mes})
+    return render_to_response('getdata.html',{'result':mes})
 
 
 
@@ -153,4 +155,4 @@ def goConfResult(request):
     env = request.GET['env']
     Publish = goPublish(env)
     mes = Publish.goConf()
-    return render_to_response('goConfResult.html',{'result':mes})
+    return render_to_response('getdata.html',{'result':mes})

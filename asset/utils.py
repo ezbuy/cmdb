@@ -49,6 +49,7 @@ class goPublish:
                                 print deploy_pillar
                                 os.system("salt '%s' state.sls logs.gologs %s" % (i,deploy_pillar))
                                 currentTime = self.getNowTime()
+                                saltCmd.cmd('%s'%i,'cmd.run',['mv /srv/%s/%s /tmp/%s/%s_%s'%(self.name,self.name,self.name,self.name,currentTime)])
                                 svn = saltCmd.cmd('%s'%i,'cmd.run',['svn update --username=deploy --password=ezbuyisthebest --non-interactive /srv/%s'%self.name])
                                 result.append(svn)
 
@@ -64,6 +65,8 @@ class goPublish:
         self.project = project
         self.revertFile = revertFile
         self.host = host
+        result = []
+        saltCmd =LocalClient()
         projectPwd = "/srv/" + self.project + "/" + self.project
         currentTime = self.getNowTime()
 
@@ -71,18 +74,26 @@ class goPublish:
         runCmd = "'mv " + projectPwd + " " + rename + "'"
 
         os.system("salt %s state.sls logs.revert" % self.host)
-        os.system("salt '%s' cmd.run %s" %(self.host,runCmd))
-        revertResult = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(self.host,self.project,self.revertFile,self.project,self.project))
-        for obj in goservices.objects.filter(env=self.env):
-                if obj.group.name == self.project and self.host == obj.saltminion.saltname:
-                    os.system("salt %s cmd.run 'supervisorctl restart %s'"%(self.host,obj.name))
+        #os.system("salt '%s' cmd.run %s" %(self.host,runCmd))
+        saltCmd.cmd('%s' % self.host,'cmd.run',['%s' % runCmd])
 
+        revertResult = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(self.host,self.project,self.revertFile,self.project,self.project))
         if revertResult[0] == 0:
+            for obj in goservices.objects.filter(env=self.env):
+                if obj.group.name == self.project and self.host == obj.saltminion.saltname:
+                    #os.system("salt %s cmd.run 'supervisorctl restart %s'"%(self.host,obj.name))
+                    restart = saltCmd.cmd('%s' % self.host,'cmd.run',['supervisorctl restart %s' % obj.name])
+                    result.append(restart)
+
+
             mes = 'revert to %s version is successful.' % revertFile
+            mes = {self.host:mes}
+            result.append(mes)
         else:
             mes = 'revert to %s version is failed.' % revertFile
-
-        return mes
+            mes = {self.host: mes}
+            result.append(mes)
+        return result
 
 
     def goConf(self):
