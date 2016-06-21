@@ -2,11 +2,18 @@
 
 {% block content %}
 
-<pre>
-{% for v in result %}
-{{ v }}
-{% endfor %}
-</pre>
+<div>
+    {% for dic in result %}
+        {% for k,v in dic.items %}
+            <h2 style="color: red">{{ k }}:</h2>
+            <ul>
+                <pre style="border: none">
+                    <li>{{ v }}</li>
+                </pre>
+            </ul>
+        {% endfor %}
+    {% endfor %}
+</div>
 
 
 

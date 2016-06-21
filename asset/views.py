@@ -16,7 +16,11 @@ def asset_list(request):
 @login_required
 def get(request):
     groupname = gogroup.objects.all()
-    return render_to_response('get.html',{'groupname':groupname})
+    test ={'test4': 'spike_shops: stopped\nspike_shops: started',
+ 'test5': 'spike_shops: ERROR (not running)\nspike_shops: ERROR (abnormal termination)'}
+
+    print '22222',test
+    return render_to_response('get.html',{'groupname':groupname,'test':test})
 
 
 
@@ -58,19 +62,13 @@ def goServices(request):
 @login_required
 def getServices(request):
     data = request.GET.getlist('id')
-    print '222222221',data
+    saltCmd = LocalClient()
+    result = []
     for v in data:
         goName,host = v.split(',')
-        message = "salt '%s' cmd.run 'supervisorctl restart %s'" % (host,goName)
-        os.system("echo %s >> /tmp/test.txt" % message)
-        os.system("salt '%s' cmd.run 'supervisorctl restart %s' >> /tmp/test.txt" % (host,goName))
-    f = open('/tmp/test.txt', 'r')
-    result = f.readlines()
-    f.close()
+        getMes = saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%goName])
+        result.append(getMes)
 
-
-
-    os.system('rm /tmp/test.txt')
     return render_to_response('getservices.html',{'result':result})
 
 
