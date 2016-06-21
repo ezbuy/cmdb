@@ -42,12 +42,12 @@ def goServices(request):
     data = request.GET.get('projectName')
     go = goServicesni(data)
     groupName = gogroup.objects.all()
-    if data is not None:
+    #if data is not None:
 
-        project = go.getServiceName()
+    project = go.getServiceName()
 
-    else:
-        project = go.getServiceName()
+    #else:
+    #    project = go.getServiceName()
 
     return render_to_response('goservices.html',{'project':project,'groupName':groupName})
 
@@ -58,17 +58,15 @@ def goServices(request):
 @login_required
 def getServices(request):
     data = request.GET.getlist('id')
-
-
-    for goName in data:
-            for SN in goservices.objects.filter(name=goName):
-                saltHost = str(SN.saltminion.saltname)
-
-                message = "salt '%s' cmd.run 'supervisorctl restart %s'" % (saltHost,goName)
-                os.system("echo %s >> /tmp/test.txt" % message)
-                os.system("salt '%s' cmd.run 'supervisorctl restart %s' >> /tmp/test.txt" % (saltHost,goName))
+    print '222222221',data
+    for v in data:
+        goName,host = v.split(',')
+        message = "salt '%s' cmd.run 'supervisorctl restart %s'" % (host,goName)
+        os.system("echo %s >> /tmp/test.txt" % message)
+        os.system("salt '%s' cmd.run 'supervisorctl restart %s' >> /tmp/test.txt" % (host,goName))
     f = open('/tmp/test.txt', 'r')
     result = f.readlines()
+    f.close()
 
 
 
@@ -112,8 +110,7 @@ def goRevertResulttwo(request):
     hostname = list(set(hostname))
     for h in hostname:
         fileName = commands.getstatusoutput('salt %s cmd.run "ls -t /tmp/%s | head -n 10"' % (h,data))[1].split()[1:]
-
-        if 'no' in fileName:
+        if 'no' in fileName or 'No' in fileName:
             pass
         else:
             value=1

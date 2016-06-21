@@ -64,6 +64,7 @@ class goPublish:
         os.system('echo "%s" >> /tmp/test.txt' % line)
         f = open('/tmp/test.txt', 'r')
         result = f.readlines()
+        f.close()
 
 
         os.system('rm /tmp/test.txt')
