@@ -6,6 +6,7 @@ from salt.client import LocalClient
 class goPublish:
     def __init__(self,env):
         self.env = env
+        self.saltCmd = LocalClient()
 
 
     def getNowTime(self):
@@ -16,14 +17,13 @@ class goPublish:
     def deployGo(self,name):
 
         self.name = name
-        saltCmd = LocalClient()
         Project = []
         salt = []
         result = []
         saltcount = 0
 
         minionHost = commands.getstatusoutput('salt-key -l accepted')[1].split()[2:]
-        print minionHost
+
         groupname = gogroup.objects.all()
         for name in groupname:
             if self.name == name.name:
@@ -46,14 +46,14 @@ class goPublish:
                         else:
                             if saltcount == 1:
                                 deploy_pillar = "pillar=\"{'project':'" + self.name + "'}\""
-                                print deploy_pillar
+
                                 os.system("salt '%s' state.sls logs.gologs %s" % (i,deploy_pillar))
                                 currentTime = self.getNowTime()
-                                saltCmd.cmd('%s'%i,'cmd.run',['mv /srv/%s/%s /tmp/%s/%s_%s'%(self.name,self.name,self.name,self.name,currentTime)])
-                                svn = saltCmd.cmd('%s'%i,'cmd.run',['svn update --username=deploy --password=ezbuyisthebest --non-interactive /srv/%s'%self.name])
+                                self.saltCmd.cmd('%s'%i,'cmd.run',['mv /srv/%s/%s /tmp/%s/%s_%s'%(self.name,self.name,self.name,self.name,currentTime)])
+                                svn = self.saltCmd.cmd('%s'%i,'cmd.run',['svn update --username=deploy --password=ezbuyisthebest --non-interactive /srv/%s'%self.name])
                                 result.append(svn)
 
-                            restart = saltCmd.cmd('%s'%i,'cmd.run',['supervisorctl restart %s'%obj])
+                            restart = self.saltCmd.cmd('%s'%i,'cmd.run',['supervisorctl restart %s'%obj])
                             result.append(restart)
 
 
@@ -66,7 +66,7 @@ class goPublish:
         self.revertFile = revertFile
         self.host = host
         result = []
-        saltCmd =LocalClient()
+
         projectPwd = "/srv/" + self.project + "/" + self.project
         currentTime = self.getNowTime()
 
@@ -74,15 +74,15 @@ class goPublish:
         runCmd = "'mv " + projectPwd + " " + rename + "'"
 
         os.system("salt %s state.sls logs.revert" % self.host)
-        #os.system("salt '%s' cmd.run %s" %(self.host,runCmd))
-        saltCmd.cmd('%s' % self.host,'cmd.run',['%s' % runCmd])
+
+        self.saltCmd.cmd('%s' % self.host,'cmd.run',['%s' % runCmd])
 
         revertResult = commands.getstatusoutput("salt '%s' cmd.run 'cp /tmp/%s/%s /srv/%s/%s'" %(self.host,self.project,self.revertFile,self.project,self.project))
         if revertResult[0] == 0:
             for obj in goservices.objects.filter(env=self.env):
                 if obj.group.name == self.project and self.host == obj.saltminion.saltname:
                     #os.system("salt %s cmd.run 'supervisorctl restart %s'"%(self.host,obj.name))
-                    restart = saltCmd.cmd('%s' % self.host,'cmd.run',['supervisorctl restart %s' % obj.name])
+                    restart = self.saltCmd.cmd('%s' % self.host,'cmd.run',['supervisorctl restart %s' % obj.name])
                     result.append(restart)
 
 
@@ -98,7 +98,6 @@ class goPublish:
 
     def goConf(self):
         hostname = []
-        saltCmd = LocalClient()
         result = []
         if self.env == '1' or self.env == '2':
             for obj in goservices.objects.filter(env=self.env):
@@ -106,7 +105,7 @@ class goPublish:
         hostname = list(set(hostname))
         confCmd = "svn update --username=deploy --password=ezbuyisthebest --non-interactive /srv/goconf"
         for h in hostname:
-            confResult = saltCmd.cmd('%s'%h,'cmd.run',['%s'%confCmd])
+            confResult = self.saltCmd.cmd('%s'%h,'cmd.run',['%s'%confCmd])
             result.append(confResult)
 
         return result

@@ -16,11 +16,7 @@ def asset_list(request):
 @login_required
 def get(request):
     groupname = gogroup.objects.all()
-    test ={'test4': 'spike_shops: stopped\nspike_shops: started',
- 'test5': 'spike_shops: ERROR (not running)\nspike_shops: ERROR (abnormal termination)'}
-
-    print '22222',test
-    return render_to_response('get.html',{'groupname':groupname,'test':test})
+    return render_to_response('get.html',{'groupname':groupname})
 
 
 
@@ -28,8 +24,6 @@ def get(request):
 def getData(request):
     data = request.GET['goProject']
     env = request.GET['env']
-
-
     Publish = goPublish(env)
     result = Publish.deployGo(data)
 
@@ -46,12 +40,7 @@ def goServices(request):
     data = request.GET.get('projectName')
     go = goServicesni(data)
     groupName = gogroup.objects.all()
-    #if data is not None:
-
     project = go.getServiceName()
-
-    #else:
-    #    project = go.getServiceName()
 
     return render_to_response('goservices.html',{'project':project,'groupName':groupName})
 
@@ -97,17 +86,13 @@ def goRevertResulttwo(request):
     result = {}
     hostname = []
     value = 0
-    print data,env
+
 
     for obj in goservices.objects.filter(env=env):
-        print type(obj.group.name)
-        # for e in goservices.objects.filter(env=self.env):
         if obj.group.name == data:
-            print obj.saltminion
             hostname.append(str(obj.saltminion.saltname))
 
     hostname = list(set(hostname))
-    print hostname
     for h in hostname:
         fileName = commands.getstatusoutput('salt %s cmd.run "ls -t /tmp/%s | head -n 10"' % (h,data))[1].split()[1:]
         if 'no' in fileName or 'No' in fileName or 'not' in fileName or 'Not' in fileName:   #minion is offline
@@ -120,7 +105,7 @@ def goRevertResulttwo(request):
         result[env] = revertFile
     else:
         result = {}
-    print '2222',result
+
     return render_to_response('gorevert2.html',{'fileName':result})
 
 
