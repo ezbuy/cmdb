@@ -1,23 +1,19 @@
 {% extends 'base.html' %}
 {% include 'link_css.html' %}
 {% block content %}
-
-
-<div class="text-center">
-<form  class="col-lg-12" action="{% url 'getData' %}" method="get">
+<form class="col-lg-12" action="{% url 'getData' %}" method="get">
   <div class="input-group my-group text-center" style="margin: 0px 0px 100px;">
     <span class="input-group-btn">
-      <button class="btn btn-default active" type="submit">项目名称</button>
+      <button class="btn btn-default active" type="button">项目名称</button>
     </span>
     <select id="project" class="selectpicker form-control" data-live-search="true" name="goProject" onchange="getoption(this.value)">
-        {% for name in groupname %}
-            <option>{{ name.name }}</option>
-        {% endfor %}
+       <option value="spike">spike</option>
+      <option value="account">account</option>
 
     </select>
   </div>
 
-  <div class="input-group my-group text-center" style="margin: 0px 0px 100px 0px;">
+  <div class="input-group my-group text-center">
     <span class="input-group-btn">
       <button class="btn btn-default active" type="button">运行环境</button>
     </span>
@@ -29,7 +25,7 @@
 
   <div class="input-group my-group text-center">
     <span class="input-group-btn">
-      <button class="btn btn-default active" type="button">重启服务</button>
+      <button class="btn btn-default active" type="button">运行环境</button>
     </span>
     <select id="services" class="selectpicker form-control" data-live-search="true" name="services">
 
@@ -41,7 +37,6 @@
     <input id='sub' class="btn btn-danger" type="submit" value="Deploy" disabled="disabled">
 </form>
 
-
 <script>
     function getoption(val) {
 
@@ -51,7 +46,7 @@
 
         select.options.length = 0;   // del options
 
-        $.getJSON("/asset/getProjectList",{"project":project,"env":env},function (result) {
+        $.getJSON("/asset/test2",{"project":project,"env":env},function (result) {
                 console.log(result)
                 for (i=0;i<result.length;i++) {
                 var objOption = document.createElement("OPTION")
@@ -65,4 +60,3 @@
     }
 </script>
 {% endblock %}
-</html>

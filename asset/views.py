@@ -24,8 +24,9 @@ def get(request):
 def getData(request):
     data = request.GET['goProject']
     env = request.GET['env']
+    services = request.GET['services']
     Publish = goPublish(env)
-    result = Publish.deployGo(data)
+    result = Publish.deployGo(data,services)
 
     return render_to_response('getdata.html',{'result':result})
 
@@ -141,3 +142,20 @@ def goConfResult(request):
     Publish = goPublish(env)
     mes = Publish.goConf()
     return render_to_response('getdata.html',{'result':mes})
+
+
+def test(request):
+    return render_to_response('test.html')
+
+def getProjectList(request):
+    project = request.GET['project']
+    env = request.GET['env']
+    result = []
+    go = goservices.objects.filter(env=env).filter(group_id__name=project)
+    for name in go:
+        print '112',name
+        result.append(name.name)
+    result.append('all')
+    result = list(set(result))
+    print '-----',result
+    return HttpResponse(json.dumps(result))

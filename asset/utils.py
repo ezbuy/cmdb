@@ -14,47 +14,49 @@ class goPublish:
 
 
 
-    def deployGo(self,name):
+    def deployGo(self,name,services):
 
         self.name = name
-        Project = []
-        salt = []
+        self.services = services
+        hostInfo = {}
         result = []
-        saltcount = 0
 
         minionHost = commands.getstatusoutput('salt-key -l accepted')[1].split()[2:]
-
         groupname = gogroup.objects.all()
         for name in groupname:
             if self.name == name.name:
                 for obj in goservices.objects.filter(env=self.env).filter(group_id=name.id):
-                    Project.append(obj)
-
                     for saltname in minion.objects.filter(id=obj.saltminion_id):
-
-                        i = saltname.saltname
-                        if i not in salt:
-                            salt.append(i)
-                            saltcount = 1
-                        else:
-                            saltcount = 0
-
-                        if i not in minionHost:
-                            notMinion = 'No minions matched the %s host.' % i
+                        saltHost = saltname.saltname
+                        if saltHost not in minionHost:
+                            notMinion = 'No minions matched the %s host.' % saltHost
                             result.append(notMinion)
-
+                        if self.services == 'all':
+                            golist = [obj.name]
+                            if hostInfo.has_key(saltHost):
+                                services.append(obj.name)
+                            else:
+                                services = golist
+                                hostInfo[saltHost] = services
                         else:
-                            if saltcount == 1:
-                                deploy_pillar = "pillar=\"{'project':'" + self.name + "'}\""
+                            golist = [self.services]
+                            hostInfo[saltHost] = golist
 
-                                os.system("salt '%s' state.sls logs.gologs %s" % (i,deploy_pillar))
-                                currentTime = self.getNowTime()
-                                self.saltCmd.cmd('%s'%i,'cmd.run',['mv /srv/%s/%s /tmp/%s/%s_%s'%(self.name,self.name,self.name,self.name,currentTime)])
-                                svn = self.saltCmd.cmd('%s'%i,'cmd.run',['svn update --username=deploy --password=ezbuyisthebest --non-interactive /srv/%s'%self.name])
-                                result.append(svn)
 
-                            restart = self.saltCmd.cmd('%s'%i,'cmd.run',['supervisorctl restart %s'%obj])
-                            result.append(restart)
+
+        print 'aaaaaaa',hostInfo
+        for host,goname in hostInfo.items():
+                    deploy_pillar = "pillar=\"{'project':'" + self.name + "'}\""
+
+                    os.system("salt '%s' state.sls logs.gologs %s" % (host, deploy_pillar))
+                    currentTime = self.getNowTime()
+                    self.saltCmd.cmd('%s' % host, 'cmd.run', ['mv /srv/%s/%s /tmp/%s/%s_%s' % (self.name, self.name, self.name, self.name, currentTime)])
+                    svn = self.saltCmd.cmd('%s' % host, 'cmd.run', ['svn update --username=deploy --password=ezbuyisthebest --non-interactive /srv/%s' % self.name])
+                    result.append(svn)
+                    allServices = " ".join(goname)
+                    restart = self.saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%allServices])
+                    result.append(restart)
+
 
 
 

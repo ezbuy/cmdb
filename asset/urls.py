@@ -14,4 +14,6 @@ urlpatterns = patterns('',
     url(r'^revert/$',revert, name='revert'),
     url(r'^goconf/$',goConfHTML,name='goConf'),
     url(r'^goConfResult/$', goConfResult, name='goConfResult'),
+    url(r'^test/$', test, name='test'),
+    url(r'^getProjectList/$', getProjectList, name='getProjectList'),
 )
