@@ -7,7 +7,7 @@
 <form  class="col-lg-12" action="{% url 'getData' %}" method="get">
   <div class="input-group my-group text-center" style="margin: 0px 0px 100px;">
     <span class="input-group-btn">
-      <button class="btn btn-default active" type="submit">项目名称</button>
+      <button class="btn btn-default active" type="button">项目名称</button>
     </span>
     <select id="project" class="selectpicker form-control" data-live-search="true" name="goProject" onchange="getoption(this.value)">
         {% for name in groupname %}
@@ -22,6 +22,7 @@
       <button class="btn btn-default active" type="button">运行环境</button>
     </span>
     <select id="env" class="selectpicker form-control" data-live-search="true" name="env"  onchange="getoption(this.value)">
+      <option value="none"></option>
       <option value="1">生产环境</option>
       <option value="2">测试环境</option>
     </select>
@@ -48,20 +49,27 @@
         var project = document.getElementById("project").value;
         var env = document.getElementById("env").value;
         var select = document.getElementById("services");
+        console.log(project)
+        console.log(env)
 
         select.options.length = 0;   // del options
-
-        $.getJSON("/asset/getProjectList",{"project":project,"env":env},function (result) {
+        if (env != "none") {
+            $.getJSON("/asset/getProjectList",{"project":project,"env":env},function (result) {
                 console.log(result)
                 for (i=0;i<result.length;i++) {
-                var objOption = document.createElement("OPTION")
-                objOption.value = result[i]
-                objOption.text = result[i]
-                select.add(objOption)
-            }
+                    var objOption = document.createElement("OPTION")
+                    objOption.value = result[i]
+                    objOption.text = result[i]
+                    select.add(objOption)
+                }
+            })
 
-        })
-        $("#sub").attr("disabled",false)
+            $("#sub").attr("disabled", false)
+        }
+        else
+        {
+            $("#sub").attr("disabled", true)
+        }
     }
 </script>
 {% endblock %}
