@@ -16,6 +16,13 @@ def asset_list(request):
 @login_required
 def get(request):
     groupname = gogroup.objects.all()
+    if request.META.has_key('HTTP_X_FORWARDED_FOR'):
+        ip =  request.META['HTTP_X_FORWARDED_FOR']
+        print '111'
+    else:
+        ip = request.META['REMOTE_ADDR']
+        print '22'
+    print 'ip:',ip
     return render_to_response('get.html',{'groupname':groupname})
 
 
