@@ -49,25 +49,28 @@
         var project = document.getElementById("project").value;
         var env = document.getElementById("env").value;
         var select = document.getElementById("services");
-        console.log(project)
-        console.log(env)
+
 
         select.options.length = 0;   // del options
         if (env != "none") {
             $.getJSON("/asset/getProjectList",{"project":project,"env":env},function (result) {
-                console.log(result)
+                //console.log(result)
                 for (i=0;i<result.length;i++) {
                     var objOption = document.createElement("OPTION")
                     objOption.value = result[i]
                     objOption.text = result[i]
                     select.add(objOption)
                 }
+                if (result.length != 0) {
+                    $("#sub").attr("disabled", false)
+                }
+                else{
+                    $("#sub").attr("disabled", true)
+                }
+                console.log(result.length)
             })
-
-            $("#sub").attr("disabled", false)
         }
-        else
-        {
+        else{
             $("#sub").attr("disabled", true)
         }
     }
