@@ -7,7 +7,7 @@ class goServicesAdmin(admin.ModelAdmin):
     list_display = ('ip','name','env','group','saltminion')
 
 class svnAdmin(admin.ModelAdmin):
-    list_display = ('username','password','repo','localpath')
+    list_display = ('username','password','repo','localpath','movepath','revertpath')
 admin.site.register(IDC)
 admin.site.register(Asset)
 admin.site.register(AssetRecord)

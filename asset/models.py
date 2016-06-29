@@ -129,6 +129,8 @@ class svn(models.Model):
     password = models.CharField(max_length=32)
     repo = models.CharField(max_length=128)
     localpath = models.CharField(max_length=64)
+    movepath = models.CharField(max_length=64)
+    revertpath = models.CharField(max_length=64)
 
     def __unicode__(self):
         return self.repo
