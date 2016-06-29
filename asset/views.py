@@ -10,7 +10,7 @@ import os,commands,re,json
 @login_required
 def asset_list(request):
     asset_list = Asset.objects.all()
-    return render_to_response('jasset/asset_list.html',{'asset_list':asset_list})
+    return render_to_response('asset/asset_list.html',{'asset_list':asset_list})
 
 
 @login_required
