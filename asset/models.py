@@ -124,6 +124,14 @@ class goservices(models.Model):
     def __unicode__(self):
         return self.name
 
+class svn(models.Model):
+    username = models.CharField(max_length=32)
+    password = models.CharField(max_length=32)
+    repo = models.CharField(max_length=128)
+    localpath = models.CharField(max_length=64)
+
+    def __unicode__(self):
+        return self.repo
 
 
 
