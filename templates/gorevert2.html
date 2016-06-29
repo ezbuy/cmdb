@@ -47,11 +47,14 @@
                                         <input name="id" value="{{ env }},{{ instance }},{{ salt }}" type="radio" class="i-checks">
                                     </td>
                                         <td class="text-center">{{ instance }}</a></td>
-                                        <td class="text-center">{{ env }}</a></td>
+                                        {% if env == '2' %}
+                                            <td class="text-center">测试环境</a></td>
+                                        {% elif env == '1' %}
+                                            <td class="text-center">生产环境</a></td>
+                                        {% endif %}
                                         <td class="text-center">{{ salt }}</a></td>
                                     {% endfor %}
                                 {% endfor %}
-
                                 </tr>
                             {% endfor %}
                             </tbody>
