@@ -147,15 +147,15 @@ def goConfResult(request):
 def test(request):
     return render_to_response('test.html')
 
+@login_required
 def getProjectList(request):
     project = request.GET['project']
     env = request.GET['env']
     result = []
     go = goservices.objects.filter(env=env).filter(group_id__name=project)
     for name in go:
-        print '112',name
         result.append(name.name)
     result.append('all')
     result = list(set(result))
-    print '-----',result
+
     return HttpResponse(json.dumps(result))

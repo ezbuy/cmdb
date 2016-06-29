@@ -39,12 +39,13 @@ class goPublish:
                                 services = golist
                                 hostInfo[saltHost] = services
                         else:
-                            golist = [self.services]
-                            hostInfo[saltHost] = golist
+                            if obj.name == self.services:
+                                golist = [self.services]
+                                hostInfo[saltHost] = golist
 
 
 
-        print 'aaaaaaa',hostInfo
+
         for host,goname in hostInfo.items():
                     deploy_pillar = "pillar=\"{'project':'" + self.name + "'}\""
 
