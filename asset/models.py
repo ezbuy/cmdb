@@ -131,9 +131,26 @@ class svn(models.Model):
     localpath = models.CharField(max_length=64)
     movepath = models.CharField(max_length=64)
     revertpath = models.CharField(max_length=64)
+    executefile = models.CharField(max_length=64)
+    project = models.ForeignKey(gogroup)
 
     def __unicode__(self):
         return self.repo
+
+
+
+class goconf(models.Model):
+    username = models.CharField(max_length=32)
+    password = models.CharField(max_length=32)
+    repo = models.CharField(max_length=128)
+    localpath = models.CharField(max_length=64)
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+    project = models.ForeignKey(gogroup)
+    hostname = models.ForeignKey(minion)
+
+    def __unicode__(self):
+        return self.repo
+
 
 
 

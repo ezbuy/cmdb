@@ -146,8 +146,11 @@ def goConfHTML(request):
 @login_required
 def goConfResult(request):
     env = request.GET['env']
+    project = request.GET['project']
+    print 'p',project
+    print 'v',env
     Publish = goPublish(env)
-    mes = Publish.goConf()
+    mes = Publish.goConf(project)
     return render_to_response('getdata.html',{'result':mes})
 
 
@@ -167,3 +170,17 @@ def getProjectList(request):
     result = list(set(result))
 
     return HttpResponse(json.dumps(result))
+
+
+@login_required
+def getConfProject(request):
+    conf = goconf.objects.all()
+    env = request.GET['env']
+    project = []
+    for i in conf:
+        if str(i.env) == env:
+            project.append(i.project.name)
+
+    project = list(set(project))
+
+    return HttpResponse(json.dumps(project))
