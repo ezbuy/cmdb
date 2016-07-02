@@ -1,6 +1,6 @@
 from asset.models import *
 from asset import models
-
+from django.http import HttpRequest
 import os,time,commands
 from salt.client import LocalClient
 
@@ -13,28 +13,30 @@ class goPublish:
     def getNowTime(self):
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))
 
-    def notification(self,hostname,project,result):
+    def notification(self,hostname,project,result,username):
+
 
         self.hostname = hostname
         self.project = project
         self.result = result
-
+        self.username = username
         if self.result.values()[0].find('ERROR') > 0 or self.result.values()[0].find('error') > 0 or self.result.values()[0].find('Skip') > 0:
             errmsg = 'Failed'
         else:
             errmsg = 'Success'
 
-        notificaction = 'curl -X POST -H \'Content-Type:application/json;\' -d \'{"hostname":"%s", "ip":"null", "project":"%s", "gitcommit":"null", "gitmsg":"null", "errmsg":"%s","errcode":true}\' http://dlog.65dg.me/dlog' % (
-            self.hostname, self.project, errmsg)
+        notificaction = 'curl -X POST -H \'Content-Type:application/json;\' -d \'{"hostname":"%s by %s", "ip":"null", "project":"%s", "gitcommit":"null", "gitmsg":"null", "errmsg":"%s","errcode":true}\' http://dlog.65dg.me/dlog' % (
+            self.hostname,self.username, self.project, errmsg)
 
 
         apiResult = os.system(notificaction)
         return apiResult
 
-    def deployGo(self,name,services):
+    def deployGo(self,name,services,username):
 
         self.name = name
         self.services = services
+        self.username = username
         hostInfo = {}
         result = []
 
@@ -79,18 +81,19 @@ class goPublish:
             result.append(restart)
 
 
-            ding = self.notification(host,self.name,restart)
+            ding = self.notification(host,self.name,restart,self.username)
 
 
 
 
         return result
 
-    def go_revert(self,project,revertFile,host):
+    def go_revert(self,project,revertFile,host,username):
 
         self.project = project
         self.revertFile = revertFile
         self.host = host
+        self.username = username
         result = []
 
         for p in self.svnInfo:
@@ -118,28 +121,29 @@ class goPublish:
 
                 mes = {self.host: mes}
                 info = 'revert ' + self.project
-                ding = self.notification(self.host,info,mes)
+                ding = self.notification(self.host,info,mes,username)
 
                 result.append(mes)
 
         return result
 
 
-    def goConf(self,project):
+    def goConf(self,project,usernmae):
         self.project = project
+        self.username = usernmae
         result = []
         conf = goconf.objects.all()
 
 
         for p in conf:
-            info = 'aaa'
+
             if str(p.env) == self.env and p.project.name == self.project:
                 print p.username,p.password,p.localpath,p.hostname
                 confCmd = "svn update --username=%s --password=%s --non-interactive %s" %(p.username,p.password,p.localpath)
                 confResult = self.saltCmd.cmd('%s' % p.hostname,'cmd.run',['%s' % confCmd])
                 result.append(confResult)
 
-                ding = self.notification(p.hostname,self.project,confResult)
+                ding = self.notification(p.hostname,self.project,confResult,self.username)
 
 
         return result

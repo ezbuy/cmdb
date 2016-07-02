@@ -17,6 +17,7 @@ def asset_list(request):
 def get(request):
     groupname = gogroup.objects.all()
 
+
     return render_to_response('get.html',{'groupname':groupname})
 
 
@@ -26,8 +27,10 @@ def getData(request):
     data = request.GET['goProject']
     env = request.GET['env']
     services = request.GET['services']
+    username = request.user
     Publish = goPublish(env)
-    result = Publish.deployGo(data,services)
+    result = Publish.deployGo(data,services,username)
+
 
     return render_to_response('getdata.html',{'result':result})
 
@@ -53,6 +56,7 @@ def goServices(request):
 @login_required
 def getServices(request):
     data = request.GET.getlist('id')
+    username = request.user
     saltCmd = LocalClient()
     result = []
 
@@ -62,7 +66,7 @@ def getServices(request):
         getMes = saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%goName])
         result.append(getMes)
         info = 'restart ' + goName
-        ding = goPublish(data).notification(host,info,getMes)
+        ding = goPublish(data).notification(host,info,getMes,username)
 
 
     return render_to_response('getdata.html',{'result':result})
@@ -125,13 +129,14 @@ def revert(request):
         return render_to_response('goRevertResult.html', {'mes': mes})
 
     data = request.GET['id']
+    username = request.user
     data = data.split(',')
     env = data[0]
     revertFile = data[1]
     project = revertFile.split('_')[0]
     host = data[2]
     Publish = goPublish(env)
-    mes = Publish.go_revert(project,revertFile,host)
+    mes = Publish.go_revert(project,revertFile,host,username)
 
     return render_to_response('getdata.html',{'result':mes})
 
@@ -146,9 +151,9 @@ def goConfHTML(request):
 def goConfResult(request):
     env = request.GET['env']
     project = request.GET['project']
-
+    username = request.user
     Publish = goPublish(env)
-    mes = Publish.goConf(project)
+    mes = Publish.goConf(project,username)
     return render_to_response('getdata.html',{'result':mes})
 
 
