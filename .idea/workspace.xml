@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64417799-fc58-4869-9447-fff65d8eb089" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/asset/admin.py" afterPath="$PROJECT_DIR$/asset/admin.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/asset/migrations/0001_initial.py" afterPath="$PROJECT_DIR$/asset/migrations/0001_initial.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/asset/models.py" afterPath="$PROJECT_DIR$/asset/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/asset/urls.py" afterPath="$PROJECT_DIR$/asset/urls.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/asset/utils.py" afterPath="$PROJECT_DIR$/asset/utils.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/asset/views.py" afterPath="$PROJECT_DIR$/asset/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/goConf.html" afterPath="$PROJECT_DIR$/templates/goConf.html" />
     </list>
     <ignored path="mico.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -46,8 +41,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/asset/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="619">
-              <caret line="183" column="30" selection-start-line="183" selection-start-column="30" selection-end-line="183" selection-end-column="30" />
+            <state relative-caret-position="405">
+              <caret line="64" column="12" selection-start-line="64" selection-start-column="12" selection-end-line="64" selection-end-column="12" />
               <folding>
                 <element signature="e#0#67#0" expanded="true" />
               </folding>
@@ -70,12 +65,12 @@
       <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/asset/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="354">
-              <caret line="110" column="22" selection-start-line="110" selection-start-column="22" selection-end-line="110" selection-end-column="22" />
+            <state relative-caret-position="384">
+              <caret line="81" column="19" selection-start-line="81" selection-start-column="19" selection-end-line="81" selection-end-column="19" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
-                <element signature="e#2669#4075#0" expanded="false" />
-                <element signature="e#4669#5049#0" expanded="false" />
+                <element signature="e#167#266#0" expanded="false" />
+                <element signature="e#302#372#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -140,9 +135,20 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/asset/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="544">
-              <caret line="148" column="12" selection-start-line="148" selection-start-column="4" selection-end-line="148" selection-end-column="12" />
-              <folding />
+            <state relative-caret-position="575">
+              <caret line="126" column="24" selection-start-line="126" selection-start-column="24" selection-end-line="126" selection-end-column="24" />
+              <folding>
+                <element signature="e#213#328#0" expanded="false" />
+                <element signature="e#370#490#0" expanded="false" />
+                <element signature="e#528#777#0" expanded="false" />
+                <element signature="e#809#1780#0" expanded="false" />
+                <element signature="e#1814#4384#0" expanded="false" />
+                <element signature="e#4424#4679#0" expanded="false" />
+                <element signature="e#4714#4847#0" expanded="false" />
+                <element signature="e#4886#5234#0" expanded="false" />
+                <element signature="e#5265#5686#0" expanded="false" />
+                <element signature="e#5722#6132#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -673,7 +679,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="829" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="829" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29041487" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -718,12 +724,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/asset/utils.py</url>
-          <line>120</line>
+          <line>147</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/asset/utils.py</url>
-          <line>104</line>
+          <line>127</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
@@ -923,7 +929,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#0#39#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -941,7 +947,7 @@
         <state relative-caret-position="90">
           <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
           <folding>
-            <element signature="e#0#32#0" expanded="true" />
+            <element signature="e#0#32#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -992,9 +998,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
           <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <element signature="e#637#677#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1019,7 +1023,7 @@
         <state relative-caret-position="105">
           <caret line="7" column="4" selection-start-line="7" selection-start-column="4" selection-end-line="11" selection-end-column="12" />
           <folding>
-            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#0#39#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1089,14 +1093,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/asset/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="148" column="12" selection-start-line="148" selection-start-column="4" selection-end-line="148" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/asset/admin.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -1107,22 +1103,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/asset/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="575">
+          <caret line="126" column="24" selection-start-line="126" selection-start-column="24" selection-end-line="126" selection-end-column="24" />
+          <folding>
+            <element signature="e#213#328#0" expanded="false" />
+            <element signature="e#370#490#0" expanded="false" />
+            <element signature="e#528#777#0" expanded="false" />
+            <element signature="e#809#1780#0" expanded="false" />
+            <element signature="e#1814#4384#0" expanded="false" />
+            <element signature="e#4424#4679#0" expanded="false" />
+            <element signature="e#4714#4847#0" expanded="false" />
+            <element signature="e#4886#5234#0" expanded="false" />
+            <element signature="e#5265#5686#0" expanded="false" />
+            <element signature="e#5722#6132#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/asset/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="354">
-          <caret line="110" column="22" selection-start-line="110" selection-start-column="22" selection-end-line="110" selection-end-column="22" />
+        <state relative-caret-position="384">
+          <caret line="81" column="19" selection-start-line="81" selection-start-column="19" selection-end-line="81" selection-end-column="19" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
-            <element signature="e#2669#4075#0" expanded="false" />
-            <element signature="e#4669#5049#0" expanded="false" />
+            <element signature="e#167#266#0" expanded="false" />
+            <element signature="e#302#372#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/asset/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="619">
-          <caret line="183" column="30" selection-start-line="183" selection-start-column="30" selection-end-line="183" selection-end-column="30" />
+        <state relative-caret-position="405">
+          <caret line="64" column="12" selection-start-line="64" selection-start-column="12" selection-end-line="64" selection-end-column="12" />
           <folding>
             <element signature="e#0#67#0" expanded="true" />
           </folding>

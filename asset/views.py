@@ -16,13 +16,7 @@ def asset_list(request):
 @login_required
 def get(request):
     groupname = gogroup.objects.all()
-    if request.META.has_key('HTTP_X_FORWARDED_FOR'):
-        ip =  request.META['HTTP_X_FORWARDED_FOR']
-        print '111'
-    else:
-        ip = request.META['REMOTE_ADDR']
-        print '22'
-    print 'ip:',ip
+
     return render_to_response('get.html',{'groupname':groupname})
 
 
@@ -61,10 +55,15 @@ def getServices(request):
     data = request.GET.getlist('id')
     saltCmd = LocalClient()
     result = []
+
+
     for v in data:
         goName,host = v.split(',')
         getMes = saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%goName])
         result.append(getMes)
+        info = 'restart ' + goName
+        ding = goPublish(data).notification(host,info,getMes)
+
 
     return render_to_response('getdata.html',{'result':result})
 
@@ -147,8 +146,7 @@ def goConfHTML(request):
 def goConfResult(request):
     env = request.GET['env']
     project = request.GET['project']
-    print 'p',project
-    print 'v',env
+
     Publish = goPublish(env)
     mes = Publish.goConf(project)
     return render_to_response('getdata.html',{'result':mes})

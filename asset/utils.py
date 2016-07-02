@@ -13,7 +13,23 @@ class goPublish:
     def getNowTime(self):
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))
 
+    def notification(self,hostname,project,result):
 
+        self.hostname = hostname
+        self.project = project
+        self.result = result
+
+        if self.result.values()[0].find('ERROR') > 0 or self.result.values()[0].find('error') > 0 or self.result.values()[0].find('Skip') > 0:
+            errmsg = 'Failed'
+        else:
+            errmsg = 'Success'
+
+        notificaction = 'curl -X POST -H \'Content-Type:application/json;\' -d \'{"hostname":"%s", "ip":"null", "project":"%s", "gitcommit":"null", "gitmsg":"null", "errmsg":"%s","errcode":true}\' http://dlog.65dg.me/dlog' % (
+            self.hostname, self.project, errmsg)
+
+
+        apiResult = os.system(notificaction)
+        return apiResult
 
     def deployGo(self,name,services):
 
@@ -58,10 +74,12 @@ class goPublish:
 
 
 
-
             allServices = " ".join(goname)
             restart = self.saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%allServices])
             result.append(restart)
+
+
+            ding = self.notification(host,self.name,restart)
 
 
 
@@ -93,12 +111,17 @@ class goPublish:
                             result.append(restart)
 
                     mes = 'revert to %s version is successful.' % revertFile
-                    mes = {self.host:mes}
-                    result.append(mes)
+                    #mes = {self.host:mes}
+                    #result.append(mes)
                 else:
                     mes = 'revert to %s version is failed.' % revertFile
-                    mes = {self.host: mes}
-                    result.append(mes)
+
+                mes = {self.host: mes}
+                info = 'revert ' + self.project
+                ding = self.notification(self.host,info,mes)
+
+                result.append(mes)
+
         return result
 
 
@@ -109,11 +132,15 @@ class goPublish:
 
 
         for p in conf:
+            info = 'aaa'
             if str(p.env) == self.env and p.project.name == self.project:
                 print p.username,p.password,p.localpath,p.hostname
                 confCmd = "svn update --username=%s --password=%s --non-interactive %s" %(p.username,p.password,p.localpath)
                 confResult = self.saltCmd.cmd('%s' % p.hostname,'cmd.run',['%s' % confCmd])
                 result.append(confResult)
+
+                ding = self.notification(p.hostname,self.project,confResult)
+
 
         return result
 
