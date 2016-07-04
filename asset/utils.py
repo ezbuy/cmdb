@@ -14,6 +14,7 @@ def notification(hostname, project, result, username):
     notificaction = 'curl -X POST -H \'Content-Type:application/json;\' -d \'{"hostname":"%s by %s", "ip":"null", "project":"%s", "gitcommit":"null", "gitmsg":"null", "errmsg":"%s","errcode":true}\' http://dlog.65dg.me/dlog' % (
         hostname, username, project, errmsg)
 
+
     #print '-------', notificaction
     apiResult = os.system(notificaction)
     return apiResult
@@ -154,7 +155,7 @@ class goPublish:
                 confCmd = "svn update --username=%s --password=%s --non-interactive %s" %(p.username,p.password,p.localpath)
                 confResult = self.saltCmd.cmd('%s' % p.hostname,'cmd.run',['%s' % confCmd])
                 result.append(confResult)
-                
+
                 info = self.project + ' conf'
 
 

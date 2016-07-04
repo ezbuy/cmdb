@@ -12,6 +12,7 @@
                 <button class="btn btn-default active" type="submit">运行环境</button>
             </span>
             <select id="env" class="selectpicker form-control" data-live-search="true" name="env" onchange="getoption(this.value)">
+                <option value="none"></option>
                 <option value="1">生产环境</option>
                 <option value="2">测试环境</option>
             </select>
@@ -44,7 +45,7 @@
         console.log(env)
 
         project.options.length = 0;   // del options
-
+        if (env != "none") {
             $.getJSON("/asset/getConfProject",{"env":env},function (result) {
                 console.log(result)
                 for (i=0;i<result.length;i++) {
@@ -61,6 +62,10 @@
                 }
                 console.log(result.length)
             })
+        }
+        else{
+            $("#sub").attr("disabled", true)
+        }
 
     }
 </script>
