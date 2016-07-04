@@ -1,8 +1,27 @@
 from asset.models import *
 from asset import models
-from django.http import HttpRequest
 import os,time,commands
 from salt.client import LocalClient
+from logs.models import goLog
+
+def notification(hostname, project, result, username):
+
+    if result.values()[0].find('ERROR') > 0 or result.values()[0].find('error') > 0 or result.values()[0].find('Skip') > 0:
+        errmsg = 'Failed'
+    else:
+        errmsg = 'Success'
+
+    notificaction = 'curl -X POST -H \'Content-Type:application/json;\' -d \'{"hostname":"%s by %s", "ip":"null", "project":"%s", "gitcommit":"null", "gitmsg":"null", "errmsg":"%s","errcode":true}\' http://dlog.65dg.me/dlog' % (
+        hostname, username, project, errmsg)
+
+    #print '-------', notificaction
+    apiResult = os.system(notificaction)
+    return apiResult
+
+
+def logs(user,ip,action,result):
+    goLog.objects.create(user=user, remote_ip=ip, goAction=action, result=result)
+
 
 class goPublish:
     def __init__(self,env):
@@ -10,39 +29,25 @@ class goPublish:
         self.saltCmd = LocalClient()
         self.svnInfo = models.svn.objects.all()
 
+
     def getNowTime(self):
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))
 
-    def notification(self,hostname,project,result,username):
 
-
-        self.hostname = hostname
-        self.project = project
-        self.result = result
-        self.username = username
-        if self.result.values()[0].find('ERROR') > 0 or self.result.values()[0].find('error') > 0 or self.result.values()[0].find('Skip') > 0:
-            errmsg = 'Failed'
-        else:
-            errmsg = 'Success'
-
-        notificaction = 'curl -X POST -H \'Content-Type:application/json;\' -d \'{"hostname":"%s by %s", "ip":"null", "project":"%s", "gitcommit":"null", "gitmsg":"null", "errmsg":"%s","errcode":true}\' http://dlog.65dg.me/dlog' % (
-            self.hostname,self.username, self.project, errmsg)
-
-
-        apiResult = os.system(notificaction)
-        return apiResult
-
-    def deployGo(self,name,services,username):
+    def deployGo(self,name,services,username,ip):
 
         self.name = name
         self.services = services
         self.username = username
+        self.ip = ip
         hostInfo = {}
         result = []
 
 
 
         minionHost = commands.getstatusoutput('salt-key -l accepted')[1].split()[2:]
+
+
         groupname = gogroup.objects.all()
         for name in groupname:
             if self.name == name.name:
@@ -81,19 +86,22 @@ class goPublish:
             result.append(restart)
 
 
-            ding = self.notification(host,self.name,restart,self.username)
+            ding = notification(host,self.name,restart,self.username)
 
 
+        action = 'deploy ' + self.name
+        logs(self.username,self.ip,action,result)
 
 
         return result
 
-    def go_revert(self,project,revertFile,host,username):
+    def go_revert(self,project,revertFile,host,username,ip):
 
         self.project = project
         self.revertFile = revertFile
         self.host = host
         self.username = username
+        self.ip = ip
         result = []
 
         for p in self.svnInfo:
@@ -121,29 +129,39 @@ class goPublish:
 
                 mes = {self.host: mes}
                 info = 'revert ' + self.project
-                ding = self.notification(self.host,info,mes,username)
+                ding = notification(self.host,info,mes,username)
 
                 result.append(mes)
 
+        action = 'revert ' + self.project
+        logs(self.username, self.ip, action, result)
         return result
 
 
-    def goConf(self,project,usernmae):
+    def goConf(self,project,usernmae,ip):
         self.project = project
         self.username = usernmae
+        self.ip = ip
         result = []
         conf = goconf.objects.all()
+
 
 
         for p in conf:
 
             if str(p.env) == self.env and p.project.name == self.project:
-                print p.username,p.password,p.localpath,p.hostname
+                #print p.username,p.password,p.localpath,p.hostname
                 confCmd = "svn update --username=%s --password=%s --non-interactive %s" %(p.username,p.password,p.localpath)
                 confResult = self.saltCmd.cmd('%s' % p.hostname,'cmd.run',['%s' % confCmd])
                 result.append(confResult)
+                
+                info = self.project + ' conf'
 
-                ding = self.notification(p.hostname,self.project,confResult,self.username)
+
+                ding = notification(p.hostname,self.project,confResult,self.username)
+
+        action = 'conf ' + self.project
+        logs(self.username, self.ip, action, result)
 
 
         return result

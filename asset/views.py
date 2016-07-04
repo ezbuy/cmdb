@@ -28,8 +28,9 @@ def getData(request):
     env = request.GET['env']
     services = request.GET['services']
     username = request.user
+    ip = request.META['REMOTE_ADDR']
     Publish = goPublish(env)
-    result = Publish.deployGo(data,services,username)
+    result = Publish.deployGo(data,services,username,ip)
 
 
     return render_to_response('getdata.html',{'result':result})
@@ -59,6 +60,7 @@ def getServices(request):
     username = request.user
     saltCmd = LocalClient()
     result = []
+    ip = request.META['REMOTE_ADDR']
 
 
     for v in data:
@@ -66,7 +68,8 @@ def getServices(request):
         getMes = saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%goName])
         result.append(getMes)
         info = 'restart ' + goName
-        ding = goPublish(data).notification(host,info,getMes,username)
+        notification(host,info,getMes,username)
+    logs(username,ip,'restart services',result)
 
 
     return render_to_response('getdata.html',{'result':result})
@@ -130,13 +133,14 @@ def revert(request):
 
     data = request.GET['id']
     username = request.user
+    ip = request.META['REMOTE_ADDR']
     data = data.split(',')
     env = data[0]
     revertFile = data[1]
     project = revertFile.split('_')[0]
     host = data[2]
     Publish = goPublish(env)
-    mes = Publish.go_revert(project,revertFile,host,username)
+    mes = Publish.go_revert(project,revertFile,host,username,ip)
 
     return render_to_response('getdata.html',{'result':mes})
 
@@ -151,9 +155,10 @@ def goConfHTML(request):
 def goConfResult(request):
     env = request.GET['env']
     project = request.GET['project']
+    ip = request.META['REMOTE_ADDR']
     username = request.user
     Publish = goPublish(env)
-    mes = Publish.goConf(project,username)
+    mes = Publish.goConf(project,username,ip)
     return render_to_response('getdata.html',{'result':mes})
 
 

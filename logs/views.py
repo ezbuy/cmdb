@@ -4,5 +4,5 @@ from django.contrib.auth.decorators import login_required
 from logs.models import *
 
 def gologs(reques):
-    logs = goLog.objects.all()
+    logs = goLog.objects.all().order_by('-id')[:10]
     return render_to_response('logs/gologs.html',{'logs':logs})
