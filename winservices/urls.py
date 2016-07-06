@@ -15,19 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from cmdb.views import *
-from web.views import *
-
-
-import asset,logs,winservices
+from winservices.views import *
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^$',index,name='index'),
-    url(r'^asset/', include('asset.urls')),
-    url(r'^logs/', include('logs.urls')),
-    url(r'^winservices/', include('winservices.urls')),
-    url(r'^login/',login,name='login'),
-    url(r'^logout/',logout,name='logout'),
+
+    url(r'^services/$', services, name='winservices'),
+    url(r'^getServicesList/$',getServicesList,name='getServicesList'),
+    url(r'^deployService/$',deployService,name='deployService'),
 
 ]

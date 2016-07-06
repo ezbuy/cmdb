@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'cmdb',
     'asset',
     'logs',
+    'winservices',
 
 ]
 

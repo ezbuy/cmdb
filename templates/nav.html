@@ -6,7 +6,7 @@
             <li id="index">
                <a href="#"><i class="fa fa-dashboard"></i> <span class="nav-label">仪表盘</span><span class="label label-info pull-right"></span></a>
             </li>
-            <li id="juser">
+            <li>
                 <a href="#"><i class="fa fa-group"></i> <span class="nav-label">Go Project</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li class="group"><a href="{% url 'get' %}">发布</a></li>
@@ -15,7 +15,21 @@
                     <li class="user"><a href="{% url 'goRevert' %}">版本回滚<span class="label pull-right"></span></a></li>
                 </ul>
             </li>
-            <li id="jasset">
+
+
+
+             <li>
+                <a href="#"><i class="fa fa-bars"></i> <span class="nav-label">Windows Services</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li class="group"><a href="{% url 'winservices' %}">发布</a></li>
+                    <li class="user"><a href="{% url 'goServices' %}">重启服务<span class="label pull-right"></span></a></li>
+                </ul>
+            </li>
+
+
+
+
+            <li>
                 <a><i class="fa fa-inbox"></i> <span class="nav-label">资产管理</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li class="group"><a href="#">查看资产组</a></li>
@@ -24,7 +38,7 @@
                 </ul>
             </li>
             <li >
-               <a href="{% url 'gologs' %}"><i class="fa fa-files-o"></i> <span class="nav-label">日志审计</span><span class="label label-info pull-right"></span></a>
+               <a href="{% url 'gologs' %}" ><i class="fa fa-files-o"></i> <span class="nav-label">日志审计</span><span class="label label-info pull-right"></span></a>
             </li>
             <!--li id="file">
                 <a href="#"><i class="fa fa-download"></i> <span class="nav-label">上传下载</span><span class="fa arrow"></span></a>
@@ -34,7 +48,7 @@
                 </ul>
             </li-->
             <li id="setting">
-                   <a href="/admin"><i class="fa fa-gears"></i> <span class="nav-label">设置</span><span class="label label-info pull-right"></span></a>
+                   <a target="_blank" href="/admin"><i class="fa fa-gears"></i> <span class="nav-label">设置</span><span class="label label-info pull-right"></span></a>
             </li>
 
         </ul>

@@ -1,0 +1,9 @@
+from django.contrib import admin
+from winservices.models import winconf
+# Register your models here.
+
+class winconfAdmin(admin.ModelAdmin):
+    list_display = ('username','password','repo','localpath','env','servicename','hostname')
+
+
+admin.site.register(winconf,winconfAdmin)
