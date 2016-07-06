@@ -1,10 +1,18 @@
 from winservices.models import winconf
 from salt.client import LocalClient
+from asset.utils import logs,notification
+
+
+
+
 
 class servicesPublish:
-    def __init__(self):
+    def __init__(self,user,ip):
+        self.user = user
+        self.ip = ip
         self.obj = winconf.objects.all()
         self.salt = LocalClient()
+
 
     def deployServices(self,env,services):
         self.env = env
@@ -22,6 +30,11 @@ class servicesPublish:
             result.append(update)
             start = self.salt.cmd(name.hostname.saltname,'cmd.run', ['net start %s' % name.servicename])
             result.append(start)
+
+            action = 'deploy ' + name.servicename
+            logs(self.user,self.ip,action,result)
+            notification(name.hostname.saltname,name.servicename,start,self.user)
+
 
 
         return result

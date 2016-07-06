@@ -21,8 +21,10 @@ def getServicesList(request):
 
 
 def deployService(request):
+    username = request.user
+    ip = request.META['REMOTE_ADDR']
     env = request.GET['env']
     server = request.GET['services']
     print '---%s----%s--' %(env,server)
-    obj = servicesPublish().deployServices(env,server)
+    obj = servicesPublish(username,ip).deployServices(env,server)
     return render_to_response('getdata.html',{'result':obj})
