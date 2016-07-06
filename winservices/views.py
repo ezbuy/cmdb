@@ -25,4 +25,4 @@ def deployService(request):
     server = request.GET['services']
     print '---%s----%s--' %(env,server)
     obj = servicesPublish().deployServices(env,server)
-    return HttpResponse(obj)
+    return render_to_response('getdata.html',{'result':obj})
