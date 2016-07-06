@@ -54,9 +54,12 @@ def winServicesRestart(request):
 
     for v in data:
         sName, host = v.split(',')
-        getMes = salt.cmd(host, 'cmd.run', ['net restart %s' % sName])
+        getMes = salt.cmd(host, 'cmd.run', ['net stop %s' % sName])
         result.append(getMes)
-        info = 'restart ' + sName.split('"')
+        getMes = salt.cmd(host, 'cmd.run', ['net start %s' % sName])
+        result.append(getMes)
+        info = 'restart ' + sName.strip('"')
+
         notification(host, info, getMes, username)
     logs(username, ip, 'restart services', result)
 
