@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action="{% url 'winServicesList' %}" method="get">
+    <div class="btn-group" role="group">
+        <button type="submit" class="btn btn-default" name="env" value="1">生产环境</button>
+        <button type="submit" class="btn btn-default" name="env" value="2">测试环境</button>
+    </div>
+</form>
+
+
+
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins" id="all">
+                <div class="ibox-title">
+                    <h5> Services详细信息列表</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <form action="{% url 'winServicesRestart' %}" method="get" id="checkall">
+
+                        <table class="table table-striped table-bordered table-hover " id="editable" name="editable">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">
+                                        <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('checkall')">
+                                    </th>
+                                    <th class="text-center"> 实例名称 </th>
+                                    <th class="text-center"> 运行环境 </th>
+                                    <th class="text-center"> salt minion </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for services in project %}
+                                <tr class="gradeX">
+                                    <td class="text-center"  data-editable='false'>
+                                        <input name="id" value="{{ services.servicename }},{{ services.hostname.saltname }}" type="checkbox" class="i-checks">
+                                    </td>
+                                    <td class="text-center"> {{ services.servicename }}</td>
+                                    <td class="text-center"> {{ services.get_env_display }} </td>
+                                    <td class="text-center"> {{ services.hostname.saltname }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                      <input class="btn btn-danger" type="submit" value="Restart">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

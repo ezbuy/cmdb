@@ -22,5 +22,7 @@ urlpatterns = [
     url(r'^services/$', services, name='winservices'),
     url(r'^getServicesList/$',getServicesList,name='getServicesList'),
     url(r'^deployService/$',deployService,name='deployService'),
+    url(r'^winServicesList/$',winServicesList,name='winServicesList'),
+    url(r'^winServicesRestart/$', winServicesRestart, name='winServicesRestart'),
 
 ]

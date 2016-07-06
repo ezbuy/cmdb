@@ -20,10 +20,8 @@ class servicesPublish:
         result = []
         obj = winconf.objects.filter(env=self.env).filter(servicename=self.services)
         for name in obj:
-            print name.servicename,name.hostname
-            update_cmd = '\'svn update ' + name.localpath + '\''
 
-            print update_cmd
+            update_cmd = '\'svn update ' + name.localpath + '\''
             stop = self.salt.cmd(name.hostname.saltname,'cmd.run',['net stop %s' % name.servicename])
             result.append(stop)
             update = self.salt.cmd(name.hostname.saltname,'cmd.run',['%s' % update_cmd])
@@ -33,7 +31,8 @@ class servicesPublish:
 
             action = 'deploy ' + name.servicename
             logs(self.user,self.ip,action,result)
-            notification(name.hostname.saltname,name.servicename,start,self.user)
+            servicename = name.servicename.strip('"')
+            notification(name.hostname.saltname,servicename,start,self.user)
 
 
 
