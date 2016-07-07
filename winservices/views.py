@@ -10,11 +10,12 @@ from salt.client import LocalClient
 from asset.utils import notification,logs
 
 
-
+@login_required
 def services(request):
     return render_to_response('winservices.html')
 
 
+@login_required
 def getServicesList(request):
     env = request.GET['env']
     obj = winconf.objects.filter(env=env)
@@ -24,7 +25,7 @@ def getServicesList(request):
 
     return  HttpResponse(json.dumps(servicesList))
 
-
+@login_required
 def deployService(request):
     username = request.user
     ip = request.META['REMOTE_ADDR']
@@ -34,7 +35,7 @@ def deployService(request):
     obj = servicesPublish(username,ip).deployServices(env,server)
     return render_to_response('getdata.html',{'result':obj})
 
-
+@login_required
 def winServicesList(request):
 
     if 'env' in request.GET:
@@ -44,23 +45,13 @@ def winServicesList(request):
     winServices = winconf.objects.filter(env=int(env))
     return render_to_response('winserviceslist.html',{'project':winServices})
 
-
+@login_required
 def winServicesRestart(request):
     data = request.GET.getlist('id')
-    salt = LocalClient()
+    action = request.GET['action']
     username = request.user
     ip = request.META['REMOTE_ADDR']
-    result = []
 
-    for v in data:
-        sName, host = v.split(',')
-        getMes = salt.cmd(host, 'cmd.run', ['net stop %s' % sName])
-        result.append(getMes)
-        getMes = salt.cmd(host, 'cmd.run', ['net start %s' % sName])
-        result.append(getMes)
-        info = 'restart ' + sName.strip('"')
-
-        notification(host, info, getMes, username)
-    logs(username, ip, 'restart services', result)
+    result = servicesPublish(username,ip).servicesAction(data,action)
 
     return render_to_response('getdata.html',{'result':result})

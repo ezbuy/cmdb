@@ -21,7 +21,7 @@ class servicesPublish:
         obj = winconf.objects.filter(env=self.env).filter(servicename=self.services)
         for name in obj:
 
-            
+
             stop = self.salt.cmd(name.hostname.saltname,'cmd.run',['net stop %s' % name.servicename])
             result.append(stop)
             update = self.salt.cmd(name.hostname.saltname,'cmd.run',['svn up %s --username=%s --password=%s' % (name.localpath,name.username,name.password)])
@@ -39,4 +39,29 @@ class servicesPublish:
         return result
 
 
+    def servicesAction(self,services,action):
+        self.services = services
+        self.action = action
 
+        result = []
+
+        for s in self.services:
+            sName, host = s.split(',')
+            if action == 'start':
+                getMes = self.salt.cmd(host, 'cmd.run', ['net start %s' % sName])
+
+            elif action == 'stop':
+                getMes = self.salt.cmd(host, 'cmd.run', ['net stop %s' % sName])
+
+            elif action == 'restart':
+                getMes = self.salt.cmd(host, 'cmd.run', ['net stop %s' % sName])
+                result.append(getMes)
+                getMes = self.salt.cmd(host, 'cmd.run', ['net start %s' % sName])
+
+            result.append(getMes)
+            info = 'restart ' + sName.strip('"')
+            notification(host, info, getMes, self.user)
+        logs(self.user, self.ip, 'restart services', result)
+
+
+        return result

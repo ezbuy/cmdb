@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 from logs.models import *
 
-def gologs(reques):
+@login_required
+def logs(reques):
     logs = goLog.objects.all().order_by('-id')[:10]
-    return render_to_response('logs/gologs.html',{'logs':logs})
+    return render_to_response('logs/logs.html',{'logs':logs})

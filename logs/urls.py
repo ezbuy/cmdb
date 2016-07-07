@@ -19,6 +19,6 @@ from logs.views import *
 
 urlpatterns = [
 
-    url(r'^gologs/$', gologs, name='gologs'),
+    url(r'^logs/$', logs, name='logs'),
 
 ]
