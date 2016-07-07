@@ -59,9 +59,10 @@ class servicesPublish:
                 getMes = self.salt.cmd(host, 'cmd.run', ['net start %s' % sName])
 
             result.append(getMes)
-            info = 'restart ' + sName.strip('"')
+            info = self.action + ' ' + sName.strip('"')
             notification(host, info, getMes, self.user)
-        logs(self.user, self.ip, 'restart services', result)
+            logs(self.user, self.ip, info, result)
+
 
 
         return result

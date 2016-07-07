@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64417799-fc58-4869-9447-fff65d8eb089" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/winserviceslist.html" afterPath="$PROJECT_DIR$/templates/winserviceslist.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/winservices/utils.py" afterPath="$PROJECT_DIR$/winservices/utils.py" />
     </list>
     <ignored path="mico.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -69,11 +69,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="winserviceslist.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="winserviceslist.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/winserviceslist.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="493">
               <caret line="92" column="9" selection-start-line="92" selection-start-column="9" selection-end-line="92" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="utils.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/winservices/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="622">
+              <caret line="68" column="0" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -104,16 +114,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="315">
               <caret line="40" column="36" selection-start-line="40" selection-start-column="36" selection-end-line="40" selection-end-column="36" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tests.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/winservices/tests.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -202,12 +202,12 @@
         <option value="$PROJECT_DIR$/templates/winservices.html" />
         <option value="$PROJECT_DIR$/winservices/urls.py" />
         <option value="$PROJECT_DIR$/templates/logs/gologs.html" />
-        <option value="$PROJECT_DIR$/winservices/utils.py" />
         <option value="$PROJECT_DIR$/winservices/views.py" />
         <option value="$PROJECT_DIR$/logs/urls.py" />
         <option value="$PROJECT_DIR$/templates/nav.html" />
         <option value="$PROJECT_DIR$/logs/views.py" />
         <option value="$PROJECT_DIR$/templates/winserviceslist.html" />
+        <option value="$PROJECT_DIR$/winservices/utils.py" />
       </list>
     </option>
   </component>
@@ -965,16 +965,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/winservices/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="602">
-          <caret line="67" column="0" selection-start-line="67" selection-start-column="0" selection-end-line="67" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#38#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/winservices/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="360">
@@ -1077,6 +1067,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="493">
           <caret line="92" column="9" selection-start-line="92" selection-start-column="9" selection-end-line="92" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/winservices/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="622">
+          <caret line="68" column="0" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
           <folding />
         </state>
       </provider>
