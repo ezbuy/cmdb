@@ -21,10 +21,10 @@ class servicesPublish:
         obj = winconf.objects.filter(env=self.env).filter(servicename=self.services)
         for name in obj:
 
-            update_cmd = '\'svn update ' + name.localpath + '\''
+            
             stop = self.salt.cmd(name.hostname.saltname,'cmd.run',['net stop %s' % name.servicename])
             result.append(stop)
-            update = self.salt.cmd(name.hostname.saltname,'cmd.run',['%s' % update_cmd])
+            update = self.salt.cmd(name.hostname.saltname,'cmd.run',['svn up %s --username=%s --password=%s' % (name.localpath,name.username,name.password)])
             result.append(update)
             start = self.salt.cmd(name.hostname.saltname,'cmd.run', ['net start %s' % name.servicename])
             result.append(start)
