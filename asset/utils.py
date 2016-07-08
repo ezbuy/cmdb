@@ -27,7 +27,7 @@ def notification(hostname,project,result,username):
         "errcode": True
     }
     try:
-        requests.post(url,headers=headers,data=json.dumps(data))
+        requests.post(url,headers=headers,data=json.dumps(data),timeout=3)
     except Exception,e:
         print e
 

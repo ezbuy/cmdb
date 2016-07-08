@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="64417799-fc58-4869-9447-fff65d8eb089" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/asset/utils.py" afterPath="$PROJECT_DIR$/asset/utils.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/login.html" afterPath="$PROJECT_DIR$/templates/login.html" />
     </list>
     <ignored path="mico.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -71,17 +70,17 @@
       <file leaf-file-name="utils.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/asset/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+            <state relative-caret-position="690">
+              <caret line="200" column="0" selection-start-line="200" selection-start-column="0" selection-end-line="200" selection-end-column="0" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
-                <element signature="e#889#966#0" expanded="false" />
-                <element signature="e#990#6295#0" expanded="false" />
-                <element signature="e#1022#1121#0" expanded="false" />
-                <element signature="e#1158#1228#0" expanded="false" />
-                <element signature="e#3764#5429#0" expanded="false" />
-                <element signature="e#5482#6295#0" expanded="false" />
-                <element signature="e#6322#6702#0" expanded="false" />
+                <element signature="e#899#976#0" expanded="false" />
+                <element signature="e#1000#6305#0" expanded="false" />
+                <element signature="e#1032#1131#0" expanded="false" />
+                <element signature="e#1168#1238#0" expanded="false" />
+                <element signature="e#3774#5439#0" expanded="false" />
+                <element signature="e#5492#6305#0" expanded="false" />
+                <element signature="e#6332#6712#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -231,7 +230,7 @@
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="831" />
+    <option name="height" value="830" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -601,7 +600,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="831" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="830" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29470673" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1047,17 +1046,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/asset/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+        <state relative-caret-position="690">
+          <caret line="200" column="0" selection-start-line="200" selection-start-column="0" selection-end-line="200" selection-end-column="0" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
-            <element signature="e#889#966#0" expanded="false" />
-            <element signature="e#990#6295#0" expanded="false" />
-            <element signature="e#1022#1121#0" expanded="false" />
-            <element signature="e#1158#1228#0" expanded="false" />
-            <element signature="e#3764#5429#0" expanded="false" />
-            <element signature="e#5482#6295#0" expanded="false" />
-            <element signature="e#6322#6702#0" expanded="false" />
+            <element signature="e#899#976#0" expanded="false" />
+            <element signature="e#1000#6305#0" expanded="false" />
+            <element signature="e#1032#1131#0" expanded="false" />
+            <element signature="e#1168#1238#0" expanded="false" />
+            <element signature="e#3774#5439#0" expanded="false" />
+            <element signature="e#5492#6305#0" expanded="false" />
+            <element signature="e#6332#6712#0" expanded="false" />
           </folding>
         </state>
       </provider>
