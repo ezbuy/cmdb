@@ -1,23 +1,37 @@
 from asset.models import *
 from asset import models
-import os,time,commands
+import os,time,commands,json,requests
 from salt.client import LocalClient
 from logs.models import goLog
 
-def notification(hostname, project, result, username):
+
+
+
+def notification(hostname,project,result,username):
+    url = 'http://dlog.65dg.me/dlog'
+    headers = {'Content-Type': 'application/json'}
+    hs = str(hostname) + " by " + str(username)
 
     if result.values()[0].find('ERROR') > 0 or result.values()[0].find('error') > 0 or result.values()[0].find('Skip') > 0:
         errmsg = 'Failed'
     else:
         errmsg = 'Success'
 
-    notificaction = 'curl -X POST -H \'Content-Type:application/json;\' -d \'{"hostname":"%s by %s", "ip":"null", "project":"%s", "gitcommit":"null", "gitmsg":"null", "errmsg":"%s","errcode":true}\' http://dlog.65dg.me/dlog' % (
-        hostname, username, project, errmsg)
+    data ={
+        "hostname": hs,
+        "ip": "null",
+        "project": project,
+        "gitcommit": "null",
+        "gitmsg": "null",
+        "errmsg": errmsg,
+        "errcode": True
+    }
+    try:
+        requests.post(url,headers=headers,data=json.dumps(data))
+    except Exception,e:
+        print e
 
 
-    #print '-------', notificaction
-    apiResult = os.system(notificaction)
-    return apiResult
 
 
 def logs(user,ip,action,result):
