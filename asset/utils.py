@@ -12,10 +12,21 @@ def notification(hostname,project,result,username):
     headers = {'Content-Type': 'application/json'}
     hs = str(hostname) + " by " + str(username)
 
-    if result.values()[0].find('ERROR') > 0 or result.values()[0].find('error') > 0 or result.values()[0].find('Skip') > 0:
+    try:
+        if type(result) == dict:
+            if result.values()[0].find('ERROR') > 0 or result.values()[0].find('error') > 0 or result.values()[0].find('Skip') > 0:
+                errmsg = 'Failed'
+            else:
+                errmsg = 'Success'
+        if type(result) == list:
+            result = str(result)
+            if result.find('ERROR') > 0 or result.find('error') > 0 or result.find('Skip') > 0:
+                errmsg = 'Failed'
+            else:
+                errmsg = 'Success'
+    except Exception, e:
+        print e
         errmsg = 'Failed'
-    else:
-        errmsg = 'Success'
 
     data ={
         "hostname": hs,
@@ -26,6 +37,7 @@ def notification(hostname,project,result,username):
         "errmsg": errmsg,
         "errcode": True
     }
+
     try:
         requests.post(url,headers=headers,data=json.dumps(data),timeout=3)
     except Exception,e:
@@ -75,10 +87,12 @@ class goPublish:
                         if self.services == 'all':
                             golist = [obj.name]
                             if hostInfo.has_key(saltHost):
-                                services.append(obj.name)
+                                for k,v in hostInfo.items():
+                                    if k == saltHost:
+                                        v.append(obj.name)
+                                        hostInfo[saltHost] = v
                             else:
-                                services = golist
-                                hostInfo[saltHost] = services
+                                hostInfo[saltHost] = golist
                         else:
                             if obj.name == self.services:
                                 golist = [self.services]
