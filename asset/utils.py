@@ -226,7 +226,11 @@ def syncAsset():
     for host in grains.keys():
         ip = grains[host]['ipv4'][-1]
         hostname_id = grains[host]['id']
-        os = grains[host]['osfullname']
+        if grains[host]['osfinger']:
+            os = grains[host]['osfinger']
+        else:
+            os = grains[host]['osfullname']
+            
         cpu = grains[host]['cpu_model']
         memory = grains[host]['mem_total']
 
