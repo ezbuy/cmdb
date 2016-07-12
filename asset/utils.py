@@ -213,3 +213,30 @@ class goServicesni:
 
 
 
+
+def syncAsset():
+    salt = LocalClient()
+    grains = salt.cmd('*','grains.items')
+    obj = Asset.objects.all()
+    host_list = []
+    for i in obj:
+        host_list.append(i.hostname)
+
+
+    for host in grains.keys():
+        ip = grains[host]['ipv4'][-1]
+        hostname_id = grains[host]['id']
+        os = grains[host]['osfullname']
+        cpu = grains[host]['cpu_model']
+        memory = grains[host]['mem_total']
+
+        if host not in host_list:
+            try:
+                    Asset.objects.create(ip=ip,hostname=hostname_id,system_type=os,cpu=cpu,memory=memory)
+            except Exception,e:
+                    print e
+
+
+
+
+

@@ -164,6 +164,7 @@ def goConfResult(request):
 
 
 def test(request):
+    syncAsset()
     return render_to_response('test.html')
 
 @login_required
