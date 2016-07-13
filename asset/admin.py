@@ -13,7 +13,7 @@ class goconfAdmin(admin.ModelAdmin):
     list_display = ('username','password','repo','localpath','env','project','hostname')
 
 class assetAdmin(admin.ModelAdmin):
-    list_display = ('hostname','ip','system_type','env','cpu','memory')
+    list_display = ('hostname','ip','system_type','asset_type','cpu','memory')
 
 admin.site.register(IDC)
 admin.site.register(Asset,assetAdmin)

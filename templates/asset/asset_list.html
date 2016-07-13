@@ -33,8 +33,8 @@
                                     </th>
                                     <th class="text-center"> 主机名 </th>
                                     <th class="text-center" name="ip"> IP地址 </th>
-                                    <!--th class="text-center"> IDC </th>
-                                    <th class="text-center"> 所属主机组 </th-->
+                                    <!--th class="text-center"> IDC </th-->
+                                    <th class="text-center"> 主机类型 </th>
 {#                                    <th class="text-center"> 配置信息 </th>#}
                                     <th class="text-center"> 操作系统 </th>
                                     <th class="text-center"> cpu核数 </th>
@@ -51,8 +51,8 @@
                                     </td>
                                     <td class="text-center hostname">{{ asset.hostname }}</td>
                                     <td class="text-center"> {{ asset.ip }} </td>
-                                    <!--td class="text-center"> {{ asset.idc.name }} </td>
-                                    <td class="text-center">{{ asset.group.get }}</td-->
+                                    <!--td class="text-center"> {{ asset.idc.name }} </td-->
+                                    <td class="text-center">{{ asset.asset_type }}</td>
 {#                                    <td class="text-center">{{ asset.cpu }}|{{ asset.memory }}|{{ asset.disk }}</td>#}
                                     <td class="text-center">{{ asset.system_type }}</td>
                                     <td class="text-center"> {{ asset.cpu }} </td>
