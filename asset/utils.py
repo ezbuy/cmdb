@@ -223,24 +223,29 @@ def syncAsset():
         host_list.append(i.hostname)
 
 
-    for host in grains.keys():
-        ip = grains[host]['ipv4'][-1]
-        hostname_id = grains[host]['id']
-        cpu = grains[host]['cpu_model']
-        memory = grains[host]['mem_total']
-        asset_type = grains[host]['virtual']
-        if grains[host].has_key('osfinger'):
-            os = grains[host]['osfinger']
-        else:
-            os = grains[host]['osfullname']
+    try:
+        for host in grains.keys():
+            ip = grains[host]['ipv4'][-1]
+            hostname_id = grains[host]['id']
+            cpu = grains[host]['cpu_model']
+            memory = grains[host]['mem_total']
+            if grains[host].has_key('virtual'):
+                asset_type = grains[host]['virtual']
+            else:
+                asset_type = ''
+            if grains[host].has_key('osfinger'):
+                os = grains[host]['osfinger']
+            else:
+                os = grains[host]['osfullname']
 
 
-        if host not in host_list:
-            try:
+            if host not in host_list:
+                try:
                     Asset.objects.create(ip=ip,hostname=hostname_id,system_type=os,cpu=cpu,memory=memory,asset_type=asset_type)
-            except Exception,e:
+                except Exception,e:
                     print e
-
+    except Exception,e:
+        print e
 
 
 
