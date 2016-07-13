@@ -12,8 +12,11 @@ class svnAdmin(admin.ModelAdmin):
 class goconfAdmin(admin.ModelAdmin):
     list_display = ('username','password','repo','localpath','env','project','hostname')
 
+class assetAdmin(admin.ModelAdmin):
+    list_display = ('hostname','ip','system_type','env','cpu','memory')
+
 admin.site.register(IDC)
-admin.site.register(Asset)
+admin.site.register(Asset,assetAdmin)
 admin.site.register(AssetRecord)
 admin.site.register(AssetGroup)
 admin.site.register(minion)
