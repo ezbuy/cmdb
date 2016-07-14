@@ -18,8 +18,13 @@ def notification(hostname,project,result,username):
                 errmsg = 'Failed'
             else:
                 errmsg = 'Success'
-        if type(result) == list:
+        elif type(result) == list:
             result = str(result)
+            if result.find('ERROR') > 0 or result.find('error') > 0 or result.find('Skip') > 0:
+                errmsg = 'Failed'
+            else:
+                errmsg = 'Success'
+        elif type(result) == str:
             if result.find('ERROR') > 0 or result.find('error') > 0 or result.find('Skip') > 0:
                 errmsg = 'Failed'
             else:
@@ -177,18 +182,18 @@ class goPublish:
 
 
         for p in conf:
+            try:
+                if str(p.env) == self.env and p.project.name == self.project:
+                    #print p.username,p.password,p.localpath,p.hostname
+                    confCmd = "svn update --username=%s --password=%s --non-interactive %s" %(p.username,p.password,p.localpath)
+                    confResult = self.saltCmd.cmd('%s' % p.hostname,'cmd.run',['%s' % confCmd])
+                    result.append(confResult)
 
-            if str(p.env) == self.env and p.project.name == self.project:
-                #print p.username,p.password,p.localpath,p.hostname
-                confCmd = "svn update --username=%s --password=%s --non-interactive %s" %(p.username,p.password,p.localpath)
-                confResult = self.saltCmd.cmd('%s' % p.hostname,'cmd.run',['%s' % confCmd])
-                result.append(confResult)
+                    info = self.project + ' conf'
 
-                info = self.project + ' conf'
-
-
-                ding = notification(p.hostname,self.project,confResult,self.username)
-
+                    ding = notification(p.hostname, info, confResult, self.username)
+            except Exception,e:
+                print e
         action = 'conf ' + self.project
         logs(self.username, self.ip, action, result)
 
