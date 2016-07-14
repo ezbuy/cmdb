@@ -232,7 +232,7 @@ def syncAsset():
             if grains[host].has_key('virtual'):
                 asset_type = grains[host]['virtual']
             else:
-                asset_type = ''
+                asset_type = 'physical'
             if grains[host].has_key('osfinger'):
                 os = grains[host]['osfinger']
             else:
