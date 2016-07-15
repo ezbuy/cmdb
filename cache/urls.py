@@ -15,20 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from cmdb.views import index
-from web.views import login,logout
-
-
-import asset,logs,winservices,cache
+from cache.views import memcached,flushMemcached
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^$',index,name='index'),
-    url(r'^asset/', include('asset.urls')),
-    url(r'^logs/', include('logs.urls')),
-    url(r'^winservices/', include('winservices.urls')),
-    url(r'^cache/', include('cache.urls')),
-    url(r'^login/',login,name='login'),
-    url(r'^logout/',logout,name='logout'),
+
+    url(r'^memcache/$', memcached, name='memcache'),
+    url(r'^flushMemcache/$', flushMemcached, name='flushMemcache'),
 
 ]
