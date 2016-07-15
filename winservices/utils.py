@@ -26,7 +26,7 @@ class servicesPublish:
             result.append(stop)
             while True:
                 task_list = self.salt.cmd(name.hostname.saltname, 'cmd.run', ['tasklist | findstr %s' % name.tasklist_name])
-                if task_list[name.hostname.saltname]:
+                if not task_list[name.hostname.saltname]:
                     print 'proccess has been exit.'
                     break
                 time.sleep(3)
