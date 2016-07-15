@@ -21,6 +21,9 @@ def memcached(request):
 @login_required
 def flushMemcached(request):
     data = request.GET.getlist('mcName')
+    project = 'memcache flush'
+    username = request.user
+    ip = request.META['REMOTE_ADDR']
     saltCmd = LocalClient()
     result = []
 
@@ -30,8 +33,15 @@ def flushMemcached(request):
             try:
                 cmd = saltCmd.cmd(info.saltMinion.saltname,'cmd.run',['echo "flush_all" | nc %s %s' % (info.ip,info.port)])
                 result.append(cmd)
+                if cmd[info.saltMinion.saltname] == 'OK':
+                    msg = 'Success'
+                else:
+                    msg = 'error'
+                host = info.ip + ":" + info.port
+                notification(host,project,msg,username)
                 print result
             except Exception,e:
                 print e
+    logs(username,ip,project,result)
 
     return render_to_response('getdata.html',{'result':result})
