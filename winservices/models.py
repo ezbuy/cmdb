@@ -14,6 +14,7 @@ class winconf(models.Model):
     env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
     servicename = models.CharField(max_length=32)
     hostname = models.ForeignKey(minion)
+    tasklist_name = models.CharField(max_length=32)
 
     def __unicode__(self):
         return self.servicename

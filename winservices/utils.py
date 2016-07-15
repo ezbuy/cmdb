@@ -1,7 +1,7 @@
 from winservices.models import winconf
 from salt.client import LocalClient
 from asset.utils import logs,notification
-
+import time
 
 
 
@@ -24,6 +24,12 @@ class servicesPublish:
 
             stop = self.salt.cmd(name.hostname.saltname,'cmd.run',['net stop %s' % name.servicename])
             result.append(stop)
+            while True:
+                task_list = self.salt.cmd(name.hostname.saltname, 'cmd.run', ['tasklist | findstr %s' % name.tasklist_name])
+                if task_list[name.hostname.saltname]:
+                    print 'proccess has been exit.'
+                    break
+                time.sleep(3)
             update = self.salt.cmd(name.hostname.saltname,'cmd.run',['svn up %s --username=%s --password=%s' % (name.localpath,name.username,name.password)])
             result.append(update)
             start = self.salt.cmd(name.hostname.saltname,'cmd.run', ['net start %s' % name.servicename])
