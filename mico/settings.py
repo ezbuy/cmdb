@@ -80,7 +80,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mico.wsgi.application'
 
-
+SESSION_COOKIE_AGE = 1800
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_SAVE_EVERY_REQUEST = True
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
