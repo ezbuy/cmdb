@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'logs',
     'winservices',
     'cache',
-
+    'www',
+    'djcelery',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -58,6 +59,9 @@ MIDDLEWARE_CLASSES = [
 ]
 
 ROOT_URLCONF = 'mico.urls'
+BROKER_URL = 'redis://127.0.0.1:6379/3'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/4'
+
 
 TEMPLATES = [
     {

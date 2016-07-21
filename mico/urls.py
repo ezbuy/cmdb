@@ -19,7 +19,7 @@ from cmdb.views import index
 from web.views import login,logout
 
 
-import asset,logs,winservices,cache
+import asset,logs,winservices,cache,www
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^logs/', include('logs.urls')),
     url(r'^winservices/', include('winservices.urls')),
     url(r'^cache/', include('cache.urls')),
+    url(r'^www/', include('www.urls')),
     url(r'^login/',login,name='login'),
     url(r'^logout/',logout,name='logout'),
 

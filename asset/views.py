@@ -194,3 +194,17 @@ def getConfProject(request):
     project = list(set(project))
 
     return HttpResponse(json.dumps(project))
+
+
+def getText(request):
+    if os.path.exists('/tmp/celery1.txt'):
+        f = open('/tmp/celery1.txt', 'r')
+        info = f.read()
+        s, end = commands.getstatusoutput('tail -n 1 /tmp/celery1.txt')
+        if end == 'done':
+            commands.getstatusoutput('rm /tmp/celery1.txt')
+    else:
+        info = ''
+        end = ''
+    content = {'info': info, 'end': end}
+    return HttpResponse(json.dumps(content))
