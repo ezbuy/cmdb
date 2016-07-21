@@ -4,7 +4,7 @@
         <ul class="nav" id="side-menu">
 
             <li id="index">
-               <a href="#"><i class="fa fa-dashboard"></i> <span class="nav-label">仪表盘</span><span class="label label-info pull-right"></span></a>
+               <a href="#"><i class="fa fa-dashboard"></i> <span class="nav-label">Dashboard</span><span class="label label-info pull-right"></span></a>
             </li>
             <li>
                 <a href="#"><i class="fa fa-group"></i> <span class="nav-label">Go Project</span><span class="fa arrow"></span></a>
@@ -27,6 +27,16 @@
             </li>
 
 
+
+            <li>
+                <a href="#"><i class="fa fa-paperclip"></i> <span class="nav-label">Web IIS</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li class="group"><a href="{% url 'winservices' %}">发布</a></li>
+                    <li class="user"><a href="{% url 'winServicesList' %}">recycle<span class="label pull-right"></span></a></li>
+                </ul>
+            </li>
+
+
             <li>
                 <a><i class="fa fa-play-circle-o"></i> <span class="nav-label">Cache</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -38,7 +48,7 @@
 
 
             <li>
-                <a><i class="fa fa-inbox"></i> <span class="nav-label">资产管理</span><span class="fa arrow"></span></a>
+                <a><i class="fa fa-inbox"></i> <span class="nav-label">Asset</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li class="group"><a href="#">查看资产组</a></li>
                     <li class="asset"> <a href="{% url 'asset_list' %}">查看资产</a></li>
@@ -49,7 +59,7 @@
 
 
             <li >
-               <a href="{% url 'logs' %}" ><i class="fa fa-files-o"></i> <span class="nav-label">日志审计</span><span class="label label-info pull-right"></span></a>
+               <a href="{% url 'logs' %}" ><i class="fa fa-files-o"></i> <span class="nav-label">logs</span><span class="label label-info pull-right"></span></a>
             </li>
             <!--li id="file">
                 <a href="#"><i class="fa fa-download"></i> <span class="nav-label">上传下载</span><span class="fa arrow"></span></a>
@@ -59,7 +69,7 @@
                 </ul>
             </li-->
             <li id="setting">
-                   <a target="_blank" href="/admin"><i class="fa fa-gears"></i> <span class="nav-label">设置</span><span class="label label-info pull-right"></span></a>
+                   <a target="_blank" href="/admin"><i class="fa fa-gears"></i> <span class="nav-label">setting</span><span class="label label-info pull-right"></span></a>
             </li>
 
         </ul>

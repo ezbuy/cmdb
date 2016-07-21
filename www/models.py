@@ -1,7 +1,7 @@
-from __future__ import unicode_literals
+# coding: utf-8
 
 from django.db import models
-
+from asset.models import ASSET_ENV
 # Create your models here.
 
 class salt_module(models.Model):
@@ -26,6 +26,7 @@ class webSite(models.Model):
     svn_password = models.CharField(max_length=128)
     svn_repo = models.CharField(max_length=128)
     recycle_cmd = models.CharField(max_length=128)
+    env = models.IntegerField(choices=ASSET_ENV,verbose_name=u"运行环境")
 
 
     def __unicode__(self):

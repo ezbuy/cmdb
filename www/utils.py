@@ -11,6 +11,7 @@ def deployWww(site):
     saltCmd = LocalClient()
     result = []
     data = {}
+    f = open('/tmp/celery1.txt','w')
     for s in obj:
         if s.webSite == site:
             info = s
@@ -25,13 +26,14 @@ def deployWww(site):
             try:
                 s,backup = commands.getstatusoutput("salt " + info.lb_server + " state.sls " + m['state_module'] + " " + deploy_pillar)
                 print '***************',backup
-                f = open('/tmp/celery1.txt','w')
+
                 f.write(backup)
                 f.flush()
                 f.write('\n\n\n\n\n')
                 print '------*****************************backup11111---------'
             except Exception,e:
                 print e
+                exit()
                 print '------backup---------'
         try:
             update_cmd = '\'svn update %s --username=deploy --password=ezbuyisthebest \'' % info.svn_path
@@ -40,12 +42,13 @@ def deployWww(site):
             f.flush()
             f.write('\n\n\n\n\n')
             print '------update1111---------'
-
-
-
         except Exception, e:
             print e
             print '------update---------'
+            exit()
+
+
+
         ####recycle#######
         try:
             print '--------', info.recycle_cmd
@@ -53,13 +56,16 @@ def deployWww(site):
             f.write(recycle)
             f.flush()
             f.write('\n\n\n\n\n')
-            print recycle
-            print '------recycle1111---------'
+
+            print '------recycle---------'
 
             i = 0
             while i < 5:
                 start_time = time.time()
-                os.system("curl -H \"Host:" + site + "\" -I " + host['url'])
+                s,testUrl = commands.getstatusoutput("curl -H \"Host:" + site + "\" -I " + host['url'])
+                f.write(testUrl)
+                f.flush()
+                f.write('\n\n\n\n\n')
                 print time.time() - start_time
                 if time.time() - start_time < 2:
                     break
@@ -70,6 +76,7 @@ def deployWww(site):
 
         except Exception, e:
             print e
+            exit()
             print '------recycle---------'
 
     ######none########
@@ -84,6 +91,7 @@ def deployWww(site):
             print '------*****************************backup11111---------'
         except Exception, e:
             print e
+            exit()
             print '------backup---------'
 
 
