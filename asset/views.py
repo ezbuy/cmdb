@@ -201,7 +201,7 @@ def getText(request):
         f = open('/tmp/celery1.txt', 'r')
         info = f.read()
         s, end = commands.getstatusoutput('tail -n 1 /tmp/celery1.txt')
-        if end == 'done':
+        if end == 'done' or end == 'error':
             commands.getstatusoutput('rm /tmp/celery1.txt')
     else:
         info = ''

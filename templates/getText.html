@@ -10,10 +10,9 @@
                 	//$.each(data, function(){
             		    $("#content").html('<pre style="border: none">' + data.info + '</pre>');
                         console.log(id)
-                        if (data.end == 'done') {
-                            console.log('ssss')
+                        if (data.end == 'done' || data.end == 'error') {
+                            console.log('stop')
                             window.clearInterval(a)
-
                         }
                     });
    		    }, 3000)
@@ -21,7 +20,7 @@
    </script>
  </head>
  <body>
-   <h1>Ajax Test</h1>
+   <h1>Result:</h1>
    <p id="time"></p>
    <div id="content"></div> 
  </body>
