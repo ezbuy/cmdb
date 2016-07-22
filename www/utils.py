@@ -32,7 +32,7 @@ def deployWww(env,site):
                     f.close()
                     exit()
             try:  #####svn update########
-                update_cmd = '\'svn update %s --username=deploy --password=ezbuyisthebest \'' % info.svn_path
+                update_cmd = '\'svn update %s --username=%s --password=%s \'' % (info.svn_path,info.svn_username,info.svn_password)
                 s,update = commands.getstatusoutput("salt " + host['host'] + " cmd.run " + update_cmd)
                 f.write(update)
                 f.flush()
