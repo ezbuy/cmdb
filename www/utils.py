@@ -6,16 +6,13 @@ from celery.task import task
 
 
 @task
-def deployWww(site):
-    obj = webSite.objects.all()
+def deployWww(env,site):
+
+    info = webSite.objects.filter(env=env).filter(webSite=site)
     saltCmd = LocalClient()
     result = []
     data = {}
     f = open('/tmp/celery1.txt','w')
-    for s in obj:
-        if s.webSite == site:
-            info = s
-            break
 
     for host in info.checkUrl.values():
         print host['host']
