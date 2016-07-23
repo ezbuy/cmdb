@@ -29,5 +29,7 @@ def getProjectName(request):
 def deployIis(request):
      env = request.GET['env']
      site = request.GET['project']
-     deployWww.delay(env,site)
+     username = request.user
+     ip = request.META['REMOTE_ADDR']
+     deployWww.delay(env,site,username,ip)
      return render_to_response('getText.html')

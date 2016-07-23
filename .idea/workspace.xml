@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="64417799-fc58-4869-9447-fff65d8eb089" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/utils.py" afterPath="$PROJECT_DIR$/www/utils.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/views.py" afterPath="$PROJECT_DIR$/www/views.py" />
     </list>
     <ignored path="mico.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,11 +38,28 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/asset/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1020">
+              <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#26#0" expanded="true" />
+                <element signature="e#1792#1862#0" expanded="false" />
+                <element signature="e#4525#6190#0" expanded="false" />
+                <element signature="e#6243#7149#0" expanded="false" />
+                <element signature="e#7176#7556#0" expanded="false" />
+                <element signature="e#7583#8586#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/asset/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="545">
-              <caret line="204" column="35" selection-start-line="204" selection-start-column="35" selection-end-line="204" selection-end-column="35" />
+            <state relative-caret-position="500">
+              <caret line="135" column="0" selection-start-line="135" selection-start-column="0" selection-end-line="136" selection-end-column="36" />
               <folding>
                 <element signature="e#1#68#0" expanded="true" />
               </folding>
@@ -64,8 +82,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+            <state relative-caret-position="525">
+              <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
               <folding>
                 <element signature="e#0#67#0" expanded="true" />
               </folding>
@@ -85,25 +103,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="utils.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="30" column="29" selection-start-line="30" selection-start-column="29" selection-end-line="30" selection-end-column="29" />
+            <state relative-caret-position="120">
+              <caret line="20" column="8" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="8" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
-              <folding>
-                <element signature="e#17#45#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -112,8 +118,8 @@
       <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/winservices/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="585">
-              <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
+            <state relative-caret-position="21">
+              <caret line="35" column="32" selection-start-line="35" selection-start-column="32" selection-end-line="35" selection-end-column="32" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
                 <element signature="e#196#308#0" expanded="false" />
@@ -202,7 +208,6 @@
         <option value="$PROJECT_DIR$/cache/views.py" />
         <option value="$PROJECT_DIR$/winservices/models.py" />
         <option value="$PROJECT_DIR$/winservices/admin.py" />
-        <option value="$PROJECT_DIR$/winservices/utils.py" />
         <option value="$PROJECT_DIR$/asset/utils.py" />
         <option value="$PROJECT_DIR$/www/admin.py" />
         <option value="$PROJECT_DIR$/mico/urls.py" />
@@ -218,6 +223,7 @@
         <option value="$PROJECT_DIR$/templates/nav.html" />
         <option value="$PROJECT_DIR$/www/urls.py" />
         <option value="$PROJECT_DIR$/templates/wwwList.html" />
+        <option value="$PROJECT_DIR$/winservices/utils.py" />
         <option value="$PROJECT_DIR$/www/views.py" />
         <option value="$PROJECT_DIR$/www/utils.py" />
       </list>
@@ -230,10 +236,9 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="91" />
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="829" />
+    <option name="height" value="830" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -291,20 +296,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cmdb" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cmdb" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="winservices" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -645,7 +636,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="91" y="23" width="1440" height="829" extended-state="0" />
+    <frame x="0" y="23" width="1440" height="830" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33333334" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -987,21 +978,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/asset/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="667">
-          <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-            <element signature="e#1792#1862#0" expanded="false" />
-            <element signature="e#4525#6190#0" expanded="false" />
-            <element signature="e#6243#7149#0" expanded="false" />
-            <element signature="e#7176#7556#0" expanded="false" />
-            <element signature="e#7583#8586#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/asset/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -1050,16 +1026,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/winservices/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="25" selection-end-column="50" />
-          <folding>
-            <element signature="e#1#68#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/www/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
@@ -1094,17 +1060,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/winservices/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-            <element signature="e#196#308#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/www/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
@@ -1123,10 +1078,56 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/winservices/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="25" selection-end-column="50" />
+          <folding>
+            <element signature="e#1#68#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/winservices/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="21">
+          <caret line="35" column="32" selection-start-line="35" selection-start-column="32" selection-end-line="35" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
+            <element signature="e#196#308#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/asset/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="500">
+          <caret line="135" column="0" selection-start-line="135" selection-start-column="0" selection-end-line="136" selection-end-column="36" />
+          <folding>
+            <element signature="e#1#68#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/asset/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1020">
+          <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+            <element signature="e#1792#1862#0" expanded="false" />
+            <element signature="e#4525#6190#0" expanded="false" />
+            <element signature="e#6243#7149#0" expanded="false" />
+            <element signature="e#7176#7556#0" expanded="false" />
+            <element signature="e#7583#8586#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/www/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+        <state relative-caret-position="525">
+          <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
           <folding>
             <element signature="e#0#67#0" expanded="true" />
           </folding>
@@ -1135,20 +1136,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/www/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="30" column="29" selection-start-line="30" selection-start-column="29" selection-end-line="30" selection-end-column="29" />
+        <state relative-caret-position="120">
+          <caret line="20" column="8" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="8" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/asset/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="545">
-          <caret line="204" column="35" selection-start-line="204" selection-start-column="35" selection-end-line="204" selection-end-column="35" />
-          <folding>
-            <element signature="e#1#68#0" expanded="true" />
           </folding>
         </state>
       </provider>
