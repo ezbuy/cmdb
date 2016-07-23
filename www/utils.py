@@ -18,7 +18,7 @@ class wwwFun:
 
 
     def deploy(self,site):
-        
+
         self.site = site
         obj = webSite.objects.filter(env=self.env).filter(webSite=self.site)
         result = []
@@ -86,6 +86,8 @@ class wwwFun:
                         f.close()
                         exit()
 
+                    notification(host['host'], self.site, 'success', self.username)
+
                 except Exception, e:
                     print e
                     f.write('error')
@@ -96,22 +98,22 @@ class wwwFun:
 
 
 
-                for m in info.state_module.values():    ######nginx all online########
-                    print m['state_module']
-                    deploy_pillar = "pillar=\"{'deployserver':'none', 'deployhost':'none'}\""
-                    try:
-                        s, none = commands.getstatusoutput("salt " + info.lb_server + " state.sls " + m['state_module'] + " " + deploy_pillar)
-                        f.write(none)
-                        f.flush()
-                        notification(host['host'],self.site,'success',self.username)
+            for m in info.state_module.values():    ######nginx all online########
+                print m['state_module']
+                deploy_pillar = "pillar=\"{'deployserver':'none', 'deployhost':'none'}\""
+                try:
+                    s, none = commands.getstatusoutput("salt " + info.lb_server + " state.sls " + m['state_module'] + " " + deploy_pillar)
+                    f.write(none)
+                    f.flush()
 
-                    except Exception, e:
-                        print e
-                        f.write('error')
-                        f.close()
-                        notification(host['host'], self.site, 'error', self.username)
-                        logs(self.username, self.ip, self.site, 'Failed')
-                        exit()
+
+                except Exception, e:
+                    print e
+                    f.write('error')
+                    f.close()
+                    notification(host['host'], self.site, 'error', self.username)
+                    logs(self.username, self.ip, self.site, 'Failed')
+                    exit()
 
 
 
