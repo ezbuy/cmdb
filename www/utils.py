@@ -14,6 +14,101 @@ class wwwFun:
         self.env = env
         self.username = username
         self.ip = ip
+        self.f = open('/tmp/celery1.txt','w')
+
+
+
+
+    def __nginx_backup(self,proxy_server,web_server,nginx_module,deploy_pillar):
+        self.proxy_server = proxy_server
+        self.web_server = web_server
+        self.nginx_module = nginx_module
+        self.deploy_pillar = deploy_pillar
+
+        try:  ##########nginx backup#######
+
+            s, backup = commands.getstatusoutput("salt " + self.proxy_server + " state.sls " + self.nginx_module + " " + self.deploy_pillar)
+            self.f.write(backup)
+            self.f.flush()
+            self.f.write('\n\n\n\n\n')
+            return 0
+        except Exception, e:
+            print e
+            self.f.write('error')
+            self.f.close()
+            notification(self.web_server, self.site, 'error', self.username)
+            logs(self.username, self.ip, self.site, 'Failed')
+            exit()
+
+
+
+
+    def __svn_update(self,web_server,svn_path,svn_username,svn_password):
+        self.web_server = web_server
+        self.svn_path = svn_path
+        self.svn_username = svn_username
+        self.svn_password = svn_password
+
+
+
+        try:  #####svn update########
+            update_cmd = '\'svn update %s --username=%s --password=%s \'' % (self.svn_path, self.svn_username, self.svn_password)
+            s, update = commands.getstatusoutput("salt " + self.web_server + " cmd.run " + update_cmd)
+            self.f.write(update)
+            self.f.flush()
+            self.f.write('\n\n\n\n\n')
+        except Exception, e:
+            print e
+            self.f.write('error')
+            self.f.close()
+            notification(self.web_server, self.site, 'error', self.username)
+            logs(self.username, self.ip, self.site, 'Failed')
+            exit()
+
+
+    def __iis_recycle(self,web_server,recycle_cmd,web_url):
+        self.web_server = web_server
+        self.recycle_cmd = recycle_cmd
+        self.web_url = web_url
+
+
+        try:  ####recycle iis#######
+            s, recycle = commands.getstatusoutput("salt " + self.web_server + " cmd.run '" + self.recycle_cmd + "'")
+            self.f.write(recycle)
+            self.f.flush()
+            self.f.write('\n\n\n\n\n')
+
+            print '------recycle---------'
+
+            i = 0
+            while i < 5:
+                start_time = time.time()
+                s, testUrl = commands.getstatusoutput("curl -H \"Host:" + self.site + "\" -I " + self.web_url)
+                self.f.write(testUrl)
+                self.f.flush()
+                self.f.write('\n\n\n\n\n')
+                print time.time() - start_time
+                if time.time() - start_time < 2:
+                    break
+                i = i + 1
+            if i == 5:
+                print "!!!!!!!!!!!!!!!!!! [recycle iis] TIMEOUT !!!!!!!!!!!!!!!!!!"
+                self.f.write('error')
+                self.f.close()
+                exit()
+
+            notification(self.web_server, self.site, 'success', self.username)
+
+        except Exception, e:
+            print e
+            self.f.write('error')
+            self.f.close()
+            notification(self.web_server, self.site, 'error', self.username)
+            logs(self.username, self.ip, self.site, 'Failed')
+            exit()
+
+
+
 
 
 
@@ -21,108 +116,29 @@ class wwwFun:
 
         self.site = site
         obj = webSite.objects.filter(env=self.env).filter(webSite=self.site)
-        result = []
-        data = {}
-        f = open('/tmp/celery1.txt','w')
+
+
 
         for info in obj:
-
             for host in info.checkUrl.values():
                 print host['host']
                 for m in info.state_module.values():
-
-                    try:   ##########nginx backup#######
-                        deploy_pillar = "pillar=\"{'deployserver':'" + host['host'] + "', 'deployhost':'" + info.salt_pillar_host + "'}\""
-                        s,backup = commands.getstatusoutput("salt " + info.lb_server + " state.sls " + m['state_module'] + " " + deploy_pillar)
-                        f.write(backup)
-                        f.flush()
-                        f.write('\n\n\n\n\n')
-                    except Exception,e:
-                        print e
-                        f.write('error')
-                        f.close()
-                        notification(host['host'],self.site,'error',self.username)
-                        logs(self.username, self.ip, self.site, 'Failed')
-                        exit()
-                try:  #####svn update########
-                    update_cmd = '\'svn update %s --username=%s --password=%s \'' % (info.svn_path,info.svn_username,info.svn_password)
-                    s,update = commands.getstatusoutput("salt " + host['host'] + " cmd.run " + update_cmd)
-                    f.write(update)
-                    f.flush()
-                    f.write('\n\n\n\n\n')
-                except Exception, e:
-                    print e
-                    f.write('error')
-                    f.close()
-                    notification(host['host'], self.site, 'error', self.username)
-                    logs(self.username, self.ip, self.site, 'Failed')
-                    exit()
-
-
-
-
-                try:    ####recycle iis#######
-                    s, recycle = commands.getstatusoutput("salt " + host['host'] + " cmd.run '" + info.recycle_cmd + "'")
-                    f.write(recycle)
-                    f.flush()
-                    f.write('\n\n\n\n\n')
-
-                    print '------recycle---------'
-
-                    i = 0
-                    while i < 5:
-                        start_time = time.time()
-                        s,testUrl = commands.getstatusoutput("curl -H \"Host:" + self.site + "\" -I " + host['url'])
-                        f.write(testUrl)
-                        f.flush()
-                        f.write('\n\n\n\n\n')
-                        print time.time() - start_time
-                        if time.time() - start_time < 2:
-                            break
-                        i = i + 1
-                    if i == 5:
-                        print "!!!!!!!!!!!!!!!!!! [recycle iis] TIMEOUT !!!!!!!!!!!!!!!!!!"
-                        f.write('error')
-                        f.close()
-                        exit()
-
-                    notification(host['host'], self.site, 'success', self.username)
-
-                except Exception, e:
-                    print e
-                    f.write('error')
-                    f.close()
-                    notification(host['host'], self.site, 'error', self.username)
-                    logs(self.username, self.ip, self.site, 'Failed')
-                    exit()
-
-
-
+                    deploy_pillar = "pillar=\"{'deployserver':'" + host['host'] + "', 'deployhost':'" + info.salt_pillar_host + "'}\""
+                    self.__nginx_backup(info.lb_server,host['host'],m['state_module'],deploy_pillar)
+                self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password)
+                self.__iis_recycle(host['host'],info.recycle_cmd,host['url'])
             for m in info.state_module.values():    ######nginx all online########
                 print m['state_module']
                 deploy_pillar = "pillar=\"{'deployserver':'none', 'deployhost':'none'}\""
-                try:
-                    s, none = commands.getstatusoutput("salt " + info.lb_server + " state.sls " + m['state_module'] + " " + deploy_pillar)
-                    f.write(none)
-                    f.flush()
+                status = self.__nginx_backup(info.lb_server,host['host'],m['state_module'],deploy_pillar)
 
-
-                except Exception, e:
-                    print e
-                    f.write('error')
-                    f.close()
-                    notification(host['host'], self.site, 'error', self.username)
-                    logs(self.username, self.ip, self.site, 'Failed')
-                    exit()
-
-
-
-        f.write('\n\n\n\n\n')
-        f.write('done')
-        f.flush()
-        f.close()
+        if status != 0:
+            return 'Failed'
+        self.f.write('done')
+        self.f.flush()
+        self.f.close()
         logs(self.username, self.ip, self.site, 'Success')
-        return result
+        return 'Successful'
 
 
 
@@ -130,3 +146,6 @@ class wwwFun:
 def deployWww(env,site,username,ip):
     obj = wwwFun(env,username,ip)
     obj.deploy(site)
+
+
+
