@@ -112,9 +112,10 @@ class wwwFun:
 
 
 
-    def deploy(self,site):
+    def deploy(self,site,action='svn'):
 
         self.site = site
+        self.action = action
         obj = webSite.objects.filter(env=self.env).filter(webSite=self.site)
 
 
@@ -125,7 +126,10 @@ class wwwFun:
                 for m in info.state_module.values():
                     deploy_pillar = "pillar=\"{'deployserver':'" + host['host'] + "', 'deployhost':'" + info.salt_pillar_host + "'}\""
                     self.__nginx_backup(info.lb_server,host['host'],m['state_module'],deploy_pillar)
-                self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password)
+                if self.action == 'svn':
+                    self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password)
+                elif self.action == 'recycle':
+                    pass
                 self.__iis_recycle(host['host'],info.recycle_cmd,host['url'])
             for m in info.state_module.values():    ######nginx all online########
                 print m['state_module']
@@ -133,19 +137,28 @@ class wwwFun:
                 status = self.__nginx_backup(info.lb_server,host['host'],m['state_module'],deploy_pillar)
 
         if status != 0:
+            logs(self.username, self.ip, self.site, 'Failed')
             return 'Failed'
         self.f.write('done')
         self.f.flush()
         self.f.close()
-        logs(self.username, self.ip, self.site, 'Success')
+        logs(self.username, self.ip, self.site, 'Successful')
         return 'Successful'
+
+
+
+
 
 
 
 @task
 def deployWww(env,site,username,ip):
     obj = wwwFun(env,username,ip)
-    obj.deploy(site)
+    obj.deploy(site,'svn')
 
 
 
+@task
+def deployWwwRecycle(env,site,username,ip):
+    obj = wwwFun(env,username,ip)
+    obj.deploy(site,'recycle')

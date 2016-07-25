@@ -2,7 +2,7 @@ from django.shortcuts import render,render_to_response,HttpResponse
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
-from www.utils import deployWww
+from www.utils import deployWww,deployWwwRecycle
 from www.models import webSite
 import json
 
@@ -33,3 +33,26 @@ def deployIis(request):
      ip = request.META['REMOTE_ADDR']
      deployWww.delay(env,site,username,ip)
      return render_to_response('getText.html')
+
+
+@login_required
+def recycleList(request):
+    if 'env' in request.GET:
+        env = request.GET['env']
+    else:
+        env = 1
+    site = webSite.objects.filter(env=int(env))
+    return render_to_response('recyclelist.html', {'project': site})
+
+
+@login_required
+def deployRecycle(request):
+    data = request.GET.getlist('id')
+    site,env = data[0].split(',')
+    username = request.user
+    ip = request.META['REMOTE_ADDR']
+    deployWwwRecycle.delay(env,site,username,ip)
+    return render_to_response('getText.html')
+
+
+

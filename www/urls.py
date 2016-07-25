@@ -7,5 +7,7 @@ urlpatterns = patterns('',
     url(r'^wwwList$',wwwList,name='wwwList'),
     url(r'^getProjectName$',getProjectName,name='getProjectName'),
     url(r'^deployIis$',deployIis,name='deployIis'),
+    url(r'^recycleList$', recycleList, name='recycleList'),
+    url(r'^deployRecycle$', deployRecycle, name='deployRecycle'),
 
 )
