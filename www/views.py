@@ -31,8 +31,11 @@ def deployIis(request):
      site = request.GET['project']
      username = request.user
      ip = request.META['REMOTE_ADDR']
-     deployWww.delay(env,site,username,ip)
-     return render_to_response('getText.html')
+     deploy = deployWww.delay(env,site,username,ip)
+     if deploy.id:
+        return render_to_response('getText.html')
+     else:
+        return HttpResponse('celery error!')
 
 
 @login_required
@@ -51,8 +54,11 @@ def deployRecycle(request):
     site,env = data[0].split(',')
     username = request.user
     ip = request.META['REMOTE_ADDR']
-    deployWwwRecycle.delay(env,site,username,ip)
-    return render_to_response('getText.html')
+    deploy = deployWwwRecycle.delay(env,site,username,ip)
+    if deploy.id:
+        return render_to_response('getText.html')
+    else:
+        return HttpResponse('celery error!')
 
 
 

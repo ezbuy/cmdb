@@ -15,6 +15,7 @@ class wwwFun:
         self.username = username
         self.ip = ip
         self.f = open('/tmp/celery1.txt','w')
+        self.result = []
 
 
 
@@ -30,6 +31,11 @@ class wwwFun:
             s, backup = commands.getstatusoutput("salt " + self.proxy_server + " state.sls " + self.nginx_module + " " + self.deploy_pillar)
             self.f.write(backup)
             self.f.flush()
+            self.result.append(backup)
+            print '----------backup-------',backup
+            if backup.find('Failed:     0') < 0:
+                print "!!!!!!!!!!!!!!!!!! [backup server] ERROR !!!!!!!!!!!!!!!!!!!"
+                return 1
             self.f.write('\n\n\n\n\n')
             return 0
         except Exception, e:
@@ -38,7 +44,7 @@ class wwwFun:
             self.f.close()
             notification(self.web_server, self.site, 'error', self.username)
             logs(self.username, self.ip, self.site, 'Failed')
-            exit()
+            return 1
 
 
 
@@ -56,14 +62,20 @@ class wwwFun:
             s, update = commands.getstatusoutput("salt " + self.web_server + " cmd.run " + update_cmd)
             self.f.write(update)
             self.f.flush()
+            self.result.append(update)
+            print '-------update-------',update
+            if update.find('Error') > 0 or update.find('error') > 0:
+                print "!!!!!!!!!!!!!!!!!! [update svn] ERROR !!!!!!!!!!!!!!!!!!!"
+                return 1
             self.f.write('\n\n\n\n\n')
+            return 0
         except Exception, e:
             print e
             self.f.write('error')
             self.f.close()
             notification(self.web_server, self.site, 'error', self.username)
             logs(self.username, self.ip, self.site, 'Failed')
-            exit()
+            return 1
 
 
     def __iis_recycle(self,web_server,recycle_cmd,web_url):
@@ -76,9 +88,14 @@ class wwwFun:
             s, recycle = commands.getstatusoutput("salt " + self.web_server + " cmd.run '" + self.recycle_cmd + "'")
             self.f.write(recycle)
             self.f.flush()
+            self.result.append(recycle)
+            print '-------recycle-----',recycle
+            if recycle.find('Fail') > 0 or recycle.find('fail') > 0:
+                print "!!!!!!!!!!!!!!!!!! [recycle iis] ERROR !!!!!!!!!!!!!!!!!!"
+                return 1
             self.f.write('\n\n\n\n\n')
 
-            print '------recycle---------'
+
 
             i = 0
             while i < 5:
@@ -95,17 +112,17 @@ class wwwFun:
                 print "!!!!!!!!!!!!!!!!!! [recycle iis] TIMEOUT !!!!!!!!!!!!!!!!!!"
                 self.f.write('error')
                 self.f.close()
-                exit()
+                return 1
 
             notification(self.web_server, self.site, 'success', self.username)
-
+            return 0
         except Exception, e:
             print e
             self.f.write('error')
             self.f.close()
             notification(self.web_server, self.site, 'error', self.username)
             logs(self.username, self.ip, self.site, 'Failed')
-            exit()
+            return 1
 
 
 
@@ -125,25 +142,42 @@ class wwwFun:
                 print host['host']
                 for m in info.state_module.values():
                     deploy_pillar = "pillar=\"{'deployserver':'" + host['host'] + "', 'deployhost':'" + info.salt_pillar_host + "'}\""
-                    self.__nginx_backup(info.lb_server,host['host'],m['state_module'],deploy_pillar)
+                    nginx_backup = self.__nginx_backup(info.lb_server,host['host'],m['state_module'],deploy_pillar)
+                    if nginx_backup == 1:
+                        self.f.write('error')
+                        exit()
                 if self.action == 'svn':
-                    self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password)
+                    svn_up = self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password)
+                    if svn_up == 1:
+                        self.f.write('error')
+                        exit()
                 elif self.action == 'recycle':
                     pass
-                self.__iis_recycle(host['host'],info.recycle_cmd,host['url'])
+
+                recycle = self.__iis_recycle(host['host'],info.recycle_cmd,host['url'])
+                if recycle == 1:
+                    self.f.write('error')
+                    exit()
+
+
             for m in info.state_module.values():    ######nginx all online########
                 print m['state_module']
                 deploy_pillar = "pillar=\"{'deployserver':'none', 'deployhost':'none'}\""
                 status = self.__nginx_backup(info.lb_server,host['host'],m['state_module'],deploy_pillar)
 
-        if status != 0:
-            logs(self.username, self.ip, self.site, 'Failed')
-            return 'Failed'
+                if status == 1:
+                    logs(self.username, self.ip, self.site, 'Failed')
+                    self.f.write('error')
+                    exit()
+
+
         self.f.write('done')
         self.f.flush()
         self.f.close()
         logs(self.username, self.ip, self.site, 'Successful')
-        return 'Successful'
+
+
+        return self.result
 
 
 
