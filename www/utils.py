@@ -78,10 +78,11 @@ class wwwFun:
             return 1
 
 
-    def __iis_recycle(self,web_server,recycle_cmd,web_url):
+    def __iis_recycle(self,web_server,recycle_cmd,web_url,action):
         self.web_server = web_server
         self.recycle_cmd = recycle_cmd
         self.web_url = web_url
+        self.action = action
 
 
         try:  ####recycle iis#######
@@ -113,14 +114,19 @@ class wwwFun:
                 self.f.write('error')
                 self.f.close()
                 return 1
-
-            notification(self.web_server, self.site, 'success', self.username)
+            if self.action == 'recycle':
+                notification(self.web_server, 'recycle ' + self.site, 'success', self.username)
+            else:
+                notification(self.web_server,self.site, 'success', self.username)
             return 0
         except Exception, e:
             print e
             self.f.write('error')
             self.f.close()
-            notification(self.web_server, self.site, 'error', self.username)
+            if self.action == 'recycle':
+                notification(self.web_server, 'recycle ' + self.site, 'success', self.username)
+            else:
+                notification(self.web_server,self.site, 'success', self.username)
             logs(self.username, self.ip, self.site, 'Failed')
             return 1
 
@@ -154,7 +160,7 @@ class wwwFun:
                 elif self.action == 'recycle':
                     pass
 
-                recycle = self.__iis_recycle(host['host'],info.recycle_cmd,host['url'])
+                recycle = self.__iis_recycle(host['host'],info.recycle_cmd,host['url'],self.action)
                 if recycle == 1:
                     self.f.write('error')
                     exit()
