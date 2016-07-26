@@ -32,7 +32,7 @@ class wwwFun:
             self.f.write(backup)
             self.f.flush()
             self.result.append(backup)
-            print '----------backup-------',backup
+
             if backup.find('Failed:     0') < 0:
                 print "!!!!!!!!!!!!!!!!!! [backup server] ERROR !!!!!!!!!!!!!!!!!!!"
                 return 1
@@ -63,7 +63,7 @@ class wwwFun:
             self.f.write(update)
             self.f.flush()
             self.result.append(update)
-            print '-------update-------',update
+
             if update.find('Error') > 0 or update.find('error') > 0:
                 print "!!!!!!!!!!!!!!!!!! [update svn] ERROR !!!!!!!!!!!!!!!!!!!"
                 return 1
@@ -89,7 +89,7 @@ class wwwFun:
             self.f.write(recycle)
             self.f.flush()
             self.result.append(recycle)
-            print '-------recycle-----',recycle
+
             if recycle.find('Fail') > 0 or recycle.find('fail') > 0:
                 print "!!!!!!!!!!!!!!!!!! [recycle iis] ERROR !!!!!!!!!!!!!!!!!!"
                 return 1
