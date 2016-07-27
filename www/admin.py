@@ -4,6 +4,10 @@ from django.contrib import admin
 from www.models import *
 
 
-admin.site.register(webSite)
+class webSiteAdmin(admin.ModelAdmin):
+    list_display = ('webSite','salt_pillar_host','svn_path','recycle_cmd','env')
+
+
+admin.site.register(webSite,webSiteAdmin)
 admin.site.register(salt_module)
 admin.site.register(webUrl)

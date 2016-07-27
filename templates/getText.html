@@ -2,17 +2,22 @@
 {% extends 'base.html' %}
 {% block content %}
 <script>
-
+        id = 1
    		$(document).ready(function() {
-   			a = setInterval(function() {
-                id = 1
+   			flush_data = setInterval(function() {
+
                 $.getJSON("/asset/getText/",function(data) {
                 	//$.each(data, function(){
             		    $("#content").html('<pre style="border: none">' + data.info + '</pre>');
                         console.log(id)
+                        id = id + 1
                         if (data.end == 'done' || data.end == 'error') {
                             console.log('stop')
-                            window.clearInterval(a)
+                            window.clearInterval(flush_data)
+                        }
+                        if (data.info == '' && id == 3){
+                           alert('celery is error,please try again.')
+                           window.clearInterval(flush_data)
                         }
                     });
    		    }, 3000)
