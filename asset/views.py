@@ -181,6 +181,15 @@ def getProjectList(request):
 
     return HttpResponse(json.dumps(result))
 
+@login_required
+def getBuildList(request):
+    env = request.GET['env']
+    host = gobuild.objects.filter(env=env)
+    result = []
+    for h in host:
+        result.append(str(h.hostname))
+    return HttpResponse(json.dumps(result))
+
 
 @login_required
 def getConfProject(request):
@@ -195,7 +204,7 @@ def getConfProject(request):
 
     return HttpResponse(json.dumps(project))
 
-
+@login_required
 def getText(request):
     if os.path.exists('/tmp/celery1.txt'):
         f = open('/tmp/celery1.txt', 'r')
@@ -208,3 +217,29 @@ def getText(request):
         end = ''
     content = {'info': info, 'end': end}
     return HttpResponse(json.dumps(content))
+
+
+@login_required
+def go_build(request):
+    return render_to_response('gobuild.html')
+
+
+@login_required
+def build_go(request):
+    env = request.GET['env']
+    hostname = request.GET['hostname']
+    project = request.GET['project']
+    supervisorName = request.GET['supervisorname']
+    goCommand = request.GET['command']
+    svnRepo = request.GET['svnrepo']
+    svnUsername = request.GET['svnusername']
+    svnPassword = request.GET['svnpassword']
+
+    deploy = deploy_go.delay(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword)
+
+    if deploy.id:
+        return render_to_response('getText.html')
+    else:
+        return HttpResponse('celery error!')
+
+

@@ -152,5 +152,10 @@ class goconf(models.Model):
         return self.repo
 
 
+class gobuild(models.Model):
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+    hostname = models.ForeignKey(minion)
+
+
 
 

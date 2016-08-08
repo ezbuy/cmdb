@@ -18,4 +18,8 @@ urlpatterns = patterns('',
     url(r'^getProjectList/$', getProjectList, name='getProjectList'),
     url(r'^getConfProject/$', getConfProject, name='getConfProject'),
     url(r'^getText/$', getText, name='getText'),
+    url(r'^gobuild/$', go_build, name='gobuild'),
+    url(r'^getBuildList/$', getBuildList, name='getBuildList'),
+    url(r'^build_go/$', build_go, name='build_go'),
+
 )

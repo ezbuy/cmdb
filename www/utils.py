@@ -28,7 +28,7 @@ class wwwFun:
 
         try:  ##########nginx backup#######
 
-            s, backup = commands.getstatusoutput("salt " + self.proxy_server + " state.sls " + self.nginx_module + " " + self.deploy_pillar)
+            s, backup = commands.getstatusoutput("salt " + self.proxy_server + " state.sls queue=True " + self.nginx_module + " " + self.deploy_pillar)
             self.f.write(backup)
             self.f.flush()
             self.result.append(backup)

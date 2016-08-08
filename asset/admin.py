@@ -15,6 +15,9 @@ class goconfAdmin(admin.ModelAdmin):
 class assetAdmin(admin.ModelAdmin):
     list_display = ('hostname','ip','system_type','asset_type','cpu','memory')
 
+class gobuildAdmin(admin.ModelAdmin):
+    list_display = ('env','hostname')
+
 admin.site.register(IDC)
 admin.site.register(Asset,assetAdmin)
 admin.site.register(AssetRecord)
@@ -24,3 +27,4 @@ admin.site.register(goservices,goServicesAdmin)
 admin.site.register(gogroup)
 admin.site.register(svn,svnAdmin)
 admin.site.register(goconf,goconfAdmin)
+admin.site.register(gobuild,gobuildAdmin)

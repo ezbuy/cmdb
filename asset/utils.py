@@ -3,7 +3,7 @@ from asset import models
 import os,time,commands,json,requests
 from salt.client import LocalClient
 from logs.models import goLog
-
+from celery.task import task
 
 
 
@@ -201,6 +201,44 @@ class goPublish:
         return result
 
 
+    def build_go(self,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword):
+        self.hostname = hostname
+        self.project = project
+        self.supervisorName = supervisorName
+        self.goCommand = goCommand
+        self.svnRepo = svnRepo
+        self.svnUsername = svnUsername
+        self.svnPassword = svnPassword
+        f = open('/tmp/celery1.txt', 'w')
+        f.write("start....")
+        f.write('\n\n\n\n')
+        f.flush()
+        #result = self.saltCmd.cmd(self.hostname, 'state.sls', kwarg={
+        #    'mods': 'goservices.supervisor_submodule',
+        #    'pillar': {
+        #        'goprograme': self.project,
+        #        'supProgrameName': self.supervisorName,
+        #        'goRunCommand': self.goCommand,
+        #        'svnrepo': self.svnRepo,
+        #        'svnusername': self.svnUsername,
+        #        'svnpassword': self.svnPassword,
+        #    },
+        #})
+        try:
+            pillar= " pillar=\"{'goprograme': '%s','supProgrameName': '%s','goRunCommand': '%s','svnrepo': '%s','svnusername': '%s','svnpassword': '%s'}\"" % (self.project,self.supervisorName,self.goCommand,self.svnRepo,self.svnUsername,self.svnPassword)
+            deploy_cmd = "salt " + self.hostname +  " state.sls queue=True goservices.supervisor_submodule " + pillar
+            s, result = commands.getstatusoutput(deploy_cmd)
+            f.write(result)
+            f.write('\n\n\n\n')
+            f.write('done')
+            f.close()
+        except Exception, e:
+            print e
+            return 'error'
+
+        return result
+
+
 class goServicesni:
     def __init__(self,projectName):
         self.projectName = projectName
@@ -251,6 +289,12 @@ def syncAsset():
                     print e
     except Exception,e:
         print e
+
+
+@task
+def deploy_go(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword):
+    obj = goPublish(env)
+    obj.build_go(hostname, project, supervisorName, goCommand, svnRepo, svnUsername, svnPassword)
 
 
 
