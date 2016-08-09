@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64417799-fc58-4869-9447-fff65d8eb089" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/asset/utils.py" afterPath="$PROJECT_DIR$/asset/utils.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/asset/views.py" afterPath="$PROJECT_DIR$/asset/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/getText.html" afterPath="$PROJECT_DIR$/templates/getText.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/utils.py" afterPath="$PROJECT_DIR$/www/utils.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/views.py" afterPath="$PROJECT_DIR$/www/views.py" />
     </list>
     <ignored path="mico.iws" />
@@ -73,11 +69,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="577">
-              <caret line="66" column="0" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
+            <state relative-caret-position="412">
+              <caret line="55" column="33" selection-start-line="55" selection-start-column="33" selection-end-line="55" selection-end-column="33" />
               <folding>
                 <element signature="e#0#67#0" expanded="true" />
               </folding>
@@ -110,8 +106,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/asset/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="41">
-              <caret line="208" column="38" selection-start-line="208" selection-start-column="38" selection-end-line="208" selection-end-column="38" />
+            <state relative-caret-position="490">
+              <caret line="244" column="70" selection-start-line="244" selection-start-column="48" selection-end-line="244" selection-end-column="70" />
               <folding>
                 <element signature="e#1#68#0" expanded="true" />
               </folding>
@@ -139,7 +135,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="utils.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/asset/utils.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="369">
@@ -220,10 +216,10 @@
         <option value="$PROJECT_DIR$/asset/urls.py" />
         <option value="$PROJECT_DIR$/templates/gobuild.html" />
         <option value="$PROJECT_DIR$/templates/getText.html" />
-        <option value="$PROJECT_DIR$/www/views.py" />
         <option value="$PROJECT_DIR$/www/utils.py" />
         <option value="$PROJECT_DIR$/asset/views.py" />
         <option value="$PROJECT_DIR$/asset/utils.py" />
+        <option value="$PROJECT_DIR$/www/views.py" />
       </list>
     </option>
   </component>
@@ -1103,26 +1099,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="577">
-          <caret line="66" column="0" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#67#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/asset/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="41">
-          <caret line="208" column="38" selection-start-line="208" selection-start-column="38" selection-end-line="208" selection-end-column="38" />
-          <folding>
-            <element signature="e#1#68#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/asset/utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="369">
@@ -1134,6 +1110,26 @@
             <element signature="e#6271#7177#0" expanded="false" />
             <element signature="e#8840#9220#0" expanded="false" />
             <element signature="e#9247#10250#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/asset/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="490">
+          <caret line="244" column="70" selection-start-line="244" selection-start-column="48" selection-end-line="244" selection-end-column="70" />
+          <folding>
+            <element signature="e#1#68#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="412">
+          <caret line="55" column="33" selection-start-line="55" selection-start-column="33" selection-end-line="55" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#67#0" expanded="true" />
           </folding>
         </state>
       </provider>

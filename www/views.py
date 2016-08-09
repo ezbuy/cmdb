@@ -35,7 +35,7 @@ def deployIis(request):
      fileName = '/tmp/deployIis_' + getNowTime()
      deploy = deployWww.delay(env,site,username,ip,fileName)
      if deploy.id:
-        return render_to_response('getText.html')
+        return render_to_response('getText.html',{'fileName':fileName})
      else:
         return HttpResponse('celery error!')
 
@@ -59,7 +59,7 @@ def deployRecycle(request):
     fileName = '/tmp/deployRecycle_' + getNowTime()
     deploy = deployWwwRecycle.delay(env,site,username,ip,fileName)
     if deploy.id:
-        return render_to_response('getText.html')
+        return render_to_response('getText.html',{'fileName':fileName})
     else:
         return HttpResponse('celery error!')
 
