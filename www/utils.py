@@ -10,11 +10,12 @@ from asset.utils import notification,logs
 
 
 class wwwFun:
-    def __init__(self,env,username,ip):
+    def __init__(self,env,username,ip,fileName):
         self.env = env
         self.username = username
         self.ip = ip
-        self.f = open('/tmp/celery1.txt','w')
+        self.fileName = fileName
+        self.f = open(self.fileName,'w')
         self.result = []
 
 
@@ -192,13 +193,13 @@ class wwwFun:
 
 
 @task
-def deployWww(env,site,username,ip):
-    obj = wwwFun(env,username,ip)
+def deployWww(env,site,username,ip,fileName):
+    obj = wwwFun(env,username,ip,fileName)
     obj.deploy(site,'svn')
 
 
 
 @task
-def deployWwwRecycle(env,site,username,ip):
-    obj = wwwFun(env,username,ip)
+def deployWwwRecycle(env,site,username,ip,fileName):
+    obj = wwwFun(env,username,ip,fileName)
     obj.deploy(site,'recycle')

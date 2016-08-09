@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 from www.utils import deployWww,deployWwwRecycle
 from www.models import webSite
+from asset.utils import getNowTime
 import json
 
 
@@ -31,7 +32,8 @@ def deployIis(request):
      site = request.GET['project']
      username = request.user
      ip = request.META['REMOTE_ADDR']
-     deploy = deployWww.delay(env,site,username,ip)
+     fileName = '/tmp/deployIis_' + getNowTime()
+     deploy = deployWww.delay(env,site,username,ip,fileName)
      if deploy.id:
         return render_to_response('getText.html')
      else:
@@ -54,7 +56,8 @@ def deployRecycle(request):
     site,env = data[0].split(',')
     username = request.user
     ip = request.META['REMOTE_ADDR']
-    deploy = deployWwwRecycle.delay(env,site,username,ip)
+    fileName = '/tmp/deployRecycle_' + getNowTime()
+    deploy = deployWwwRecycle.delay(env,site,username,ip,fileName)
     if deploy.id:
         return render_to_response('getText.html')
     else:

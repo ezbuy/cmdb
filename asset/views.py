@@ -5,7 +5,7 @@ from asset.models import *
 from asset.utils import *
 from salt.client import LocalClient
 import os,commands,re,json
-
+from asset.utils import getNowTime
 
 
 @login_required
@@ -206,12 +206,14 @@ def getConfProject(request):
 
 @login_required
 def getText(request):
-    if os.path.exists('/tmp/celery1.txt'):
-        f = open('/tmp/celery1.txt', 'r')
+    fileName = request.GET['fileName']
+
+    if os.path.exists(fileName):
+        f = open(fileName, 'r')
         info = f.read()
-        s, end = commands.getstatusoutput('tail -n 1 /tmp/celery1.txt')
+        s, end = commands.getstatusoutput('tail -n 1 %s' % fileName)
         if end == 'done' or end == 'error':
-            commands.getstatusoutput('rm /tmp/celery1.txt')
+            commands.getstatusoutput('rm %s' % fileName)
     else:
         info = ''
         end = ''
@@ -234,11 +236,13 @@ def build_go(request):
     svnRepo = request.GET['svnrepo']
     svnUsername = request.GET['svnusername']
     svnPassword = request.GET['svnpassword']
+    fileName = '/tmp/build_go_' + getNowTime()
 
-    deploy = deploy_go.delay(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword)
+
+    deploy = deploy_go.delay(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword,fileName)
 
     if deploy.id:
-        return render_to_response('getText.html')
+        return render_to_response('getText.html',{'fileName':fileName})
     else:
         return HttpResponse('celery error!')
 

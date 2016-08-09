@@ -201,7 +201,7 @@ class goPublish:
         return result
 
 
-    def build_go(self,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword):
+    def build_go(self,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword,fileName):
         self.hostname = hostname
         self.project = project
         self.supervisorName = supervisorName
@@ -209,7 +209,9 @@ class goPublish:
         self.svnRepo = svnRepo
         self.svnUsername = svnUsername
         self.svnPassword = svnPassword
-        f = open('/tmp/celery1.txt', 'w')
+        self.fileName = fileName
+
+        f = open(self.fileName,'w')
         f.write("start....")
         f.write('\n\n\n\n')
         f.flush()
@@ -292,9 +294,12 @@ def syncAsset():
 
 
 @task
-def deploy_go(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword):
+def deploy_go(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword,fileName):
     obj = goPublish(env)
-    obj.build_go(hostname, project, supervisorName, goCommand, svnRepo, svnUsername, svnPassword)
+    obj.build_go(hostname, project, supervisorName, goCommand, svnRepo, svnUsername, svnPassword,fileName)
+
+def getNowTime():
+    return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))
 
 
 

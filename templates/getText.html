@@ -1,13 +1,21 @@
 
 {% extends 'base.html' %}
 {% block content %}
-<script>
+
+
+ <body>
+   <h1>Result:</h1>
+   <p id="fileName" value="{{ fileName }}"></p>
+   <div id="content"></div>
+ </body>
+
+    <script>
         id = 1
+        var filename = document.querySelector('#fileName').getAttribute('value')
    		$(document).ready(function() {
    			flush_data = setInterval(function() {
 
-                $.getJSON("/asset/getText/",function(data) {
-                	//$.each(data, function(){
+                $.getJSON("/asset/getText/",{"fileName":filename},function(data) {
             		    $("#content").html('<pre style="border: none">' + data.info + '</pre>');
                         console.log(id)
                         id = id + 1
@@ -23,16 +31,6 @@
    		    }, 3000)
         })
    </script>
- </head>
- <body>
-   <h1>Result:</h1>
-   <p id="time"></p>
-   <div id="content"></div> 
- </body>
-</html>
-
-
-   <div id="content"></div>
 
 {% endblock %}
 
