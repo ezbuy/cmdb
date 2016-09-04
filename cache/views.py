@@ -15,7 +15,7 @@ def memcached(request):
     mc = memcache.objects.filter(env=env)
 
 
-    return render_to_response("memcachelist.html",{'project':mc})
+    return render(request,"memcachelist.html",{'project':mc})
 
 
 @login_required
@@ -44,4 +44,4 @@ def flushMemcached(request):
                 print e
     logs(username,ip,project,result)
 
-    return render_to_response('getdata.html',{'result':result})
+    return render(request,'getdata.html',{'result':result})

@@ -11,7 +11,7 @@ from asset.utils import getNowTime
 @login_required
 def asset_list(request):
     asset_list = Asset.objects.all()
-    return render_to_response('asset/asset_list.html',{'asset_list':asset_list})
+    return render(request,'asset/asset_list.html',{'asset_list':asset_list})
 
 
 @login_required
@@ -19,7 +19,7 @@ def get(request):
     groupname = gogroup.objects.all()
 
 
-    return render_to_response('get.html',{'groupname':groupname})
+    return render(request,'get.html',{'groupname':groupname})
 
 
 
@@ -34,7 +34,7 @@ def getData(request):
     result = Publish.deployGo(data,services,username,ip)
 
 
-    return render_to_response('getdata.html',{'result':result})
+    return render(request,'getdata.html',{'result':result})
 
 
 
@@ -49,7 +49,7 @@ def goServices(request):
     groupName = gogroup.objects.all()
     project = go.getServiceName()
 
-    return render_to_response('goservices.html',{'project':project,'groupName':groupName})
+    return render(request,'goservices.html',{'project':project,'groupName':groupName})
 
 
 
@@ -73,7 +73,7 @@ def getServices(request):
     logs(username,ip,'restart services',result)
 
 
-    return render_to_response('getdata.html',{'result':result})
+    return render(request,'getdata.html',{'result':result})
 
 
 @login_required
@@ -81,7 +81,7 @@ def goRevert(request):
     groupname = gogroup.objects.all()
 
 
-    return render_to_response('gorevert.html',{'groupname':groupname})
+    return render(request,'gorevert.html',{'groupname':groupname})
 
 
 @login_required
@@ -121,7 +121,7 @@ def goRevertResulttwo(request):
     else:
         result = {}
 
-    return render_to_response('gorevert2.html',{'fileName':result})
+    return render(request,'gorevert2.html',{'fileName':result})
 
 
 
@@ -130,7 +130,7 @@ def revert(request):
 
     if not request.GET.keys():
         mes = 'argv is error,not revert version!!'
-        return render_to_response('goRevertResult.html', {'mes': mes})
+        return render(request,'goRevertResult.html', {'mes': mes})
 
     data = request.GET['id']
     username = request.user
@@ -143,13 +143,13 @@ def revert(request):
     Publish = goPublish(env)
     mes = Publish.go_revert(project,revertFile,host,username,ip)
 
-    return render_to_response('getdata.html',{'result':mes})
+    return render(request,'getdata.html',{'result':mes})
 
 
 
 @login_required
 def goConfHTML(request):
-    return render_to_response('goConf.html')
+    return render(request,'goConf.html')
 
 
 @login_required
@@ -160,12 +160,12 @@ def goConfResult(request):
     username = request.user
     Publish = goPublish(env)
     mes = Publish.goConf(project,username,ip)
-    return render_to_response('getdata.html',{'result':mes})
+    return render(request,'getdata.html',{'result':mes})
 
 
 def test(request):
     syncAsset()
-    return render_to_response('test.html')
+    return render(request,'test.html')
 
 @login_required
 def getProjectList(request):
@@ -223,7 +223,7 @@ def getText(request):
 
 @login_required
 def go_build(request):
-    return render_to_response('gobuild.html')
+    return render(request,'gobuild.html')
 
 
 @login_required
@@ -242,7 +242,7 @@ def build_go(request):
     deploy = deploy_go.delay(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword,fileName)
 
     if deploy.id:
-        return render_to_response('getText.html',{'fileName':fileName})
+        return render(request,'getText.html',{'fileName':fileName})
     else:
         return HttpResponse('celery error!')
 

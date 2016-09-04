@@ -12,7 +12,7 @@ from asset.utils import notification,logs
 
 @login_required
 def services(request):
-    return render_to_response('winservices.html')
+    return render(request,'winservices.html')
 
 
 @login_required
@@ -33,7 +33,7 @@ def deployService(request):
     server = request.GET['services']
 
     obj = servicesPublish(username,ip).deployServices(env,server)
-    return render_to_response('getdata.html',{'result':obj})
+    return render(request,'getdata.html',{'result':obj})
 
 @login_required
 def winServicesList(request):
@@ -43,7 +43,7 @@ def winServicesList(request):
     else:
         env = 1
     winServices = winconf.objects.filter(env=int(env))
-    return render_to_response('winserviceslist.html',{'project':winServices})
+    return render(request,'winserviceslist.html',{'project':winServices})
 
 @login_required
 def winServicesRestart(request):
@@ -54,4 +54,4 @@ def winServicesRestart(request):
 
     result = servicesPublish(username,ip).servicesAction(data,action)
 
-    return render_to_response('getdata.html',{'result':result})
+    return render(request,'getdata.html',{'result':result})

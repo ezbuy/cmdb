@@ -12,7 +12,7 @@ import json
 
 @login_required
 def wwwList(request):
-    return render_to_response('wwwList.html')
+    return render(request,'wwwList.html')
 
 
 
@@ -35,7 +35,7 @@ def deployIis(request):
      fileName = '/tmp/deployIis_' + getNowTime()
      deploy = deployWww.delay(env,site,username,ip,fileName)
      if deploy.id:
-        return render_to_response('getText.html',{'fileName':fileName})
+        return render(request,'getText.html',{'fileName':fileName})
      else:
         return HttpResponse('celery error!')
 
@@ -47,7 +47,7 @@ def recycleList(request):
     else:
         env = 1
     site = webSite.objects.filter(env=int(env))
-    return render_to_response('recyclelist.html', {'project': site})
+    return render(request,'recyclelist.html', {'project': site})
 
 
 @login_required
@@ -59,7 +59,7 @@ def deployRecycle(request):
     fileName = '/tmp/deployRecycle_' + getNowTime()
     deploy = deployWwwRecycle.delay(env,site,username,ip,fileName)
     if deploy.id:
-        return render_to_response('getText.html',{'fileName':fileName})
+        return render(request,'getText.html',{'fileName':fileName})
     else:
         return HttpResponse('celery error!')
 
