@@ -57,6 +57,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'cmdb.http.SetRemoteAddrFromForwardedFor',
+
 ]
 
 ROOT_URLCONF = 'mico.urls'

@@ -143,6 +143,7 @@ def revert(request):
     Publish = goPublish(env)
     mes = Publish.go_revert(project,revertFile,host,username,ip)
 
+
     return render(request,'getdata.html',{'result':mes})
 
 
