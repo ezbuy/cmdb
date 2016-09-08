@@ -1,5 +1,5 @@
 
-from django.shortcuts import render,render_to_response,HttpResponse
+from django.shortcuts import render,render_to_response,HttpResponse,HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from asset.models import *
 from asset.utils import *
@@ -165,7 +165,7 @@ def goConfResult(request):
 
 def test(request):
     syncAsset()
-    return render(request,'test.html')
+    return HttpResponseRedirect('/asset/list')
 
 @login_required
 def getProjectList(request):

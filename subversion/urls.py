@@ -15,22 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from cmdb.views import index
-from web.views import login,logout
-
-
-import asset,logs,winservices,cache,www,subversion
+from subversion.views import subversionCreate,getSubversionHost,createRepo
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^$',index,name='index'),
-    url(r'^asset/', include('asset.urls')),
-    url(r'^logs/', include('logs.urls')),
-    url(r'^winservices/', include('winservices.urls')),
-    url(r'^cache/', include('cache.urls')),
-    url(r'^www/', include('www.urls')),
-    url(r'^login/',login,name='login'),
-    url(r'^logout/',logout,name='logout'),
-    url(r'^subversion/', include('subversion.urls')),
-    
+
+    url(r'^subversionCreate/$', subversionCreate, name='subversionCreate'),
+    url(r'^getSubversionHost/$', getSubversionHost, name='getSubversionHost'),
+    url(r'^createRepo/$', createRepo, name='createRepo'),
+
 ]

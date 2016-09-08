@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'cache',
     'www',
     'djcelery',
+    'subversion',
 ]
 
 MIDDLEWARE_CLASSES = [
