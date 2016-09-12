@@ -237,11 +237,11 @@ class goPublish:
             f.write('done')
             f.close()
             if result.find('Failed:     0') < 0:
-                notification(self.hostname,self.project,'is error',self.username)
+                notification(self.hostname,'add ' + self.project + ' service','is error',self.username)
                 logs(self.username,self.ip,'add ' + self.project + ' service' ,'Failed')
             else:
-                notification(self.hostname, self.project, 'successful', self.username)
-                logs(self.username, self.ip,'add ' + self.project + ' service', 'successful')
+                notification(self.hostname, 'add ' + self.project + ' service', 'successful', self.username)
+                logs(self.username, self.ip,'add ' + self.project + ' service', 'Successful')
         except Exception, e:
             print e
             return 'error'
