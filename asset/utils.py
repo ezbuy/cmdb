@@ -201,7 +201,7 @@ class goPublish:
         return result
 
 
-    def build_go(self,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword,fileName):
+    def build_go(self,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword,fileName,username,ip):
         self.hostname = hostname
         self.project = project
         self.supervisorName = supervisorName
@@ -210,6 +210,8 @@ class goPublish:
         self.svnUsername = svnUsername
         self.svnPassword = svnPassword
         self.fileName = fileName
+        self.username = username
+        self.ip =  ip
 
         f = open(self.fileName,'w')
         f.write("start....")
@@ -234,6 +236,12 @@ class goPublish:
             f.write('\n\n\n\n')
             f.write('done')
             f.close()
+            if result.find('Failed:     0') < 0:
+                notification(self.hostname,self.project,'is error',self.username)
+                logs(self.username,self.ip,'deploy' + self.project,'Failed')
+            else:
+                notification(self.hostname, self.project, 'successful', self.username)
+                logs(self.username, self.ip, 'deploy' + self.project, 'successful')
         except Exception, e:
             print e
             return 'error'
@@ -294,9 +302,9 @@ def syncAsset():
 
 
 @task
-def deploy_go(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword,fileName):
+def deploy_go(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword,fileName,username,ip):
     obj = goPublish(env)
-    obj.build_go(hostname, project, supervisorName, goCommand, svnRepo, svnUsername, svnPassword,fileName)
+    obj.build_go(hostname, project, supervisorName, goCommand, svnRepo, svnUsername, svnPassword,fileName,username,ip)
 
 def getNowTime():
     return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))

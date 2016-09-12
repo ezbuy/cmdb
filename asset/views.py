@@ -229,6 +229,8 @@ def go_build(request):
 
 @login_required
 def build_go(request):
+    username = request.user
+    ip = request.META['REMOTE_ADDR']
     env = request.GET['env']
     hostname = request.GET['hostname']
     project = request.GET['project']
@@ -240,7 +242,7 @@ def build_go(request):
     fileName = '/tmp/build_go_' + getNowTime()
 
 
-    deploy = deploy_go.delay(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword,fileName)
+    deploy = deploy_go.delay(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,svnPassword,fileName,username,ip)
 
     if deploy.id:
         return render(request,'getText.html',{'fileName':fileName})
