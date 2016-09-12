@@ -238,10 +238,10 @@ class goPublish:
             f.close()
             if result.find('Failed:     0') < 0:
                 notification(self.hostname,self.project,'is error',self.username)
-                logs(self.username,self.ip,'deploy' + self.project,'Failed')
+                logs(self.username,self.ip,'add ' + self.project + ' service' ,'Failed')
             else:
                 notification(self.hostname, self.project, 'successful', self.username)
-                logs(self.username, self.ip, 'deploy' + self.project, 'successful')
+                logs(self.username, self.ip,'add ' + self.project + ' service', 'successful')
         except Exception, e:
             print e
             return 'error'
