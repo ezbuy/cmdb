@@ -236,7 +236,7 @@ class goPublish:
             f.write('\n\n\n\n')
             f.write('done')
             f.close()
-            if result.find('Failed:     0') < 0:
+            if result.find('Failed:    0') < 0:
                 notification(self.hostname,'add ' + self.project + ' service','is error',self.username)
                 logs(self.username,self.ip,'add ' + self.project + ' service' ,'Failed')
             else:
