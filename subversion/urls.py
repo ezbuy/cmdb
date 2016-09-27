@@ -15,12 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from subversion.views import subversionCreate,getSubversionHost,createRepo
+from subversion.views import subversionCreate,getSubversionHost,createRepo,subversionAddUserHtml,svnAddUser
 
 urlpatterns = [
 
     url(r'^subversionCreate/$', subversionCreate, name='subversionCreate'),
+    url(r'^subversionAddUser/$', subversionAddUserHtml, name='subversionAddUserHtml'),
     url(r'^getSubversionHost/$', getSubversionHost, name='getSubversionHost'),
     url(r'^createRepo/$', createRepo, name='createRepo'),
+    url(r'^svnAddUser/$', svnAddUser, name='svnAddUser'),
 
 ]

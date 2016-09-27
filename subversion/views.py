@@ -5,11 +5,16 @@ import json,requests
 from salt.client import LocalClient
 from asset.utils import notification,logs
 
+saltCmd = LocalClient()
 
 
 @login_required
 def subversionCreate(request):
     return render(request,'subversioncreate.html')
+
+@login_required
+def subversionAddUserHtml(request):
+    return render(request,'subversionadduser.html')
 
 @login_required
 def getSubversionHost(request):
@@ -25,7 +30,6 @@ def getSubversionHost(request):
 @login_required
 def createRepo(request):
     result = []
-    saltCmd = LocalClient()
     username = request.user
     ip = request.META['REMOTE_ADDR']
 
@@ -65,3 +69,25 @@ def createRepo(request):
 
 
     return render(request, 'getdata.html', {'result': result})
+
+
+@login_required
+def svnAddUser(request):
+    username = request.user
+    ip = request.META['REMOTE_ADDR']
+    env = request.GET['env']
+    host = request.GET['hostname']
+    svnName = request.GET['svnName']
+    svnPassword = request.GET['svnPassword']
+    result = []
+
+    obj = subversion.objects.filter(env=env)
+    for info in obj:
+        if info.hostname.saltname == host:
+            svnPasswordFile = info.svnpasswordfile
+
+    cmdinfo = saltCmd.cmd(host,'cmd.run',['htpasswd -b %s %s %s'%(svnPasswordFile,svnName,svnPassword)])
+ 
+    result.append(cmdinfo)
+    return render(request, 'getdata.html', {'result': result})
+

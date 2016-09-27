@@ -12,6 +12,10 @@ class subversion(models.Model):
     svnrooturl = models.CharField(max_length=32)
     svnusername = models.CharField(max_length=32)
     svnpassword =  models.CharField(max_length=32)
+    svnpasswordfile = models.CharField(max_length=32)
 
     def __unicode__(self):
         return self.svnrooturl
+
+
+
