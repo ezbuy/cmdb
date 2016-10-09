@@ -1,6 +1,7 @@
 root=`pwd`
 sudo pip install django==1.9
-sudo pip install MySQL-python,redis
+sudo pip install MySQL-python
+sudo pip install redis
 sudo pip install celery
 sudo pip install django-celery==3.1.17
 sudo pip install uwsgi
