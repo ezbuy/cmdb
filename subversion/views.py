@@ -45,24 +45,28 @@ def createRepo(request):
             svnusername = info.svnusername
             svnpassword = info.svnpassword
 
-
-    cmdinfo = saltCmd.cmd(host,'cmd.run',['svnadmin create %s%s && chown -R %s %s%s' % (svnparentpath,svnName,svnowner,svnparentpath,svnName)])
-    if cmdinfo[host] == '':
-        cmdinfo[host] = 'Successful'
-        result.append(cmdinfo)
-        r = requests.session()
-        r.auth = (svnusername,svnpassword)
-        test_url = r.get(svnrooturl + svnName)
-        if test_url.status_code == 200:
-            repo_info = "The svn repo url is %s%s." %(svnrooturl,svnName)
-            mes = {host:repo_info}
-            result.append(mes)
-            notification_mes = 'It is successful.'
+    try:
+        cmdinfo = saltCmd.cmd(host,'cmd.run',['svnadmin create %s%s && chown -R %s %s%s' % (svnparentpath,svnName,svnowner,svnparentpath,svnName)])
+        if cmdinfo[host] == '':
+            cmdinfo[host] = 'Successful'
+            result.append(cmdinfo)
+            r = requests.session()
+            r.auth = (svnusername,svnpassword)
+            test_url = r.get(svnrooturl + svnName)
+            if test_url.status_code == 200:
+                repo_info = "The svn repo url is %s%s." %(svnrooturl,svnName)
+                mes = {host:repo_info}
+                result.append(mes)
+                notification_mes = 'It is successful.'
+            else:
+                notification_mes = 'It is error.'
         else:
+            result.append(cmdinfo)
             notification_mes = 'It is error.'
-    else:
-        result.append(cmdinfo)
-        notification_mes = 'It is error.'
+    except Exception,e:
+            print e
+            result.append(cmdinfo)
+            notification_mes = 'The system is error.....'
 
     notification(host,'create svn repo "%s"' % svnName,notification_mes,username)
     logs(username,ip,'create svn repo "%s"' %svnName,notification_mes)
