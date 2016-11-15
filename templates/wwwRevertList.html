@@ -71,9 +71,8 @@
 
      $("#submitform").on("submit",function(e){
         var svnRevision = document.getElementById("svnRevision").value;
-         console.log(svnRevision)
         var svnRevisionAgain = document.getElementById("svnRevisionAgain").value;
-         console.log(svnRevisionAgain)
+
 
         if (!isNaN(svnRevision)) {
             if (svnRevision != svnRevisionAgain) {

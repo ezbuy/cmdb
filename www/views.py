@@ -78,7 +78,7 @@ def deployRevertIis(request):
 
      if int(revision) == 1:
          revision = 'PREV'
-     print '---------------',revision
+
      deploy = deployWwwRevert.delay(env,site,username,ip,fileName,revision)
      if deploy.id:
         return render(request,'getText.html',{'fileName':fileName})

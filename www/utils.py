@@ -119,6 +119,8 @@ class wwwFun:
                 return 1
             if self.action == 'recycle':
                 notification(self.web_server, 'recycle ' + self.site, 'success', self.username)
+            elif self.action == 'revert':
+                notification(self.web_server, 'revert ' + self.site, 'success', self.username)
             else:
                 notification(self.web_server,self.site, 'success', self.username)
             return 0
@@ -127,9 +129,11 @@ class wwwFun:
             self.f.write('error')
             self.f.close()
             if self.action == 'recycle':
-                notification(self.web_server, 'recycle ' + self.site, 'success', self.username)
+                notification(self.web_server, 'recycle ' + self.site, 'error', self.username)
+            elif self.action == 'revert':
+                notification(self.web_server, 'revert ' + self.site, 'error', self.username)
             else:
-                notification(self.web_server,self.site, 'success', self.username)
+                notification(self.web_server,self.site, 'error', self.username)
             logs(self.username, self.ip, self.site, 'Failed')
             return 1
 
