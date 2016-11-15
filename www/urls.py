@@ -9,5 +9,7 @@ urlpatterns = patterns('',
     url(r'^deployIis$',deployIis,name='deployIis'),
     url(r'^recycleList$', recycleList, name='recycleList'),
     url(r'^deployRecycle$', deployRecycle, name='deployRecycle'),
+    url(r'^wwwRevertList$', wwwRevertList, name='wwwRevertList'),
+    url(r'^deployRevertIis$', deployRevertIis, name='deployRevertIis'),
 
 )

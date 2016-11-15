@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% include 'link_css.html' %}
+{% block content %}
+
+
+<div class="text-center">
+    <form  class="col-lg-12" action="{% url 'deployRevertIis' %}" method="get" id="submitform">
+        <fieldset class="form-group">
+            <label for="formGroupExampleInput">运行环境</label>
+                <select id="env" class="selectpicker form-control" data-live-search="true" name="env"  onchange="getoption(this.value)">
+                    <option value="none"></option>
+                    <option value="1">生产环境</option>
+                    <option value="2">测试环境</option>
+                </select>
+        </fieldset>
+
+        <fieldset class="form-group">
+            <label for="formGroupExampleInput">部署主机</label>
+                <select id="project" class="selectpicker form-control" data-live-search="true" name="project">
+                </select>
+        </fieldset>
+
+        <fieldset class="form-group">
+            <label for="formGroupExampleInput">请输入SVN回滚版本号</label>
+                <input type="text" class="form-control" id="svnRevision" placeholder="请输入你需要回滚的版本号(如果回滚到上一个COMMIT,请输入1)" name="svnRevision" required="" >
+        </fieldset>
+
+        <fieldset class="form-group">
+            <label for="formGroupExampleInput2">再次输入SVN回滚版本号</label>
+                <input type="text" class="form-control" id="svnRevisionAgain" placeholder="请再次确认你需要回滚的版本号" name="svnRevisionAgain" required="" >
+        </fieldset>
+
+        <br/>
+        <input id='sub' class="btn btn-danger" type="submit" value="Deploy" disabled="disabled">
+    </form>
+</div>
+
+<script>
+    function getoption(val) {
+
+
+        var env = document.getElementById("env").value;
+        var select = document.getElementById("project");
+
+
+        select.options.length = 0;   // del options
+        if (env != "none") {
+            $.getJSON("/www/getProjectName",{"env":env},function (result) {
+                //console.log(result)
+                for (i=0;i<result.length;i++) {
+                    var objOption = document.createElement("OPTION")
+                    objOption.value = result[i]
+                    objOption.text = result[i]
+                    select.add(objOption)
+                }
+                if (result.length != 0) {
+                    $("#sub").attr("disabled", false)
+                }
+                else{
+                    $("#sub").attr("disabled", true)
+                }
+                console.log(result.length)
+            })
+        }
+        else{
+            $("#sub").attr("disabled", true)
+        }
+    }
+
+
+
+     $("#submitform").on("submit",function(e){
+        var svnRevision = document.getElementById("svnRevision").value;
+         console.log(svnRevision)
+        var svnRevisionAgain = document.getElementById("svnRevisionAgain").value;
+         console.log(svnRevisionAgain)
+
+        if (!isNaN(svnRevision)) {
+            if (svnRevision != svnRevisionAgain) {
+                alert('Please enter the correct revision,try again....')
+                return false
+            }
+        }
+        else{
+            alert('Please input a number.')
+            return false
+        }
+    })
+</script>
+{% endblock %}

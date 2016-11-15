@@ -50,16 +50,16 @@ class wwwFun:
 
 
 
-    def __svn_update(self,web_server,svn_path,svn_username,svn_password):
+    def __svn_update(self,web_server,svn_path,svn_username,svn_password,svn_revision):
         self.web_server = web_server
         self.svn_path = svn_path
         self.svn_username = svn_username
         self.svn_password = svn_password
-
+        self.svn_revision = svn_revision
 
 
         try:  #####svn update########
-            update_cmd = '\'svn update %s --username=%s --password=%s \'' % (self.svn_path, self.svn_username, self.svn_password)
+            update_cmd = '\'svn update -r %s %s --username=%s --password=%s \'' % (self.svn_revision,self.svn_path, self.svn_username, self.svn_password)
             s, update = commands.getstatusoutput("salt " + self.web_server + " cmd.run " + update_cmd)
             self.f.write(update)
             self.f.flush()
@@ -77,6 +77,8 @@ class wwwFun:
             notification(self.web_server, self.site, 'error', self.username)
             logs(self.username, self.ip, self.site, 'Failed')
             return 1
+
+
 
 
     def __iis_recycle(self,web_server,recycle_cmd,web_url,action):
@@ -136,10 +138,11 @@ class wwwFun:
 
 
 
-    def deploy(self,site,action='svn'):
+    def deploy(self,site,action='svn',revision='HEAD'):
 
         self.site = site
         self.action = action
+        self.revision = revision
         obj = webSite.objects.filter(env=self.env).filter(webSite=self.site)
 
 
@@ -153,8 +156,8 @@ class wwwFun:
                     if nginx_backup == 1:
                         self.f.write('error')
                         exit()
-                if self.action == 'svn':
-                    svn_up = self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password)
+                if self.action in ['svn','revert']:
+                    svn_up = self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password,self.revision)
                     if svn_up == 1:
                         self.f.write('error')
                         exit()
@@ -203,3 +206,9 @@ def deployWww(env,site,username,ip,fileName):
 def deployWwwRecycle(env,site,username,ip,fileName):
     obj = wwwFun(env,username,ip,fileName)
     obj.deploy(site,'recycle')
+
+
+@task
+def deployWwwRevert(env,site,username,ip,fileName,reversion):
+    obj = wwwFun(env,username,ip,fileName)
+    obj.deploy(site,'revert',reversion)

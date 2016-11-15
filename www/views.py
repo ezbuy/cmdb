@@ -2,7 +2,7 @@ from django.shortcuts import render,render_to_response,HttpResponse
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
-from www.utils import deployWww,deployWwwRecycle
+from www.utils import deployWww,deployWwwRecycle,deployWwwRevert
 from www.models import webSite
 from asset.utils import getNowTime
 import json
@@ -15,6 +15,9 @@ def wwwList(request):
     return render(request,'wwwList.html')
 
 
+@login_required
+def wwwRevertList(request):
+    return render(request,'wwwRevertList.html')
 
 @login_required
 def getProjectName(request):
@@ -62,6 +65,27 @@ def deployRecycle(request):
         return render(request,'getText.html',{'fileName':fileName})
     else:
         return HttpResponse('celery error!')
+
+
+@login_required
+def deployRevertIis(request):
+     env = request.GET['env']
+     site = request.GET['project']
+     revision = request.GET['svnRevision']
+     username = request.user
+     ip = request.META['REMOTE_ADDR']
+     fileName = '/tmp/deployRevertIis_' + getNowTime()
+
+     if int(revision) == 1:
+         revision = 'PREV'
+     print '---------------',revision
+     deploy = deployWwwRevert.delay(env,site,username,ip,fileName,revision)
+     if deploy.id:
+        return render(request,'getText.html',{'fileName':fileName})
+     else:
+        return HttpResponse('celery error!')
+
+
 
 
 
