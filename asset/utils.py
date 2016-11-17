@@ -4,6 +4,7 @@ import os,time,commands,json,requests
 from salt.client import LocalClient
 from logs.models import goLog
 from celery.task import task
+import xmlrpclib
 
 
 
@@ -299,6 +300,27 @@ def syncAsset():
                     print e
     except Exception,e:
         print e
+
+
+
+class go_monitor_status(object):
+    def get_hosts(self):
+        obj = gostatus.objects.all()
+        return obj
+
+    def get_supervisor_status(self,hostname_id):
+        self.hostname_id = hostname_id
+        obj = gostatus.objects.all().filter(hostname_id=self.hostname_id)
+        for info in obj:
+            try:
+                s = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (info.supervisor_username,info.supervisor_password,info.supervisor_host,info.supervisor_port))
+                status = s.supervisor.getAllProcessInfo()
+            except Exception, e:
+                print e
+                return 0
+
+        return status
+
 
 
 @task

@@ -250,3 +250,15 @@ def build_go(request):
         return HttpResponse('celery error!')
 
 
+
+
+@login_required
+def go_status(request):
+    hostname_id = request.GET.get('hostname')
+    obj = go_monitor_status()
+    hosts = obj.get_hosts()
+    if hostname_id is not None:
+        status = obj.get_supervisor_status(hostname_id)
+        return render(request, 'gostatus.html', {'hosts': hosts, 'status': status})
+    else:
+        return render(request, 'gostatus.html', {'hosts': hosts})

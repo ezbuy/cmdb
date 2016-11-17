@@ -21,5 +21,6 @@ urlpatterns = patterns('',
     url(r'^gobuild/$', go_build, name='gobuild'),
     url(r'^getBuildList/$', getBuildList, name='getBuildList'),
     url(r'^build_go/$', build_go, name='build_go'),
+    url(r'^goStatus/$', go_status, name='go_status'),
 
 )

@@ -18,6 +18,10 @@ class assetAdmin(admin.ModelAdmin):
 class gobuildAdmin(admin.ModelAdmin):
     list_display = ('env','hostname')
 
+class gostatusAdmin(admin.ModelAdmin):
+    list_display = ('hostname','supervisor_host','supervisor_username','supervisor_password','supervisor_port')
+
+
 admin.site.register(IDC)
 admin.site.register(Asset,assetAdmin)
 admin.site.register(AssetRecord)
@@ -28,3 +32,4 @@ admin.site.register(gogroup)
 admin.site.register(svn,svnAdmin)
 admin.site.register(goconf,goconfAdmin)
 admin.site.register(gobuild,gobuildAdmin)
+admin.site.register(gostatus,gostatusAdmin)

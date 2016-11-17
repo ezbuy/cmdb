@@ -157,5 +157,15 @@ class gobuild(models.Model):
     hostname = models.ForeignKey(minion)
 
 
+class gostatus(models.Model):
+    hostname = models.ForeignKey(minion)
+    supervisor_host = models.CharField(max_length=128,default='192.168.1.1')
+    supervisor_username = models.CharField(max_length=64)
+    supervisor_password = models.CharField(max_length=64)
+    supervisor_port = models.CharField(max_length=128,default='9001')
+
+    def __unicode__(self):
+        return self.supervisor_host
+
 
 
