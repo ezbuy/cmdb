@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64417799-fc58-4869-9447-fff65d8eb089" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/asset/views.py" afterPath="$PROJECT_DIR$/asset/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/nav.html" afterPath="$PROJECT_DIR$/templates/nav.html" />
     </list>
     <ignored path="mico.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -51,6 +51,16 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="nav.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/nav.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="240">
+              <caret line="16" column="130" selection-start-line="16" selection-start-column="130" selection-end-line="16" selection-end-column="130" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="get.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/get.html">
           <provider selected="true" editor-type-id="text-editor">
@@ -69,16 +79,6 @@
               <folding>
                 <element signature="n#style#0;n#h2#0;n#div#0;n#!!top" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="nav.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/nav.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="39" column="69" selection-start-line="39" selection-start-column="69" selection-end-line="39" selection-end-column="69" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -113,11 +113,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="wwwList.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/wwwList.html">
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mico/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="274">
-              <caret line="41" column="28" selection-start-line="41" selection-start-column="28" selection-end-line="41" selection-end-column="28" />
+            <state relative-caret-position="392">
+              <caret line="148" column="0" selection-start-line="148" selection-start-column="0" selection-end-line="151" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -133,11 +133,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/asset/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="364">
-              <caret line="233" column="36" selection-start-line="233" selection-start-column="36" selection-end-line="233" selection-end-column="36" />
+            <state relative-caret-position="334">
+              <caret line="231" column="22" selection-start-line="231" selection-start-column="22" selection-end-line="231" selection-end-column="22" />
               <folding>
                 <element signature="e#1#89#0" expanded="true" />
               </folding>
@@ -209,10 +209,10 @@
         <option value="$PROJECT_DIR$/asset/models.py" />
         <option value="$PROJECT_DIR$/asset/urls.py" />
         <option value="$PROJECT_DIR$/asset/admin.py" />
-        <option value="$PROJECT_DIR$/templates/nav.html" />
         <option value="$PROJECT_DIR$/asset/utils.py" />
         <option value="$PROJECT_DIR$/templates/crontabupdate.html" />
         <option value="$PROJECT_DIR$/asset/views.py" />
+        <option value="$PROJECT_DIR$/templates/nav.html" />
       </list>
     </option>
   </component>
@@ -296,6 +296,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="salt_api" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cmdb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cmdb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mico" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -895,14 +909,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mico/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2280">
-          <caret line="152" column="0" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/salt_api/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
@@ -1021,14 +1027,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/nav.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="39" column="69" selection-start-line="39" selection-start-column="69" selection-end-line="39" selection-end-column="69" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/wwwList.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="274">
@@ -1101,11 +1099,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/asset/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="233" column="36" selection-start-line="233" selection-start-column="36" selection-end-line="233" selection-end-column="36" />
+        <state relative-caret-position="334">
+          <caret line="231" column="22" selection-start-line="231" selection-start-column="22" selection-end-line="231" selection-end-column="22" />
           <folding>
             <element signature="e#1#89#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mico/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="392">
+          <caret line="148" column="0" selection-start-line="148" selection-start-column="0" selection-end-line="151" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/nav.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="130" selection-start-line="16" selection-start-column="130" selection-end-line="16" selection-end-column="130" />
+          <folding />
         </state>
       </provider>
     </entry>
