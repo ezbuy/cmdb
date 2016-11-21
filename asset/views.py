@@ -6,6 +6,7 @@ from asset.utils import *
 from salt.client import LocalClient
 import os,commands,re,json
 from asset.utils import getNowTime
+from salt_api.api import SaltApi
 
 
 @login_required
@@ -257,8 +258,36 @@ def go_status(request):
     hostname_id = request.GET.get('hostname')
     obj = go_monitor_status()
     hosts = obj.get_hosts()
+    #s = SaltApi()
+    #data = {
+    #    'client': 'local',
+    #    'tgt': 't-slq-gtw-1',
+    #    'fun': 'cmd.run',
+    #    'arg': 'ifconfig'
+    #}
+    #print s.salt_cmd(data)
+
     if hostname_id is not None:
         status = obj.get_supervisor_status(hostname_id)
         return render(request, 'gostatus.html', {'hosts': hosts, 'status': status})
     else:
         return render(request, 'gostatus.html', {'hosts': hosts})
+
+
+@login_required
+def crontab_update(request):
+    obj = crontab_svn_status()
+    status = obj.get_crontab_list()
+    if not request.POST.keys():
+        return render(request, 'crontabupdate.html', {'status': status})
+    else:
+        hostname = request.POST['hostname']
+        username = request.POST['username']
+        password = request.POST['password']
+        localpath = request.POST['localpath']
+        result = obj.crontab_svn_update(hostname,username,password,localpath)
+        result = result['return']
+        return render(request,'getdata.html',{'result':result})
+
+
+

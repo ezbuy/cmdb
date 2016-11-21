@@ -21,6 +21,8 @@ class gobuildAdmin(admin.ModelAdmin):
 class gostatusAdmin(admin.ModelAdmin):
     list_display = ('hostname','supervisor_host','supervisor_username','supervisor_password','supervisor_port')
 
+class crontabSVNAdmin(admin.ModelAdmin):
+    list_display = ('hostname','username','password','repo','localpath','project')
 
 admin.site.register(IDC)
 admin.site.register(Asset,assetAdmin)
@@ -33,3 +35,4 @@ admin.site.register(svn,svnAdmin)
 admin.site.register(goconf,goconfAdmin)
 admin.site.register(gobuild,gobuildAdmin)
 admin.site.register(gostatus,gostatusAdmin)
+admin.site.register(crontab_svn,crontabSVNAdmin)

@@ -22,5 +22,7 @@ urlpatterns = patterns('',
     url(r'^getBuildList/$', getBuildList, name='getBuildList'),
     url(r'^build_go/$', build_go, name='build_go'),
     url(r'^goStatus/$', go_status, name='go_status'),
+    url(r'^crontabUpdate/$', crontab_update, name='crontab_update'),
+
 
 )

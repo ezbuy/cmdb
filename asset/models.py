@@ -167,5 +167,20 @@ class gostatus(models.Model):
     def __unicode__(self):
         return self.supervisor_host
 
+class crontab_svn(models.Model):
+    hostname = models.ForeignKey(minion)
+    username = models.CharField(max_length=32)
+    password = models.CharField(max_length=32)
+    repo = models.CharField(max_length=128,default="http://svn.abc.com/svn/test")
+    localpath = models.CharField(max_length=64,default='/srv/testsvn')
+    project = models.CharField(max_length=64)
+
+    def __unicode__(self):
+        return self.project
+
+
+
+
+
 
 

@@ -144,3 +144,9 @@ USE_TZ = False
 STATIC_ROOT = '/django/static/'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR,"static"),)
+
+
+#salt api info
+salt_api_url = 'https://192.168.199.61:18080/'
+salt_user = 'saltapis'
+salt_password = 'saltapis'

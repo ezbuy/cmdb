@@ -5,8 +5,9 @@ from salt.client import LocalClient
 from logs.models import goLog
 from celery.task import task
 import xmlrpclib
+from salt_api.api import SaltApi
 
-
+salt_api = SaltApi()
 
 def notification(hostname,project,result,username):
     url = 'http://dlog.65dg.me/dlog'
@@ -320,6 +321,26 @@ class go_monitor_status(object):
                 return 0
 
         return status
+
+class crontab_svn_status(object):
+    def get_crontab_list(self):
+        obj = crontab_svn.objects.all()
+        return obj
+
+    def crontab_svn_update(self,hostname,username,password,localpath):
+        self.hostname = hostname
+        self.username = username
+        self.password = password
+        self.localpath = localpath
+        cmd = "svn update --username=%s --password=%s --non-interactive %s" % (self.username, self.password, self.localpath)
+        data = {
+            'client': 'local',
+            'tgt': self.hostname,
+            'fun': 'cmd.run',
+            'arg': cmd
+        }
+
+        return salt_api.salt_cmd(data)
 
 
 
