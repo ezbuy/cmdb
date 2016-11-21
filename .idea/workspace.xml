@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64417799-fc58-4869-9447-fff65d8eb089" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/crontabupdate.html" afterPath="$PROJECT_DIR$/templates/crontabupdate.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/asset/views.py" afterPath="$PROJECT_DIR$/asset/views.py" />
     </list>
     <ignored path="mico.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -93,10 +93,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="crontabupdate.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="crontabupdate.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/crontabupdate.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="253">
+            <state relative-caret-position="-257">
               <caret line="32" column="64" selection-start-line="32" selection-start-column="64" selection-end-line="32" selection-end-column="64" />
               <folding />
             </state>
@@ -133,11 +133,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/asset/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="409">
-              <caret line="289" column="61" selection-start-line="289" selection-start-column="61" selection-end-line="289" selection-end-column="61" />
+            <state relative-caret-position="364">
+              <caret line="233" column="36" selection-start-line="233" selection-start-column="36" selection-end-line="233" selection-end-column="36" />
               <folding>
                 <element signature="e#1#89#0" expanded="true" />
               </folding>
@@ -211,8 +211,8 @@
         <option value="$PROJECT_DIR$/asset/admin.py" />
         <option value="$PROJECT_DIR$/templates/nav.html" />
         <option value="$PROJECT_DIR$/asset/utils.py" />
-        <option value="$PROJECT_DIR$/asset/views.py" />
         <option value="$PROJECT_DIR$/templates/crontabupdate.html" />
+        <option value="$PROJECT_DIR$/asset/views.py" />
       </list>
     </option>
   </component>
@@ -1091,21 +1091,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/asset/views.py">
+    <entry file="file://$PROJECT_DIR$/templates/crontabupdate.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="409">
-          <caret line="289" column="61" selection-start-line="289" selection-start-column="61" selection-end-line="289" selection-end-column="61" />
-          <folding>
-            <element signature="e#1#89#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-257">
+          <caret line="32" column="64" selection-start-line="32" selection-start-column="64" selection-end-line="32" selection-end-column="64" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/crontabupdate.html">
+    <entry file="file://$PROJECT_DIR$/asset/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="32" column="64" selection-start-line="32" selection-start-column="64" selection-end-line="32" selection-end-column="64" />
-          <folding />
+        <state relative-caret-position="364">
+          <caret line="233" column="36" selection-start-line="233" selection-start-column="36" selection-end-line="233" selection-end-column="36" />
+          <folding>
+            <element signature="e#1#89#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

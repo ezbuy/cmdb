@@ -6,7 +6,7 @@ from asset.utils import *
 from salt.client import LocalClient
 import os,commands,re,json
 from asset.utils import getNowTime
-from salt_api.api import SaltApi
+
 
 
 @login_required
@@ -258,14 +258,6 @@ def go_status(request):
     hostname_id = request.GET.get('hostname')
     obj = go_monitor_status()
     hosts = obj.get_hosts()
-    #s = SaltApi()
-    #data = {
-    #    'client': 'local',
-    #    'tgt': 't-slq-gtw-1',
-    #    'fun': 'cmd.run',
-    #    'arg': 'ifconfig'
-    #}
-    #print s.salt_cmd(data)
 
     if hostname_id is not None:
         status = obj.get_supervisor_status(hostname_id)
