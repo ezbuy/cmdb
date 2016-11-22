@@ -323,15 +323,20 @@ class go_monitor_status(object):
         return status
 
 class crontab_svn_status(object):
+    def __init__(self,login_user,ip):
+        self.login_user = login_user
+        self.ip = ip
     def get_crontab_list(self):
         obj = crontab_svn.objects.all()
         return obj
 
-    def crontab_svn_update(self,hostname,username,password,localpath):
+    def crontab_svn_update(self,hostname,username,password,localpath,project):
         self.hostname = hostname
         self.username = username
         self.password = password
         self.localpath = localpath
+        self.project = project
+
         cmd = "svn update --username=%s --password=%s --non-interactive %s" % (self.username, self.password, self.localpath)
         data = {
             'client': 'local',
@@ -339,8 +344,10 @@ class crontab_svn_status(object):
             'fun': 'cmd.run',
             'arg': cmd
         }
-
-        return salt_api.salt_cmd(data)
+        result = salt_api.salt_cmd(data)['return']
+        notification(self.hostname,self.project,result,self.login_user)
+        logs(self.login_user,self.ip,'update svn',result)
+        return result
 
 
 

@@ -39,15 +39,11 @@
                             {% for info in status %}
                                 <tr class="gradeX">
                                     <td class="text-center"  data-editable='false'>
-                                        <input  name="project" value="{{ info.project }}" type="hidden" class="i-checks" >
-                                        <input  name="hostname" value="{{ info.hostname }}" type="hidden" class="i-checks">
-                                        <input  name="username" value="{{ info.username }}" type="hidden" class="i-checks">
-                                        <input  name="password" value="{{ info.password }}" type="hidden" class="i-checks">
-                                        <input  name="localpath" value="{{ info.localpath }}" type="radio" class="i-checks" id='services' onchange="getSubmit(this.value)">
+                                        <input  name="project"  value="{{ info.project }}:{{ info.hostname }}:{{ info.username }}:{{ info.password }}:{{ info.localpath }}" type="radio" class="i-checks" id='services' onchange="getSubmit(this.value)">
                                     </td>
                                     <td class="text-center"> {{ info.hostname }}</td>
                                     <td class="text-center"> {{ info.repo }} </td>
-                                    <td class="text-center"> {{ info.localpath }} </td>
+                                    <td class="text-center" type="hidden"> {{ info.localpath }} </td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -65,7 +61,8 @@
 
 <script>
     function getSubmit(val) {
-        var services = document.getElementsByName("localpath")
+        var services = document.getElementsByName("project")
+
         var count = 0
 
 

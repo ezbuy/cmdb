@@ -268,17 +268,23 @@ def go_status(request):
 
 @login_required
 def crontab_update(request):
-    obj = crontab_svn_status()
+    login_user = request.user
+    ip = request.META['REMOTE_ADDR']
+    obj = crontab_svn_status(login_user,ip)
     status = obj.get_crontab_list()
+
+
     if not request.POST.keys():
         return render(request, 'crontabupdate.html', {'status': status})
     else:
-        hostname = request.POST['hostname']
-        username = request.POST['username']
-        password = request.POST['password']
-        localpath = request.POST['localpath']
-        result = obj.crontab_svn_update(hostname,username,password,localpath)
-        result = result['return']
+        data = request.POST['project']
+        data = data.split(":")
+        project = data[0]
+        hostname = data[1]
+        username = data[2]
+        password = data[3]
+        localpath = data[4]
+        result = obj.crontab_svn_update(hostname,username,password,localpath,project)
         return render(request,'getdata.html',{'result':result})
 
 
