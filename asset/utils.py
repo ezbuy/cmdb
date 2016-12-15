@@ -344,7 +344,9 @@ class crontab_svn_status(object):
             'fun': 'cmd.run',
             'arg': cmd
         }
-        result = salt_api.salt_cmd(data)['return']
+        result = salt_api.salt_cmd(data)
+        if result != 0:
+            result = result['return']
         notification(self.hostname,self.project,result,self.login_user)
         logs(self.login_user,self.ip,'update svn',result)
         return result
