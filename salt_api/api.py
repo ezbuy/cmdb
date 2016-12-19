@@ -18,7 +18,7 @@ class SaltApi(object):
                   'password': self.__password
                   }
         headers = {'Accept': 'application/json'}
-        obj = requests.post(self.__loginUrl,headers=headers,data=params,verify=False).text
+        obj = requests.post(self.__loginUrl,headers=headers,data=params,verify=False).content
         data = json.loads(obj)
         token = data['return'][0]['token']
         return token
@@ -28,10 +28,11 @@ class SaltApi(object):
         headers = {'Accept': ' application/x-yaml',
                    'X-Auth-Token': ' %s' % self.__token_id
                    }
-        obj = requests.post(self.__url,headers=headers,data=self.data,verify=False).text
+        obj = requests.post(self.__url,headers=headers,data=self.data,verify=False).content
         try:
             print yaml.load(obj)
             return yaml.load(obj)
         except Exception, e:
+	    print obj
             print e
             return 0
