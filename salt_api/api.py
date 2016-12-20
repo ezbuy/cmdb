@@ -28,11 +28,13 @@ class SaltApi(object):
         headers = {'Accept': ' application/x-yaml',
                    'X-Auth-Token': ' %s' % self.__token_id
                    }
-        obj = requests.post(self.__url,headers=headers,data=self.data,verify=False).content
+        obj = requests.post(self.__url,headers=headers,data=self.data,verify=False)
+        print obj
+        obj = obj.content
+        print obj
         try:
             print yaml.load(obj)
             return yaml.load(obj)
         except Exception, e:
-	    print obj
             print e
             return 0
