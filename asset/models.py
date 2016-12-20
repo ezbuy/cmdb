@@ -28,7 +28,7 @@ ASSET_TYPE = (
 
 
 class gogroup(models.Model):
-    name = models.CharField(max_length=32,verbose_name=u"go group name")
+    name = models.CharField(max_length=32,verbose_name=u"go group name",unique=True)
     def __unicode__(self):
         return self.name
 
