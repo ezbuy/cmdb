@@ -22,7 +22,8 @@ def deploy_go():
     sub_project = request.json.get('sub_project')
     username = request.json.get('username')
     password = request.json.get('password')
-    ip = request.remote_addr
+    #ip = request.remote_addr
+    ip = request.headers['X-Real-Ip']
 
 
     env = deploy_env(env)
