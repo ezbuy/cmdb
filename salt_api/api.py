@@ -9,7 +9,7 @@ class SaltApi(object):
         self.__url = salt_api_url
         self.__username = salt_user
         self.__password = salt_password
-        self.__token_id = self.salt_login()
+
 
 
     def salt_login(self):
@@ -25,6 +25,7 @@ class SaltApi(object):
 
     def salt_cmd(self,data):
         self.data = data
+        self.__token_id = self.salt_login()
         headers = {'Accept': ' application/x-yaml',
                    'X-Auth-Token': ' %s' % self.__token_id
                    }
