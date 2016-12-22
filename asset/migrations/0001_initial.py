@@ -117,6 +117,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('saltname', models.CharField(max_length=32, verbose_name='salt minion name')),
+		('ip', models.GenericIPAddressField()),
             ],
         ),
         migrations.CreateModel(

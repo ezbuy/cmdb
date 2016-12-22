@@ -24,11 +24,14 @@ class gostatusAdmin(admin.ModelAdmin):
 class crontabSVNAdmin(admin.ModelAdmin):
     list_display = ('hostname','username','password','repo','localpath','project')
 
+class minionAdmin(admin.ModelAdmin):
+    list_display = ('saltname','ip')
+
 admin.site.register(IDC)
 admin.site.register(Asset,assetAdmin)
 admin.site.register(AssetRecord)
 admin.site.register(AssetGroup)
-admin.site.register(minion)
+admin.site.register(minion,minionAdmin)
 admin.site.register(goservices,goServicesAdmin)
 admin.site.register(gogroup)
 admin.site.register(svn,svnAdmin)
