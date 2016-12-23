@@ -6,11 +6,12 @@ from logs.models import goLog
 from celery.task import task
 import xmlrpclib
 from salt_api.api import SaltApi
+from mico.settings import dingding_api
 
 salt_api = SaltApi()
 
 def notification(hostname,project,result,username):
-    url = 'http://dlog.65dg.me/dlog'
+    url = dingding_api
     headers = {'Content-Type': 'application/json'}
     hs = str(hostname) + " by " + str(username)
 
