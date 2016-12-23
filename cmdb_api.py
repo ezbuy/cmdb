@@ -64,36 +64,41 @@ def deploy_go():
 
 @app.route('/subproject',methods=['POST'])
 def add_sub_project():
-    project = request.json.get('project')
+
     hostname = request.json.get('hostname')
-    ip = request.json.get('ip')
-    name = request.json.get('name')
-    env = request.json.get('env')
+    project = request.json.get('project')
+    sub_project_name = request.json.get('sub_project_name')
     username = request.json.get('username')
     password = request.json.get('password')
+    env = request.json.get('env')
 
     env = deploy_env(env)
+
 
     if env == 0:
         return jsonify({'result': 'The env not found.!!'})
 
     if login(username, password) == 1:
-        try:
-            saltminion = minion.objects.get(saltname=hostname)
-            project = gogroup.objects.get(name=project)
-            if goservices.objects.filter(saltminion=saltminion).filter(group=project).filter(name=name):
-                return jsonify({'result': 'The %s subproject is existing!!' % name})
-        except Exception, e:
-            print e
-            return jsonify({'result': 'wrong hostname or project name!!'})
+        if project and hostname and sub_project_name  and env and username and password:
+            try:
+                saltminion = minion.objects.get(saltname=hostname)
+                project = gogroup.objects.get(name=project)
+                ip = saltminion.ip
+                if goservices.objects.filter(saltminion=saltminion).filter(group=project).filter(name=sub_project_name).filter(env=env):
+                    return jsonify({'result': 'The %s subproject is existing!!' % sub_project_name })
+            except Exception, e:
+                print e
+                return jsonify({'result': 'wrong hostname or project name!!'})
 
-        try:
-            obj = goservices(ip=ip,name=name,env=env,group=project,saltminion=saltminion)
-            obj.save()
-            return jsonify({'result': 'added %s subproject is successful.!!' % name})
-        except Exception, e:
-            print e
-            return jsonify({'result': 'added %s subproject was failed.!!' % name})
+            try:
+                obj = goservices(ip=ip,name=sub_project_name ,env=env,group=project,saltminion=saltminion)
+                obj.save()
+                return jsonify({'result': 'added %s subproject is successful.!!' % sub_project_name })
+            except Exception, e:
+                print e
+                return jsonify({'result': 'added %s subproject was failed.!!' % sub_project_name })
+        else:
+            return jsonify({'result': 'argv is error!!!'})
     else:
         return jsonify({'result': 'username or password is error'})
 
