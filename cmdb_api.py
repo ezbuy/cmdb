@@ -4,7 +4,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mico.settings')
 django.setup()
 from asset.utils import goPublish
-from asset.models import gogroup,goservices,minion,svn
+from asset.models import gogroup,goservices,minion,svn,goconf
 from django.contrib import auth
 
 
@@ -150,6 +150,43 @@ def add_new_project():
         return jsonify({'result': 'username or password is error'})
 
 
+
+@app.route('/api/goconf',methods=['POST'])
+def add_goconf():   ###added an info for goconf table
+    username = request.json.get('username')
+    password = request.json.get('password')
+    svn_username = request.json.get('svn_username')
+    svn_password = request.json.get('svn_password')
+    svn_repo = request.json.get('svn_repo')
+    svn_root_path = request.json.get('svn_root_path')
+    project = request.json.get('project')
+    hostname = request.json.get('hostname')
+    env = request.json.get('env')
+
+    env = deploy_env(env)
+
+    if env == 0:
+        return jsonify({'result': 'The env not found.!!'})
+
+    if login(username, password) == 1:
+        if svn_username and svn_password and svn_repo and svn_root_path and project and hostname:
+            try:
+                hostname = minion.objects.get(saltname=hostname)
+                project = gogroup.objects.get(name=project)
+                if goconf.objects.filter(hostname=hostname).filter(project=project).filter(env=env):
+                    return jsonify({'result': 'The %s project is existing!!' % project})
+                else:
+                    obj = goconf(username=svn_username,password=svn_password,repo=svn_repo,localpath=svn_root_path,env=env,hostname=hostname,project=project)
+                    obj.save()
+                    return jsonify({'result': 'added %s goconf is successful!!' % project})
+            except Exception, e:
+                print e
+                return jsonify({'result': 'wrong hostname or project name!!'})
+        else:
+            return jsonify({'result': 'argv is error!!!'})
+
+    else:
+        return jsonify({'result': 'username or password is error'})
 
 
 def login(username,password):
