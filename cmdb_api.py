@@ -4,7 +4,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mico.settings')
 django.setup()
 from asset.utils import goPublish
-from asset.models import gogroup,goservices,minion
+from asset.models import gogroup,goservices,minion,svn
 from django.contrib import auth
 
 
@@ -62,7 +62,7 @@ def deploy_go():
         return jsonify({'result': e})
 
 
-@app.route('/subproject',methods=['POST'])
+@app.route('/api/subProject',methods=['POST'])
 def add_sub_project():
 
     hostname = request.json.get('hostname')
@@ -79,7 +79,7 @@ def add_sub_project():
         return jsonify({'result': 'The env not found.!!'})
 
     if login(username, password) == 1:
-        if project and hostname and sub_project_name  and env and username and password:
+        if project and hostname and sub_project_name:
             try:
                 saltminion = minion.objects.get(saltname=hostname)
                 project = gogroup.objects.get(name=project)
@@ -101,6 +101,55 @@ def add_sub_project():
             return jsonify({'result': 'argv is error!!!'})
     else:
         return jsonify({'result': 'username or password is error'})
+
+
+@app.route('/api/newProject',methods=['POST'])
+def add_new_project():
+    new_project = request.json.get('new_project')
+    username = request.json.get('username')
+    password = request.json.get('password')
+    svn_username = request.json.get('svn_username')
+    svn_password = request.json.get('svn_password')
+    svn_repo = request.json.get('svn_repo')
+    svn_root_path = request.json.get('svn_root_path')
+    svn_move_path = request.json.get('svn_move_path')
+    svn_revert_path = request.json.get('svn_revert_path')
+    svn_execute_file = request.json.get('svn_execute_file')
+    env = request.json.get('env')
+
+    env = deploy_env(env)
+
+    if env == 0:
+        return jsonify({'result': 'The env not found.!!'})
+
+    if login(username, password) == 1:
+        if new_project and svn_username and svn_password and svn_repo and svn_root_path and svn_move_path and svn_revert_path and svn_execute_file:
+            try:
+                if gogroup.objects.filter(name=new_project):
+                    return jsonify({'result': 'The %s new project is existing!!' % new_project})
+                else:
+                    ###added a group project
+                    obj = gogroup(name=new_project)
+                    obj.save()
+
+                    ###added an info for svn table
+                    project = gogroup.objects.get(name=new_project)
+                    obj = svn(username=svn_username,password=svn_password,
+                              repo=svn_repo,localpath=svn_root_path,
+                              movepath=svn_move_path,revertpath=svn_revert_path,
+                              executefile=svn_execute_file,project=project)
+                    obj.save()
+
+                    return jsonify({'result': 'added %s new subproject is successful!!' % new_project})
+            except Exception, e:
+                print e
+                return jsonify({'result': 'added %s new subproject is failed!!' % new_project})
+        else:
+            return jsonify({'result': 'argv is error!!!'})
+    else:
+        return jsonify({'result': 'username or password is error'})
+
+
 
 
 def login(username,password):
