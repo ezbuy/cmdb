@@ -281,10 +281,8 @@ def crontab_update(request):
         data = data.split("::")
         project = data[0]
         hostname = data[1]
-        username = data[2]
-        password = data[3]
-        localpath = data[4]
-        result = obj.crontab_svn_update(hostname,username,password,localpath,project)
+
+        result = obj.crontab_svn_update(hostname,project)
         return render(request,'getdata.html',{'result':result})
 
 

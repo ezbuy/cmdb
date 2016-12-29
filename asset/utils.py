@@ -331,14 +331,13 @@ class crontab_svn_status(object):
         obj = crontab_svn.objects.all()
         return obj
 
-    def crontab_svn_update(self,hostname,username,password,localpath,project):
+    def crontab_svn_update(self,hostname,project):
         self.hostname = hostname
-        self.username = username
-        self.password = password
-        self.localpath = localpath
         self.project = project
+        host = minion.objects.get(saltname=self.hostname)
+        obj = crontab_svn.objects.get(hostname=host,project=self.project)
 
-        cmd = "svn update --username=%s --password=%s --non-interactive %s" % (self.username, self.password, self.localpath)
+        cmd = "svn checkout %s %s --username=%s --password=%s --non-interactive " % (obj.repo,obj.localpath,obj.username, obj.password)
         data = {
             'client': 'local',
             'tgt': self.hostname,
