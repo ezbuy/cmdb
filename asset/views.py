@@ -278,7 +278,7 @@ def crontab_update(request):
         return render(request, 'crontabupdate.html', {'status': status})
     else:
         data = request.POST['project']
-        data = data.split(":")
+        data = data.split("::")
         project = data[0]
         hostname = data[1]
         username = data[2]
