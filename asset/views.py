@@ -58,6 +58,8 @@ def goServices(request):
 
 @login_required
 def getServices(request):
+
+    action = request.GET.get('action')
     data = request.GET.getlist('id')
     username = request.user
     saltCmd = LocalClient()
@@ -67,11 +69,11 @@ def getServices(request):
 
     for v in data:
         goName,host = v.split(',')
-        getMes = saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%goName])
+        getMes = saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl %s %s'% (action,goName)])
         result.append(getMes)
-        info = 'restart ' + goName
+        info = action + ' ' + goName
         notification(host,info,getMes,username)
-    logs(username,ip,'restart services',result)
+    logs(username,ip,'%s services' % action,result)
 
 
     return render(request,'getdata.html',{'result':result})

@@ -13,7 +13,7 @@
 
 
 
-    <div class="wrapper wrapper-content animated fadeInRight">
+<div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
         <div class="col-sm-12">
             <div class="ibox float-e-margins" id="all">
@@ -63,16 +63,10 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        <div class="row">
-                            <div class="col-sm-6">
 
-{#                                 <input type="button" id="asset_update" class="btn btn-info btn-sm"  name="update_button" value="更新"/>#}
-{#                                <input type="button" id="asset_update_all" class="btn btn-primary btn-sm"  name="update_button" value="更新全部"/>#}
-
-                            </div>
-
-                        </div>
-                      <input class="btn btn-danger" type="submit" value="Restart">
+                      <input class="btn btn-danger" type="submit"  name="action" value="stop">
+                      <input class="btn btn-danger" type="submit"  name="action" value="start">
+                      <input class="btn btn-danger" type="submit"  name="action" value="restart">
                     </form>
                 </div>
             </div>
@@ -80,4 +74,6 @@
     </div>
 </div>
 {% endblock %}
+
+
 
