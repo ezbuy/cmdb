@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+
+    <title>ezbuy | CMDB</title>
+
+
+    {% include 'link_css.html' %}
+    {% include 'head_script.html' %}
+    {% block self_head_css_js %} {% endblock %}
+</head>
+
+<body>
+
+    <div id="wrapper">
+        {% include 'nav.html' %}
+        <div id="page-wrapper" class="gray-bg">
+            <div class="row border-bottom">
+                {% include 'nav_bar_header.html' %}
+            </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <span class="label label-info pull-right">Hosts</span>
+                                <h5>主机总数</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <h1 class="no-margins"><a href="#">{{ hosts_count }}</a></h1>
+                                <div class="stat-percent font-bold text-info"> <i class="fa fa-level-up"></i></div>
+                                <small>All host</small>
+                            </div>
+                        </div>
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <span class="label label-success pull-right">Users</span>
+                                <h5>用户总数</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <h1 class="no-margins"><a href="#">{{ users }}</a></h1>
+                                <div class="stat-percent font-bold text-success">{{ percent_user }} <i class="fa fa-bolt"></i></div>
+                                <small>All user</small>
+                            </div>
+                        </div>
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <span class="label label-success pull-right">count</span>
+                                <h5>当天项目发布TOP 3统计</h5>
+                            </div>
+                            <div class="ibox-content">
+                                {% for info in top_three %}
+                                    <div class="stat-percent font-bold text-success">{{ info.user }}&nbsp;&nbsp;&nbsp;{{ info.count }} 次</div>
+                                    </br>
+                                    <small><a href="#"></a></small>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <span class="label label-danger pull-right">Problems</span>
+                                <h5>故障总数</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <h1 class="no-margins"><a href="#">#</a></h1>
+                                <div class="stat-percent font-bold text-navy"> <i class="fa fa-level-up"></i></div>
+                                <small>All Problems</small>
+                            </div>
+                        </div>
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <span class="label label-info pull-right">Project</span>
+                                <h5>项目数</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <h1 class="no-margins"><a href="#">{{ projects }}</a></h1>
+                                <div class="stat-percent font-bold text-navy"> <i class="fa fa-level-up"></i></div>
+                                <small>Go Projects</small>
+                            </div>
+                        </div>
+                         <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <span class="label label-success pull-right">count</span>
+                                <h5>当天项目发布统计</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <h1 class="no-margins"><a href="#">{{ build_count }}</a></h1>
+                                <div class="stat-percent font-bold text-navy"> <i class="fa fa-level-up"></i></div>
+                                <small>All Projects</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <span class="label label-info pull-right">swan</span>
+                                <h5>发布日志</h5>
+                            </div>
+                            <div class="ibox-content inspinia-timeline">
+                                {% for i in swan_log %}
+                                <div class="timeline-item">
+                                    <div class="row">
+                                        <div class="col-xs-3 date">
+                                            <i class="fa fa-pied-piper-alt"></i>
+                                        </div>
+                                        <div class="col-xs-7 content no-top-border">
+                                            <p class="m-b-xs"><strong><span class="label label-danger">{{ i.username }}</span> </strong></p>
+                                            <p>发布: {{ i.project_name }}</p>
+                                            <p>{{ i.swan_name }} -> {{ i.module_name }}分支</p>
+                                            <p>状态: {{ i.message }}</p>
+                                            {% if i.update_log %}
+                                            <p>更新内容: {{ i.update_log|linebreaksbr }}</p>
+                                            {% endif %}
+                                            <p>{{ i.swan_datetime }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% include 'footer.html' %}
+        </div>
+    </div>
+
+</body>
+    {% include 'foot_script.html' %}
+    {% block self_footer_js %} {% endblock %}
+</html>
+
+
