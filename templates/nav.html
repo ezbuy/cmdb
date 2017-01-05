@@ -70,19 +70,9 @@
                     <li class="idc"> <a href="#">查看机房</a></li>
                 </ul>
             </li>
-
-
-
             <li >
                <a href="{% url 'logs' %}" ><i class="fa fa-files-o"></i> <span class="nav-label">logs</span><span class="label label-info pull-right"></span></a>
             </li>
-            <!--li id="file">
-                <a href="#"><i class="fa fa-download"></i> <span class="nav-label">上传下载</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li class="upload"><a href="#">文件上传</a></li>
-                    <li class="download"><a href="#">文件下载</a></li>
-                </ul>
-            </li-->
             <li id="setting">
                    <a target="_blank" href="/admin"><i class="fa fa-gears"></i> <span class="nav-label">setting</span><span class="label label-info pull-right"></span></a>
             </li>
@@ -96,10 +86,19 @@
                     <li class="user"><a href="{% url 'crontab_update' %}">CRONTAB更新<span class="label pull-right"></span></a></li>
                 </ul>
             </li>
-            <li >
+            <li>
                <a href="{% url 'logs' %}" ><i class="fa fa-files-o"></i> <span class="nav-label">logs</span><span class="label label-info pull-right"></span></a>
             </li>
-
+        {% elif request.user|has_group:'qa' %}
+            <li>
+                <a href="#"><i class="fa fa-paperclip"></i> <span class="nav-label">Web IIS</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li><a href="{% url 'recycleList' %}">recycle<span class="label pull-right"></span></a></li>
+                </ul>
+            </li>
+            <li>
+               <a href="{% url 'logs' %}" ><i class="fa fa-files-o"></i> <span class="nav-label">logs</span><span class="label label-info pull-right"></span></a>
+            </li>
         {% endif %}
 
         </ul>
