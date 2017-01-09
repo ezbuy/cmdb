@@ -50,8 +50,20 @@
 
                     </form>
                 </div>
+                <ul class="pager">
+                    {% if logs.has_previous %}
+                        <li><a href="?page={{ logs.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                        <li>Page {{ logs.number }} of {{ logs.paginator.num_pages }}.</li>
+                    {% if logs.has_next %}
+                        <li><a href="?page={{ logs.next_page_number }}">Next</a></li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </div>
 </div>
+
+
+
 {% endblock %}
