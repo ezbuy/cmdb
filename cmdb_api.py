@@ -59,7 +59,7 @@ def deploy_go():
             return jsonify({'result': 'username or password is error'})
     except Exception, e:
         print e
-        return jsonify({'result': e})
+        return jsonify({'result': "Internal Server Error"})
 
 
 @app.route('/api/subProject',methods=['POST'])
