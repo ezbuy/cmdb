@@ -4,7 +4,7 @@ from asset.models import *
 
 
 class goServicesAdmin(admin.ModelAdmin):
-    list_display = ('ip','name','env','group','saltminion')
+    list_display = ('ip','name','env','group','saltminion','owner','has_statsd','has_sentry','comment')
 
 class svnAdmin(admin.ModelAdmin):
     list_display = ('username','password','repo','localpath','movepath','revertpath','executefile','project')

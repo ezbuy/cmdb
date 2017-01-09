@@ -45,6 +45,10 @@
                                     <th class="text-center"> 运行环境 </th>
                                     <th class="text-center"> IP地址 </th>
                                     <th class="text-center"> salt minion </th>
+                                    <th class="text-center"> owner </th>
+                                    <th class="text-center"> has_statsd </th>
+                                    <th class="text-center"> has_sentry </th>
+                                    <th class="text-center"> comment </th>
 
                                 </tr>
                             </thead>
@@ -58,7 +62,10 @@
                                     <td class="text-center"> {{ services.get_env_display }} </td>
                                     <td class="text-center"> {{ services.ip }} </td>
                                     <td class="text-center">{{ services.saltminion.saltname }}</td>
-
+                                    <td class="text-center">{{ services.owner }}</td>
+                                    <td class="text-center">{{ services.has_statsd  }}</td>
+                                    <td class="text-center">{{ services.has_sentry }}</td>
+                                    <td class="text-center">{{ services.comment }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>

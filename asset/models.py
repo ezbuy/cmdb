@@ -122,6 +122,10 @@ class goservices(models.Model):
     env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
     group = models.ForeignKey(gogroup)
     saltminion = models.ForeignKey(minion)
+    owner = models.CharField(max_length=32)
+    comment = models.CharField(max_length=256)
+    has_statsd = models.CharField(max_length=256,default='false')
+    has_sentry = models.CharField(max_length=256,default='false')
     def __unicode__(self):
         return self.name
 
