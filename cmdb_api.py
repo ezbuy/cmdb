@@ -71,6 +71,10 @@ def add_sub_project():
     username = request.json.get('username')
     password = request.json.get('password')
     env = request.json.get('env')
+    owner = request.json.get('owner')
+    has_statsd = request.json.get('has_statsd')
+    has_sentry = request.json.get('has_sentry')
+    comment = request.json.get('comment')
 
     env = deploy_env(env)
 
@@ -79,7 +83,7 @@ def add_sub_project():
         return jsonify({'result': 'The env not found.!!'})
 
     if login(username, password) == 1:
-        if project and hostname and sub_project_name:
+        if project and hostname and sub_project_name and owner and has_sentry and has_statsd and comment:
             try:
                 saltminion = minion.objects.get(saltname=hostname)
                 project = gogroup.objects.get(name=project)
@@ -91,7 +95,7 @@ def add_sub_project():
                 return jsonify({'result': 'wrong hostname or project name!!'})
 
             try:
-                obj = goservices(ip=ip,name=sub_project_name ,env=env,group=project,saltminion=saltminion)
+                obj = goservices(ip=ip,name=sub_project_name ,env=env,group=project,saltminion=saltminion,owner=owner,has_statsd=has_statsd,has_sentry=has_sentry,comment=comment)
                 obj.save()
                 return jsonify({'result': 'added %s subproject is successful.!!' % sub_project_name })
             except Exception, e:
