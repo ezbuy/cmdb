@@ -97,6 +97,12 @@
                 </ul>
             </li>
             <li>
+                <a><i class="fa fa-play-circle-o"></i> <span class="nav-label">Cache</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li class="asset"> <a href="{% url 'memcache' %}">Memcache flush_all</a></li>
+                </ul>
+            </li>
+            <li>
                <a href="{% url 'logs' %}" ><i class="fa fa-files-o"></i> <span class="nav-label">logs</span><span class="label label-info pull-right"></span></a>
             </li>
         {% endif %}
