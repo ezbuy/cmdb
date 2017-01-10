@@ -76,6 +76,15 @@
                       <input class="btn btn-danger" type="submit"  name="action" value="restart">
                     </form>
                 </div>
+                <ul class="pager">
+                    {% if project.has_previous %}
+                        <li><a href="?projectName={{ project_name }}&page={{ project.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                        <li>Page {{ project.number }} of {{ project.paginator.num_pages }}.</li>
+                    {% if project.has_next %}
+                        <li><a href="?projectName={{ project_name }}&page={{ project.next_page_number }}">Next</a></li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </div>

@@ -6,7 +6,7 @@ from asset.utils import *
 from salt.client import LocalClient
 import os,commands,re,json
 from asset.utils import getNowTime
-
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 
 
 @login_required
@@ -45,12 +45,21 @@ def getData(request):
 @login_required
 def goServices(request):
 
-    data = request.GET.get('projectName')
-    go = goServicesni(data)
-    groupName = gogroup.objects.all()
-    project = go.getServiceName()
+    project_name = request.GET.get('projectName')
+    go = goServicesni(project_name)
+    group_name = gogroup.objects.all()
+    services_list = go.getServiceName()
+    paginator = Paginator(services_list, 10)
+    page = request.GET.get('page')
 
-    return render(request,'goservices.html',{'project':project,'groupName':groupName})
+    try:
+        contacts = paginator.page(page)
+    except PageNotAnInteger:
+        contacts = paginator.page(1)
+    except EmptyPage:
+        contacts = paginator.page(paginator.num_pages)
+
+    return render(request,'goservices.html',{'project':contacts,'groupName':group_name,'project_name':project_name})
 
 
 
