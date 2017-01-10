@@ -188,8 +188,7 @@ def getProjectList(request):
     go = goservices.objects.filter(env=env).filter(group_id__name=project)
     for name in go:
         result.append(name.name)
-    if result:
-        result.append('all')
+
     result = list(set(result))
 
     return HttpResponse(json.dumps(result))

@@ -92,19 +92,9 @@ class goPublish:
                         if saltHost not in minionHost:
                             notMinion = 'No minions matched the %s host.' % saltHost
                             result.append(notMinion)
-                        if self.services == 'all':
-                            golist = [obj.name]
-                            if hostInfo.has_key(saltHost):
-                                for k,v in hostInfo.items():
-                                    if k == saltHost:
-                                        v.append(obj.name)
-                                        hostInfo[saltHost] = v
-                            else:
-                                hostInfo[saltHost] = golist
-                        else:
-                            if obj.name == self.services:
-                                golist = [self.services]
-                                hostInfo[saltHost] = golist
+                        if obj.name == self.services:
+                            golist = [self.services]
+                            hostInfo[saltHost] = golist
 
         for host, goname in hostInfo.items():
             for p in self.svnInfo:
