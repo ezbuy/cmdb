@@ -5,8 +5,9 @@ from asset.models import *
 from asset.utils import *
 from salt.client import LocalClient
 import os,commands,re,json
-from asset.utils import getNowTime
+from asset.utils import getNowTime,get_cronjob_list
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+
 
 
 @login_required
@@ -291,9 +292,21 @@ def crontab_update(request):
         data = data.split("::")
         project = data[0]
         hostname = data[1]
-
         result = obj.crontab_svn_update(hostname,project)
         return render(request,'getdata.html',{'result':result})
 
+@login_required
+def cronjob_list(request):
+    cron_list = get_cronjob_list()
+    paginator = Paginator(cron_list, 10)
+    page = request.GET.get('page')
+
+    try:
+        contacts = paginator.page(page)
+    except PageNotAnInteger:
+        contacts = paginator.page(1)
+    except EmptyPage:
+        contacts = paginator.page(paginator.num_pages)
+    return render(request,'cronjob_list.html',{'cron_list':contacts})
 
 

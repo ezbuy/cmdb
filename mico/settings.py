@@ -154,3 +154,6 @@ salt_password = 'saltapis'
 
 ##dingding notification
 dingding_api = 'http://dlog.65dg.me/dlog'
+
+##crontab api
+crontab_api = 'http://192.168.199.64:5000'

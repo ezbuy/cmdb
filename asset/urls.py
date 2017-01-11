@@ -23,6 +23,5 @@ urlpatterns = patterns('',
     url(r'^build_go/$', build_go, name='build_go'),
     url(r'^goStatus/$', go_status, name='go_status'),
     url(r'^crontabUpdate/$', crontab_update, name='crontab_update'),
-
-
+    url(r'^cronjob_list/$', cronjob_list, name='cronjob_list'),
 )

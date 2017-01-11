@@ -6,7 +6,7 @@ from logs.models import goLog
 from celery.task import task
 import xmlrpclib
 from salt_api.api import SaltApi
-from mico.settings import dingding_api
+from mico.settings import dingding_api,crontab_api
 
 salt_api = SaltApi()
 
@@ -350,6 +350,22 @@ def deploy_go(env,hostname,project,supervisorName,goCommand,svnRepo,svnUsername,
 
 def getNowTime():
     return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))
+
+
+def get_cronjob_list():
+    url = crontab_api
+    print '----',url
+    params = {
+        'fun': 'list'
+    }
+    headers = {'Content-Type': 'application/json'}
+    try:
+        obj = requests.post(url=url, headers=headers, data=json.dumps(params)).text
+        obj = json.loads(obj)
+        return obj['result']
+    except Exception, e:
+        print e
+        return 0
 
 
 

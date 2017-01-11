@@ -18,12 +18,10 @@
                     <li class="user"><a href="{% url 'goServices' %}">重启服务<span class="label pull-right"></span></a></li>
                     <li class="user"><a href="{% url 'goRevert' %}">版本回滚<span class="label pull-right"></span></a></li>
                     <li class="user"><a href="{% url 'go_status' %}">服务状态<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'crontab_update' %}">CRONTAB更新<span class="label pull-right"></span></a></li>
+                    <li class="user"><a href="{% url 'crontab_update' %}">crontab更新<span class="label pull-right"></span></a></li>
+                    <li class="user"><a href="{% url 'cronjob_list' %}">cron job列表<span class="label pull-right"></span></a></li>
                 </ul>
             </li>
-
-
-
              <li>
                 <a href="#"><i class="fa fa-bars"></i> <span class="nav-label">Windows Services</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -31,9 +29,6 @@
                     <li><a href="{% url 'winServicesList' %}">重启服务<span class="label pull-right"></span></a></li>
                 </ul>
             </li>
-
-
-
             <li>
                 <a href="#"><i class="fa fa-paperclip"></i> <span class="nav-label">Web IIS</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -42,8 +37,6 @@
                     <li><a href="{% url 'wwwRevertList' %}">版本回滚<span class="label pull-right"></span></a></li>
                 </ul>
             </li>
-
-
             <li>
                 <a><i class="fa fa-play-circle-o"></i> <span class="nav-label">Cache</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -52,8 +45,6 @@
 
                 </ul>
             </li>
-
-
             <li>
                 <a><i class="fa fa-file-o"></i> <span class="nav-label">Subversion</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -61,7 +52,6 @@
                     <li class="asset"> <a href="{% url 'subversionAddUserHtml' %}">添加用户</a></li>
                 </ul>
             </li>
-
             <li>
                 <a><i class="fa fa-inbox"></i> <span class="nav-label">Asset</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -83,7 +73,8 @@
                     <li class="group"><a href="{% url 'get' %}">发布</a></li>
                     <li class="user"><a href="{% url 'goServices' %}">重启服务<span class="label pull-right"></span></a></li>
                     <li class="user"><a href="{% url 'go_status' %}">服务状态<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'crontab_update' %}">CRONTAB更新<span class="label pull-right"></span></a></li>
+                    <li class="user"><a href="{% url 'crontab_update' %}">crontab更新<span class="label pull-right"></span></a></li>
+                    <li class="user"><a href="{% url 'cronjob_list' %}">cron job列表<span class="label pull-right"></span></a></li>
                 </ul>
             </li>
             <li>
