@@ -7,7 +7,7 @@ from logs.models import goLog
 @login_required
 def logs(request):
     logs_list = goLog.objects.all().order_by('-datetime')
-    paginator = Paginator(logs_list,10)
+    paginator = Paginator(logs_list,20)
     page = request.GET.get('page')
 
     try:

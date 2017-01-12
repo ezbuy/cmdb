@@ -50,7 +50,7 @@ def goServices(request):
     go = goServicesni(project_name)
     group_name = gogroup.objects.all()
     services_list = go.getServiceName()
-    paginator = Paginator(services_list, 10)
+    paginator = Paginator(services_list, 20)
     page = request.GET.get('page')
 
     try:
@@ -298,7 +298,7 @@ def crontab_update(request):
 @login_required
 def cronjob_list(request):
     cron_list = get_cronjob_list()
-    paginator = Paginator(cron_list, 10)
+    paginator = Paginator(cron_list, 20)
     page = request.GET.get('page')
 
     try:
