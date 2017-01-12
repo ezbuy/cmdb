@@ -372,6 +372,8 @@ class go_action(object):   #go "start,stop,restart" action
         self.service = service
         self.user = user
         self.ip = ip
+        self.result = {}
+
 
     def start(self):
         obj = goservices.objects.filter(name=self.service)
@@ -385,11 +387,12 @@ class go_action(object):   #go "start,stop,restart" action
             if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] == 20:
                 notification(info.saltminion,'start "%s" service' % self.service,'successful',self.user)
                 logs(self.user, self.ip, 'start "%s" service' % self.service, 'successful')
-                return 'successful'
+                self.result[str(info.saltminion)] = 'successful'
             else:
                 notification(info.saltminion, 'start "%s" service' % self.service, 'is error', self.user)
                 logs(self.user, self.ip, 'start "%s" service' % self.service , 'failed')
-                return 'error'
+                self.result[str(info.saltminion)] = 'failed'
+        return  self.result
 
 
     def stop(self):
@@ -404,11 +407,12 @@ class go_action(object):   #go "start,stop,restart" action
             if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] == 0:
                 notification(info.saltminion, 'stop "%s" service' % self.service, 'successful', self.user)
                 logs(self.user,self.ip,'stop "%s" service' % self.service,'successful')
-                return 'successful'
+                self.result[str(info.saltminion)] = 'successful'
             else:
                 notification(info.saltminion, 'stop "%s" service' % self.service, 'is error', self.user)
                 logs(self.user, self.ip, 'stop "%s" service' % self.service, 'failed')
-                return 'error'
+                self.result[str(info.saltminion)] = 'failed'
+        return self.result
 
     def restart(self):
         obj = goservices.objects.filter(name=self.service)
@@ -423,12 +427,12 @@ class go_action(object):   #go "start,stop,restart" action
             if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] == 20:
                 notification(info.saltminion, 'restart "%s" service' % self.service, 'successful', self.user)
                 logs(self.user, self.ip, 'restart "%s" service' % self.service, 'successful')
-                return 'successful'
+                self.result[str(info.saltminion)] = 'successful'
             else:
                 notification(info.saltminion, 'restart "%s" service' % self.service, 'is error', self.user)
                 logs(self.user, self.ip, 'restart "%s" service' % self.service, 'failed')
-                return 'error'
-
+                self.result[str(info.saltminion)] = 'failed'
+        return self.result
 
 
 
