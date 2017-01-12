@@ -367,6 +367,69 @@ def get_cronjob_list():
         print e
         return 0
 
+class go_action(object):   #go "start,stop,restart" action
+    def __init__(self,service,user,ip):
+        self.service = service
+        self.user = user
+        self.ip = ip
+
+    def start(self):
+        obj = goservices.objects.filter(name=self.service)
+        for info in obj:
+            supervisor_info = gostatus.objects.get(hostname=info.saltminion_id)
+            supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (
+                supervisor_info.supervisor_username, supervisor_info.supervisor_password,
+                supervisor_info.supervisor_host, supervisor_info.supervisor_port))
+            if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] != 20:
+                supervisor_obj.supervisor.startProcess(self.service)
+            if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] == 20:
+                notification(info.saltminion,'start "%s" service' % self.service,'successful',self.user)
+                logs(self.user, self.ip, 'start "%s" service' % self.service, 'successful')
+                return 'successful'
+            else:
+                notification(info.saltminion, 'start "%s" service' % self.service, 'is error', self.user)
+                logs(self.user, self.ip, 'start "%s" service' % self.service , 'failed')
+                return 'error'
+
+
+    def stop(self):
+        obj = goservices.objects.filter(name=self.service)
+        for info in obj:
+            supervisor_info = gostatus.objects.get(hostname=info.saltminion_id)
+            supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (
+                supervisor_info.supervisor_username, supervisor_info.supervisor_password,
+                supervisor_info.supervisor_host, supervisor_info.supervisor_port))
+            if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] != 0:
+                supervisor_obj.supervisor.stopProcess(self.service)
+            if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] == 0:
+                notification(info.saltminion, 'stop "%s" service' % self.service, 'successful', self.user)
+                logs(self.user,self.ip,'stop "%s" service' % self.service,'successful')
+                return 'successful'
+            else:
+                notification(info.saltminion, 'stop "%s" service' % self.service, 'is error', self.user)
+                logs(self.user, self.ip, 'stop "%s" service' % self.service, 'failed')
+                return 'error'
+
+    def restart(self):
+        obj = goservices.objects.filter(name=self.service)
+        for info in obj:
+            supervisor_info = gostatus.objects.get(hostname=info.saltminion_id)
+            supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (
+                supervisor_info.supervisor_username, supervisor_info.supervisor_password,
+                supervisor_info.supervisor_host, supervisor_info.supervisor_port))
+            if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] != 0:
+                supervisor_obj.supervisor.stopProcess(self.service)
+            supervisor_obj.supervisor.startProcess(self.service)
+            if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] == 20:
+                notification(info.saltminion, 'restart "%s" service' % self.service, 'successful', self.user)
+                logs(self.user, self.ip, 'restart "%s" service' % self.service, 'successful')
+                return 'successful'
+            else:
+                notification(info.saltminion, 'restart "%s" service' % self.service, 'is error', self.user)
+                logs(self.user, self.ip, 'restart "%s" service' % self.service, 'failed')
+                return 'error'
+
+
 
 
 

@@ -3,7 +3,7 @@ import os
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mico.settings')
 django.setup()
-from asset.utils import goPublish
+from asset.utils import goPublish,go_action
 from asset.models import gogroup,goservices,minion,svn,goconf
 from django.contrib import auth
 
@@ -22,44 +22,43 @@ def deploy_go():
     sub_project = request.json.get('sub_project')
     username = request.json.get('username')
     password = request.json.get('password')
-    #ip = request.remote_addr
-    ip = request.headers['X-Real-Ip']
-
+    try:
+        ip = request.headers['X-Real-Ip']
+    except Exception, e:
+        print e
+        ip = request.remote_addr
 
     env = deploy_env(env)
     if env == 0:
         return jsonify({'result': 'The env not found.!!'})
 
-    try:
-        if login(username,password) == 1:
-            if env and project and sub_project and username and ip:
-                if gogroup.objects.filter(name=project):
-                    if goservices.objects.filter(name=sub_project) or sub_project == "all":
-                        publish = goPublish(env)
-                        result = publish.deployGo(project, sub_project, username, ip)
-                        print result
-                        if result:
-                            result = str(result)
-                            if result.find('ERROR') > 0 or result.find('error') > 0 or result.find('Skip') > 0:
-                                result = 'Failed'
-                            else:
-                                result = 'Successful'
-                        else:
+    if login(username,password) == 1:
+        if env and project and sub_project and username and ip:
+            if gogroup.objects.filter(name=project):
+                if goservices.objects.filter(name=sub_project) or sub_project == "all":
+                    publish = goPublish(env)
+                    result = publish.deployGo(project, sub_project, username, ip)
+                    print result
+                    if result:
+                        result = str(result)
+                        if result.find('ERROR') > 0 or result.find('error') > 0 or result.find('Skip') > 0:
                             result = 'Failed'
-                        return jsonify({'result': result})
+                        else:
+                            result = 'Successful'
                     else:
-                        result = "No " + sub_project + " project!!"
-                        return jsonify({'result': result})
+                        result = 'Failed'
+                    return jsonify({'result': result})
                 else:
-                    result = "No " + project + " project!!"
+                    result = "No " + sub_project + " project!!"
                     return jsonify({'result': result})
             else:
-                return jsonify({'result': 'argv is error!!!'})
+                result = "No " + project + " project!!"
+                return jsonify({'result': result})
         else:
-            return jsonify({'result': 'username or password is error'})
-    except Exception, e:
-        print e
-        return jsonify({'result': "Internal Server Error"})
+            return jsonify({'result': 'argv is error!!!'})
+    else:
+        return jsonify({'result': 'username or password is error'})
+
 
 
 @app.route('/api/subProject',methods=['POST'])
@@ -191,6 +190,39 @@ def add_goconf():   ###added an info for goconf table
 
     else:
         return jsonify({'result': 'username or password is error'})
+
+
+@app.route('/api/goAction',methods=['POST'])
+def go_operation():    # go 'stop,start,restart' operation
+    username = request.json.get('username')
+    password = request.json.get('password')
+    try:
+        ip = request.headers['X-Real-Ip']
+    except Exception, e:
+        print e
+        ip = request.remote_addr
+
+    service = request.json.get('service')
+    method = request.json.get('method')
+
+    if login(username, password) == 1:
+        if username and password and service and method:
+            if goservices.objects.filter(name=service) and method in ['stop','start','restart']:
+                obj = go_action(service,username,ip)
+                if method == 'stop':
+                    result = obj.stop()
+                elif method == 'start':
+                    result = obj.start()
+                elif method == 'restart':
+                    result = obj.restart()
+                return jsonify({'result': result})
+            else:
+                return jsonify({'result': 'service name or method name is error!'})
+        else:
+            return jsonify({'result': 'argv is error!!!'})
+    else:
+        return jsonify({'result': 'username or password is error'})
+
 
 
 def login(username,password):
