@@ -86,12 +86,17 @@ def svnAddUser(request):
     result = []
 
     obj = subversion.objects.filter(env=env)
-    for info in obj:
-        if info.hostname.saltname == host:
-            svnPasswordFile = info.svnpasswordfile
+    try:
+        for info in obj:
+            if info.hostname.saltname == host:
+                svnPasswordFile = info.svnpasswordfile
+                cmdinfo = saltCmd.cmd(host,'cmd.run',['htpasswd -b %s %s %s'%(svnPasswordFile,svnName,svnPassword)])
+    except Exception,e:
+        print e
+        cmdinfo = {host:"Internal Server Error"}
 
-    cmdinfo = saltCmd.cmd(host,'cmd.run',['htpasswd -b %s %s %s'%(svnPasswordFile,svnName,svnPassword)])
- 
     result.append(cmdinfo)
+    notification(host,"svn adduser %s " % svnName,cmdinfo,username)
+    logs(username,ip,"svn adduser %s " % svnName,cmdinfo)
     return render(request, 'getdata.html', {'result': result})
 
