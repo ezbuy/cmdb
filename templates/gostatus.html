@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<form action="{% url 'go_status' %}" method="get">
+<form action="{% url 'go_status' %}" method="post">
     <div class="btn-group" role="group">
         {% for hostname in hosts %}
             <button type="submit" class="btn btn-default" name="hostname" value="{{ hostname.hostname_id }}">{{ hostname.hostname.saltname }}</button>

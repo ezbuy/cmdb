@@ -10,6 +10,7 @@ from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 
 
 
+
 @login_required
 def asset_list(request):
     asset_list = Asset.objects.all()
@@ -17,24 +18,23 @@ def asset_list(request):
 
 
 @login_required
+@deny_resubmit(page_key='deploy_go')
 def get(request):
     groupname = gogroup.objects.all()
-
-
     return render(request,'get.html',{'groupname':groupname})
 
 
 
 @login_required
+@deny_resubmit(page_key='deploy_go')
 def getData(request):
-    data = request.GET['goProject']
-    env = request.GET['env']
-    services = request.GET['services']
+    data = request.POST['goProject']
+    env = request.POST['env']
+    services = request.POST['services']
     username = request.user
     ip = request.META['REMOTE_ADDR']
     Publish = goPublish(env)
     result = Publish.deployGo(data,services,username,ip)
-
 
     return render(request,'getdata.html',{'result':result})
 
@@ -44,8 +44,8 @@ def getData(request):
 
 
 @login_required
+@deny_resubmit(page_key='go_method')
 def goServices(request):
-
     project_name = request.GET.get('projectName')
     go = goServicesni(project_name)
     group_name = gogroup.objects.all()
@@ -67,15 +67,14 @@ def goServices(request):
 
 
 @login_required
+@deny_resubmit(page_key='go_method')
 def getServices(request):
-
-    action = request.GET.get('action')
-    data = request.GET.getlist('id')
+    action = request.POST.get('action')
+    data = request.POST.getlist('id')
     username = request.user
     saltCmd = LocalClient()
     result = []
     ip = request.META['REMOTE_ADDR']
-
 
     for v in data:
         goName,host = v.split(',')
@@ -182,6 +181,7 @@ def test(request):
     return HttpResponseRedirect('/asset/list')
 
 @login_required
+@deny_resubmit(page_key='deploy_go')
 def getProjectList(request):
     project = request.GET['project']
     env = request.GET['env']
@@ -266,7 +266,7 @@ def build_go(request):
 
 @login_required
 def go_status(request):
-    hostname_id = request.GET.get('hostname')
+    hostname_id = request.POST.get('hostname')
     obj = go_monitor_status()
     hosts = obj.get_hosts()
 
@@ -278,6 +278,7 @@ def go_status(request):
 
 
 @login_required
+@deny_resubmit(page_key='crontab')
 def crontab_update(request):
     login_user = request.user
     ip = request.META['REMOTE_ADDR']

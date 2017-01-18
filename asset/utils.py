@@ -7,6 +7,7 @@ from celery.task import task
 import xmlrpclib
 from salt_api.api import SaltApi
 from mico.settings import dingding_api,crontab_api
+from functools import wraps
 
 salt_api = SaltApi()
 
@@ -437,3 +438,19 @@ class go_action(object):   #go "start,stop,restart" action
 
 
 
+def deny_resubmit(page_key=''):
+    def decorator(func):
+        @wraps(func)
+        def _wrapped_view(request, *args, **kwargs):
+            if request.method == 'GET':
+                request.session['%s_submit' % page_key] = str(time.time())
+                print 'session: ', request.session['%s_submit' % page_key]
+            elif request.method == 'POST':
+                old_key = request.session.get('%s_submit' % page_key, '')
+                if old_key == '':
+                    from django.http import HttpResponseRedirect
+                    return HttpResponseRedirect('/')
+                request.session['%s_submit' % page_key] = ''
+            return func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
