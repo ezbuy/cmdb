@@ -7,6 +7,7 @@ from asset.utils import goPublish,go_action
 from asset.models import gogroup,goservices,minion,svn,goconf
 from django.contrib import auth
 import functools
+from django.db import connection
 
 
 app = Flask(__name__)
@@ -21,6 +22,7 @@ def login_author(func):
             return jsonify({'result': 'username or password is error'})
 
         if auth.authenticate(username = usernmae,password = password) is not None:
+            connection.close()
             return func(*args,**kwargs)
         else:
             return jsonify({'result': 'username or password is error'})
