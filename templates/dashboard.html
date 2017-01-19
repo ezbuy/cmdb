@@ -99,6 +99,30 @@
                     <div class="col-lg-3">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
+                                <span class="label label-info pull-right">login</span>
+                                <h5>TOP5登录记录</h5>
+                            </div>
+                            <div class="ibox-content inspinia-timeline">
+                                {% for info in user_login_time %}
+                                <div class="timeline-item111">
+                                    <div class="row">
+                                        <div class="col-xs-3 date">
+                                            <i class="fa fa-pied-piper-alt"></i>
+                                        </div>
+                                        <div class="col-xs-7 content no-top-border">
+                                            <p><strong><span class="label label-danger"><font size="3">{{ info.username }}</font></span> </strong></p>
+                                            <p>{{ info.login_time }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
                                 <span class="label label-info pull-right">swan</span>
                                 <h5>发布日志</h5>
                             </div>
@@ -125,6 +149,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             {% include 'footer.html' %}
         </div>

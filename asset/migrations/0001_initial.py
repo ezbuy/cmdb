@@ -90,7 +90,11 @@ class Migration(migrations.Migration):
                 ('ip', models.GenericIPAddressField()),
                 ('name', models.CharField(max_length=32, verbose_name='goservices services name')),
                 ('env', models.IntegerField(blank=True, choices=[(1, '\u751f\u4ea7\u73af\u5883'), (2, '\u6d4b\u8bd5\u73af\u5883')], null=True, verbose_name='\u8fd0\u884c\u73af\u5883')),
-                ('group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='asset.gogroup')),
+                ('owner', models.CharField(max_length=32)),
+		('comment', models.CharField(max_length=256)),
+		('has_statsd', models.CharField(max_length=256)),
+		('has_sentry', models.CharField(max_length=256)),
+       		('group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='asset.gogroup')),
             ],
         ),
         migrations.CreateModel(

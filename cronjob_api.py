@@ -7,18 +7,16 @@ app = Flask(__name__)
 def main():
     fun = request.json.get('fun')
     if fun == 'list':
-	return jsonify({'result':get_crontab_list()})
+        return jsonify({'result':get_crontab_list()})
     else:
-	return jsonify({'result':0})
+        return jsonify({'result':0})
 
 def get_crontab_list():
     cron = CronTab(tabfile='/etc/crontab',user=False)
-    result = {}
     cron_list = []
     for info in cron[4:]:
         status,time = commands.getstatusoutput("grep '%s' /var/log/cron.log | tail -n 1 | awk \'{print $1,$2,$3}\'" % info.command)
-	result[str(info)] = time
-	cron_list.append({str(info):time})
+        cron_list.append({str(info):time})
     return cron_list
 
 if __name__ == '__main__':

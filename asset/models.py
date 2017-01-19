@@ -124,8 +124,8 @@ class goservices(models.Model):
     saltminion = models.ForeignKey(minion)
     owner = models.CharField(max_length=32)
     comment = models.CharField(max_length=256)
-    has_statsd = models.CharField(max_length=256,default='false')
-    has_sentry = models.CharField(max_length=256,default='false')
+    has_statsd = models.CharField(max_length=256)
+    has_sentry = models.CharField(max_length=256)
     def __unicode__(self):
         return self.name
 
