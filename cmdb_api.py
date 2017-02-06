@@ -42,6 +42,7 @@ def deploy_go():
     sub_project = request.json.get('sub_project')
     username = request.json.get('username')
     password = request.json.get('password')
+    tower_url = request.json.get('tower_url')
     try:
         ip = request.headers['X-Real-Ip']
     except Exception, e:
@@ -53,11 +54,11 @@ def deploy_go():
         return jsonify({'result': 'The env not found.!!'})
 
 
-    if env and project and sub_project and username and ip:
+    if env and project and sub_project and username and ip and tower_url:
         if gogroup.objects.filter(name=project):
             if goservices.objects.filter(name=sub_project) or sub_project == "all":
                 publish = goPublish(env)
-                result = publish.deployGo(project, sub_project, username, ip)
+                result = publish.deployGo(project, sub_project, username, ip, tower_url)
                 print result
                 if result:
                     result = str(result)

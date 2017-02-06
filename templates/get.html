@@ -4,7 +4,7 @@
 
 
 <div class="text-center">
-<form  class="col-lg-12" action="{% url 'getData' %}" method="post">
+<form  class="col-lg-12" action="{% url 'getData' %}" method="post" onsubmit="return display_prompt()">
   <div class="input-group my-group text-center" style="margin: 0px 0px 100px;">
     <span class="input-group-btn">
       <button class="btn btn-default active" type="button">项目名称</button>
@@ -13,7 +13,6 @@
         {% for name in groupname %}
             <option>{{ name.name }}</option>
         {% endfor %}
-
     </select>
   </div>
 
@@ -32,10 +31,8 @@
     <span class="input-group-btn">
       <button class="btn btn-default active" type="button">重启服务</button>
     </span>
-    <select id="services" class="selectpicker form-control" data-live-search="true" name="services">
-
-    </select>
-
+    <select id="services" class="selectpicker form-control" data-live-search="true" name="services"></select>
+    <input id="url" name="url" type="hidden">
   </div>
 
 <br/>
@@ -74,5 +71,19 @@
             $("#sub").attr("disabled", true)
         }
     }
+
+    function display_prompt() {
+        var url = document.getElementById("url");
+        var url_address = prompt("Please enter your tower url: ","")
+        if (url_address==""){
+            alert("please input again!!")
+            return false
+        }
+        else{
+            url.value = url_address
+            return true
+        }
+    }
 </script>
+
 {% endblock %}

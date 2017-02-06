@@ -70,12 +70,13 @@ class goPublish:
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))
 
 
-    def deployGo(self,name,services,username,ip):
+    def deployGo(self,name,services,username,ip,tower_url):
 
         self.name = name
         self.services = services
         self.username = username
         self.ip = ip
+        self.tower_url = tower_url
         hostInfo = {}
         result = []
 
@@ -113,7 +114,7 @@ class goPublish:
             restart = self.saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%allServices])
             result.append(restart)
 
-
+            self.name = self.name + "(" + tower_url + ")"
             ding = notification(host,self.name,restart,self.username)
 
 

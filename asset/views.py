@@ -31,10 +31,12 @@ def getData(request):
     data = request.POST['goProject']
     env = request.POST['env']
     services = request.POST['services']
+    tower_url = request.POST['url']
     username = request.user
     ip = request.META['REMOTE_ADDR']
     Publish = goPublish(env)
-    result = Publish.deployGo(data,services,username,ip)
+    result = Publish.deployGo(data,services,username,ip,tower_url)
+
 
     return render(request,'getdata.html',{'result':result})
 
