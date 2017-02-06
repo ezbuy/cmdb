@@ -75,7 +75,7 @@
     function display_prompt() {
         var url = document.getElementById("url");
         var url_address = prompt("Please enter your tower url: ","")
-        if (url_address==""){
+        if (url_address=="" || url_address == null){
             alert("please input again!!")
             return false
         }
