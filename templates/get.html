@@ -75,13 +75,21 @@
     function display_prompt() {
         var url = document.getElementById("url");
         var url_address = prompt("Please enter your tower url: ","")
-        if (url_address=="" || url_address == null){
-            alert("please input again!!")
+
+        if (url_address == null)
+        {
+            console.log(url_address)
             return false
         }
-        else{
+        else if (url_address.match("tower.im"))
+        {
             url.value = url_address
             return true
+        }
+        else
+        {
+            alert('The url is error....')
+            return false
         }
     }
 </script>

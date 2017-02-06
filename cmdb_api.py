@@ -53,10 +53,12 @@ def deploy_go():
     if env == 0:
         return jsonify({'result': 'The env not found.!!'})
 
+    if tower_url.find("tower.im") == -1:
+        return jsonify({'result': 'The tower_url is error.!!'})
 
     if env and project and sub_project and username and ip and tower_url:
         if gogroup.objects.filter(name=project):
-            if goservices.objects.filter(name=sub_project) or sub_project == "all":
+            if goservices.objects.filter(name=sub_project):
                 publish = goPublish(env)
                 result = publish.deployGo(project, sub_project, username, ip, tower_url)
                 print result
