@@ -117,7 +117,7 @@ class goPublish:
             ding = notification(host,info,restart,self.username)
 
 
-        action = 'deploy ' + self.name
+        action = 'deploy ' + info
         logs(self.username,self.ip,action,result)
 
 
