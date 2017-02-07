@@ -109,13 +109,12 @@ class goPublish:
                     result.append(svn)
 
 
-
             allServices = " ".join(goname)
             restart = self.saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%allServices])
             result.append(restart)
 
-            self.name = self.name + "(" + tower_url + ")"
-            ding = notification(host,self.name,restart,self.username)
+            info = self.name + "(" + tower_url + ")"
+            ding = notification(host,info,restart,self.username)
 
 
         action = 'deploy ' + self.name
