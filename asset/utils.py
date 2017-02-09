@@ -2,7 +2,7 @@ from asset.models import *
 from asset import models
 import os,time,commands,json,requests
 from salt.client import LocalClient
-from logs.models import goLog
+from logs.models import goLog,publishLog
 from celery.task import task
 import xmlrpclib
 from salt_api.api import SaltApi
@@ -57,6 +57,9 @@ def notification(hostname,project,result,username):
 
 def logs(user,ip,action,result):
     goLog.objects.create(user=user, remote_ip=ip, goAction=action, result=result)
+
+def publish_logs(user,ip,url,result):
+    publishLog.objects.create(user=user, remote_ip=ip, publish_url=url, publish_result=result)
 
 
 class goPublish:
@@ -119,6 +122,7 @@ class goPublish:
 
         action = 'deploy ' + info
         logs(self.username,self.ip,action,result)
+        publish_logs(self.username,self.ip,self.tower_url,result)
 
 
         return result
