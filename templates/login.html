@@ -20,7 +20,7 @@
             </div>
 
             <h2>Welcome to CMDBServer</h2>
-            <form class="m-t" role="form" method="post" action="{% url 'login' %}">
+            <form class="m-t" role="form" method="post" action="{% url 'login' %}?next={{ next  }}">
                 <div class="form-group">
                     <input type="text" name="username" class="form-control" placeholder="Username">
                 </div>
