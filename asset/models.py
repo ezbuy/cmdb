@@ -183,6 +183,17 @@ class crontab_svn(models.Model):
     def __unicode__(self):
         return self.project
 
+class GOTemplate(models.Model):
+    username = models.CharField(max_length=32)
+    password = models.CharField(max_length=32)
+    repo = models.CharField(max_length=128)
+    localpath = models.CharField(max_length=64)
+    env = models.IntegerField(choices=ASSET_ENV, blank=True, null=True, verbose_name=u"运行环境")
+    project = models.ForeignKey(gogroup)
+    hostname = models.ForeignKey(minion)
+
+    def __unicode__(self):
+        return self.repo
 
 
 

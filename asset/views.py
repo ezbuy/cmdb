@@ -313,3 +313,32 @@ def cronjob_list(request):
     return render(request,'cronjob_list.html',{'cron_list':contacts})
 
 
+@login_required
+@deny_resubmit(page_key='go_template')
+def go_template_html(request):
+    return render(request,'go_template.html')
+
+@login_required
+@deny_resubmit(page_key='go_template')
+def get_gotemplate_project(request):
+    go_template = GOTemplate.objects.all()
+    env = request.GET['env']
+    project = []
+    for i in go_template:
+        if str(i.env) == env:
+            project.append(i.project.name)
+
+    project = list(set(project))
+
+    return HttpResponse(json.dumps(project))
+
+@login_required
+@deny_resubmit(page_key='go_template')
+def go_template_result(request):
+    env = request.POST['env']
+    project = request.POST['project']
+    ip = request.META['REMOTE_ADDR']
+    username = request.user
+    Publish = goPublish(env)
+    mes = Publish.go_template(project,username,ip)
+    return render(request,'getdata.html',{'result':mes})

@@ -246,7 +246,28 @@ class goPublish:
 
         return result
 
+    def go_template(self, project, usernmae, ip):
+        self.project = project
+        self.username = usernmae
+        self.ip = ip
+        result = []
+        conf = GOTemplate.objects.all()
 
+        for p in conf:
+            try:
+                if str(p.env) == self.env and p.project.name == self.project:
+                    confCmd = "svn checkout %s --username=%s --password=%s --non-interactive %s" % (
+                    p.repo,p.username, p.password, p.localpath)
+                    confResult = self.saltCmd.cmd('%s' % p.hostname, 'cmd.run', ['%s' % confCmd])
+                    result.append(confResult)
+                    info = self.project + ' template'
+                    ding = notification(p.hostname, info, confResult, self.username)
+            except Exception, e:
+                print e
+        action = self.project + ' template'
+        logs(self.username, self.ip, action, result)
+
+        return result
 class goServicesni:
     def __init__(self,projectName):
         self.projectName = projectName

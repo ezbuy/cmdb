@@ -24,4 +24,7 @@ urlpatterns = patterns('',
     url(r'^goStatus/$', go_status, name='go_status'),
     url(r'^crontabUpdate/$', crontab_update, name='crontab_update'),
     url(r'^cronjob_list/$', cronjob_list, name='cronjob_list'),
+    url(r'^go_template/$',go_template_html,name='go_template'),
+    url(r'^get_gotemplate_project/$', get_gotemplate_project, name='get_gotemplate_project'),
+    url(r'^go_template_result/$', go_template_result, name='go_template_result'),
 )

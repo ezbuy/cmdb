@@ -4,7 +4,7 @@
 
 
 <div class="text-center">
-    <form class="col-lg-12" action="{% url 'goConfResult' %}" method="get">
+    <form class="col-lg-12" action="{% url 'go_template_result' %}" method="post">
 
 
         <div class="input-group my-group text-center" style="margin: 0px 0px 100px;">
@@ -46,7 +46,7 @@
 
         project.options.length = 0;   // del options
         if (env != "none") {
-            $.getJSON("/asset/getConfProject",{"env":env},function (result) {
+            $.getJSON("/asset/get_gotemplate_project",{"env":env},function (result) {
                 console.log(result)
                 for (i=0;i<result.length;i++) {
                     var objOption = document.createElement("OPTION")
