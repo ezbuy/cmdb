@@ -353,7 +353,7 @@ class crontab_svn_status(object):
         host = minion.objects.get(saltname=self.hostname)
         obj = crontab_svn.objects.get(hostname=host,project=self.project)
 
-        cmd = "svn checkout %s %s --username=%s --password=%s --non-interactive " % (obj.repo,obj.localpath,obj.username, obj.password)
+        cmd = ["svn checkout %s %s --username=%s --password=%s --non-interactive " % (obj.repo,obj.localpath,obj.username, obj.password),'env={"LC_ALL": "en_US.UTF-8"}']
         data = {
             'client': 'local',
             'tgt': self.hostname,
