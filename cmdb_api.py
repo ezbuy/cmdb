@@ -53,7 +53,7 @@ def deploy_go():
     if env == 0:
         return jsonify({'result': 'The env not found.!!'})
 
-    if tower_url.find("tower.im") == -1:
+    if tower_url and tower_url.find("tower.im") == -1:
         return jsonify({'result': 'The tower_url is error.!!'})
 
     if env and project and sub_project and username and ip and tower_url:
@@ -61,6 +61,7 @@ def deploy_go():
             if goservices.objects.filter(name=sub_project):
                 publish = goPublish(env)
                 result = publish.deployGo(project, sub_project, username, ip, tower_url)
+                connection.close()
                 print result
                 if result:
                     result = str(result)
@@ -72,9 +73,11 @@ def deploy_go():
                     result = 'Failed'
                 return jsonify({'result': result})
             else:
+                connection.close()
                 result = "No " + sub_project + " project!!"
                 return jsonify({'result': result})
         else:
+            connection.close()
             result = "No " + project + " project!!"
             return jsonify({'result': result})
     else:
@@ -110,16 +113,20 @@ def add_sub_project():
             project = gogroup.objects.get(name=project)
             ip = saltminion.ip
             if goservices.objects.filter(saltminion=saltminion).filter(group=project).filter(name=sub_project_name).filter(env=env):
+                connection.close()
                 return jsonify({'result': 'The %s subproject is existing!!' % sub_project_name })
         except Exception, e:
+            connection.close()
             print e
             return jsonify({'result': 'wrong hostname or project name!!'})
 
         try:
             obj = goservices(ip=ip,name=sub_project_name ,env=env,group=project,saltminion=saltminion,owner=owner,has_statsd=has_statsd,has_sentry=has_sentry,comment=comment)
             obj.save()
+            connection.close()
             return jsonify({'result': 'added %s subproject is successful.!!' % sub_project_name })
         except Exception, e:
+            connection.close()
             print e
             return jsonify({'result': 'added %s subproject was failed.!!' % sub_project_name })
     else:
@@ -151,6 +158,7 @@ def add_new_project():
     if new_project and svn_username and svn_password and svn_repo and svn_root_path and svn_move_path and svn_revert_path and svn_execute_file:
         try:
             if gogroup.objects.filter(name=new_project):
+                connection.close()
                 return jsonify({'result': 'The %s new project is existing!!' % new_project})
             else:
                 ###added a group project
@@ -164,9 +172,10 @@ def add_new_project():
                           movepath=svn_move_path,revertpath=svn_revert_path,
                           executefile=svn_execute_file,project=project)
                 obj.save()
-
+                connection.close()
                 return jsonify({'result': 'added %s new subproject is successful!!' % new_project})
         except Exception, e:
+            connection.close()
             print e
             return jsonify({'result': 'added %s new subproject is failed!!' % new_project})
     else:
@@ -199,12 +208,15 @@ def add_goconf():   ###added an info for goconf table
             hostname = minion.objects.get(saltname=hostname)
             project = gogroup.objects.get(name=project)
             if goconf.objects.filter(hostname=hostname).filter(project=project).filter(env=env):
+                connection.close()
                 return jsonify({'result': 'The %s project is existing!!' % project})
             else:
                 obj = goconf(username=svn_username,password=svn_password,repo=svn_repo,localpath=svn_root_path,env=env,hostname=hostname,project=project)
                 obj.save()
+                connection.close()
                 return jsonify({'result': 'added %s goconf is successful!!' % project})
         except Exception, e:
+            connection.close()
             print e
             return jsonify({'result': 'wrong hostname or project name!!'})
     else:
@@ -230,14 +242,21 @@ def go_operation():    # go 'stop,start,restart' operation
     if username and password and service and method:
         if goservices.objects.filter(name=service) and method in ['stop','start','restart']:
             obj = go_action(service,username,ip)
-            if method == 'stop':
-                result = obj.stop()
-            elif method == 'start':
-                result = obj.start()
-            elif method == 'restart':
-                result = obj.restart()
+            try:
+                if method == 'stop':
+                    result = obj.stop()
+                elif method == 'start':
+                    result = obj.start()
+                elif method == 'restart':
+                    result = obj.restart()
+                connection.close()
+            except Exception, e:
+                connection.close()
+                print e
+                return jsonify({'result': 'Internal Server Error'})
             return jsonify({'result': result})
         else:
+            connection.close()
             return jsonify({'result': 'service name or method name is error!'})
     else:
         return jsonify({'result': 'argv is error!!!'})
