@@ -4,7 +4,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mico.settings')
 django.setup()
 from asset.utils import goPublish,go_action
-from asset.models import gogroup,goservices,minion,svn,goconf
+from asset.models import gogroup,goservices,minion,svn,goconf,GOTemplate
 from django.contrib import auth
 import functools
 from django.db import connection
@@ -51,7 +51,7 @@ def deploy_go():
     username = request.json.get('username')
     password = request.json.get('password')
     tower_url = request.json.get('tower_url')
-    print '---q--',env
+   
     try:
         ip = request.headers['X-Real-Ip']
     except Exception, e:
@@ -257,6 +257,38 @@ def go_operation():    # go 'stop,start,restart' operation
     else:
         return jsonify({'result': 'argv is error!!!'})
 
+
+@app.route('/api/gotemplate',methods=['POST'])
+@login_author
+def add_gotemplate():   ###added an info for gotemplate table
+    username = request.json.get('username')
+    password = request.json.get('password')
+    svn_username = request.json.get('svn_username')
+    svn_password = request.json.get('svn_password')
+    svn_repo = request.json.get('svn_repo')
+    svn_root_path = request.json.get('svn_root_path')
+    project = request.json.get('project')
+    hostname = request.json.get('hostname')
+    env = request.json.get('env')
+
+    if svn_username and svn_password and svn_repo and svn_root_path and project and hostname:
+        try:
+            hostname = minion.objects.get(saltname=hostname)
+            project = gogroup.objects.get(name=project)
+            if GOTemplate.objects.filter(hostname=hostname).filter(project=project).filter(env=env):
+                connection.close()
+                return jsonify({'result': 'The %s project is existing!!' % project})
+            else:
+                obj = GOTemplate(username=svn_username,password=svn_password,repo=svn_repo,localpath=svn_root_path,env=env,hostname=hostname,project=project)
+                obj.save()
+                connection.close()
+                return jsonify({'result': 'added %s gotemplate is successful!!' % project})
+        except Exception, e:
+            connection.close()
+            print e
+            return jsonify({'result': 'wrong hostname or project name!!'})
+    else:
+        return jsonify({'result': 'argv is error!!!'})
 
 
 if __name__ == '__main__':
