@@ -23,6 +23,13 @@ def login_author(func):
 
         if auth.authenticate(username = usernmae,password = password) is not None:
             connection.close()
+            if request.json.get('env') is None:
+                env={'env':'1'}
+            elif int(request.json.get('env')) not in [1, 2]:
+                return jsonify({'result': 'The env not found.!!'})
+            else:
+                env={'env':request.json.get('env')}
+            request.get_json().update(env)
             return func(*args,**kwargs)
         else:
             return jsonify({'result': 'username or password is error'})
@@ -32,6 +39,7 @@ def login_author(func):
 @app.route('/',methods=['POST'])
 @login_author
 def message():
+    print request.json.get('env')
     return jsonify({'hi':'hello world!!'})
 
 @app.route('/deploy',methods=['POST'])
@@ -43,43 +51,46 @@ def deploy_go():
     username = request.json.get('username')
     password = request.json.get('password')
     tower_url = request.json.get('tower_url')
+    print '---q--',env
     try:
         ip = request.headers['X-Real-Ip']
     except Exception, e:
         print e
         ip = request.remote_addr
 
-    env = deploy_env(env)
-    if env == 0:
-        return jsonify({'result': 'The env not found.!!'})
 
     if tower_url and tower_url.find("tower.im") == -1:
         return jsonify({'result': 'The tower_url is error.!!'})
 
-    if env and project and sub_project and username and ip and tower_url:
-        if gogroup.objects.filter(name=project):
-            if goservices.objects.filter(name=sub_project):
-                publish = goPublish(env)
-                result = publish.deployGo(project, sub_project, username, ip, tower_url)
-                connection.close()
-                print result
-                if result:
-                    result = str(result)
-                    if result.find('ERROR') > 0 or result.find('error') > 0 or result.find('Skip') > 0:
-                        result = 'Failed'
+    if project and sub_project and tower_url:
+        try:
+            if gogroup.objects.filter(name=project):
+                if goservices.objects.filter(name=sub_project):
+                    publish = goPublish(env)
+                    result = publish.deployGo(project, sub_project, username, ip, tower_url)
+                    connection.close()
+                    print result
+                    if result:
+                        result = str(result)
+                        if result.find('ERROR') > 0 or result.find('error') > 0 or result.find('Skip') > 0:
+                            result = 'Failed'
+                        else:
+                            result = 'Successful'
                     else:
-                        result = 'Successful'
+                        result = 'Failed'
+                    return jsonify({'result': result})
                 else:
-                    result = 'Failed'
-                return jsonify({'result': result})
+                    connection.close()
+                    result = "No " + sub_project + " project!!"
+                    return jsonify({'result': result})
             else:
                 connection.close()
-                result = "No " + sub_project + " project!!"
+                result = "No " + project + " project!!"
                 return jsonify({'result': result})
-        else:
+        except Exception, e:
             connection.close()
-            result = "No " + project + " project!!"
-            return jsonify({'result': result})
+            print e
+            return jsonify({'result': 'the env value is error!!'})
     else:
         return jsonify({'result': 'argv is error!!!'})
 
@@ -100,11 +111,6 @@ def add_sub_project():
     has_sentry = request.json.get('has_sentry')
     comment = request.json.get('comment')
 
-    env = deploy_env(env)
-
-
-    if env == 0:
-        return jsonify({'result': 'The env not found.!!'})
 
 
     if project and hostname and sub_project_name and owner and has_sentry and has_statsd and comment:
@@ -149,10 +155,6 @@ def add_new_project():
     svn_execute_file = request.json.get('svn_execute_file')
     env = request.json.get('env')
 
-    env = deploy_env(env)
-
-    if env == 0:
-        return jsonify({'result': 'The env not found.!!'})
 
 
     if new_project and svn_username and svn_password and svn_repo and svn_root_path and svn_move_path and svn_revert_path and svn_execute_file:
@@ -196,12 +198,6 @@ def add_goconf():   ###added an info for goconf table
     project = request.json.get('project')
     hostname = request.json.get('hostname')
     env = request.json.get('env')
-
-    env = deploy_env(env)
-
-    if env == 0:
-        return jsonify({'result': 'The env not found.!!'})
-
 
     if svn_username and svn_password and svn_repo and svn_root_path and project and hostname:
         try:
@@ -260,15 +256,6 @@ def go_operation():    # go 'stop,start,restart' operation
             return jsonify({'result': 'service name or method name is error!'})
     else:
         return jsonify({'result': 'argv is error!!!'})
-
-
-def deploy_env(env):
-    if env is None:
-        return 1
-    elif int(env) not in [1, 2]:
-        return 0
-    else:
-        return env
 
 
 
