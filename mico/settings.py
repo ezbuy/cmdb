@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'djcelery',
     'subversion',
     'web',
+    'kettle',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -158,3 +159,9 @@ dingding_api = 'http://dlog.65dg.me/dlog'
 
 ##crontab api
 crontab_api = 'http://192.168.199.64:5000'
+
+##kettle setting
+kettle_host = 't-slq-web-1'
+kettle_install_dir = '/srv/kettle/data-integration/'
+kettle_svn_path = '/srv/kettle/bi/kettle/'
+kettle_log_path = '/tmp/'
