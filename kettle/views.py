@@ -2,7 +2,7 @@ from django.shortcuts import render,HttpResponse
 from django.contrib.auth.decorators import login_required
 from utils import kettle_run
 from asset.utils import deny_resubmit
-
+from mico.settings import kettle_log_url
 
 
 # Create your views here.
@@ -23,6 +23,6 @@ def kettle_execute(request):
     username = request.user
     return_date = kettle_run.delay(username,ip,cmd_type,kettle_file,kettle_log_file)
     #print return_date
-    result = [{'kettle':'The kettle is running,please check kettle log file(%s)!' % kettle_log_file}]
+    result = [{'kettle':'The kettle is running,please check kettle log file(%s%s)!' % (kettle_log_url,kettle_log_file)}]
     return render(request,'getdata.html',{'result':result})
 
