@@ -1,12 +1,13 @@
 from django.shortcuts import render,render_to_response,HttpResponse
 from django.contrib.auth.decorators import login_required
-from asset.utils import logs,notification
+from asset.utils import logs,dingding_robo,deny_resubmit
 from salt.client import LocalClient
 from cache.models import memcache
 # Create your views here.
 
 
 @login_required
+@deny_resubmit(page_key='memcache')
 def memcached(request):
     if 'env' in request.GET:
         env = request.GET['env']
@@ -19,14 +20,14 @@ def memcached(request):
 
 
 @login_required
+@deny_resubmit(page_key='memcache')
 def flushMemcached(request):
-    data = request.GET.getlist('mcName')
+    data = request.POST.getlist('mcName')
     project = 'memcache flush'
     username = request.user
     ip = request.META['REMOTE_ADDR']
     saltCmd = LocalClient()
     result = []
-
 
     for name in data:
         for info in memcache.objects.filter(memcacheName=name):
@@ -38,7 +39,7 @@ def flushMemcached(request):
                 else:
                     msg = 'error'
                 host = info.ip + ":" + info.port
-                notification(host,project,msg,username)
+                dingding_robo(host,project,msg,username,request.POST['phone_number'])
                 print result
             except Exception,e:
                 print e

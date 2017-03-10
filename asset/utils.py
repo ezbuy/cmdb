@@ -249,10 +249,11 @@ class goPublish:
 
         return result
 
-    def go_template(self, project, usernmae, ip):
+    def go_template(self, project, usernmae, ip, phone_number):
         self.project = project
         self.username = usernmae
         self.ip = ip
+        self.phone_number = phone_number
         result = []
         conf = GOTemplate.objects.all()
 
@@ -264,7 +265,8 @@ class goPublish:
                     confResult = self.saltCmd.cmd('%s' % p.hostname, 'cmd.run', ['%s' % confCmd])
                     result.append(confResult)
                     info = self.project + ' template'
-                    ding = notification(p.hostname, info, confResult, self.username)
+                    #ding = notification(p.hostname, info, confResult, self.username)
+                    dingding_robo(p.hostname, info, confResult, self.username,self.phone_number)
             except Exception, e:
                 print e
         action = self.project + ' template'

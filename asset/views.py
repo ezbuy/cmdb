@@ -7,7 +7,7 @@ from salt.client import LocalClient
 import os,commands,re,json
 from asset.utils import getNowTime,get_cronjob_list
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
-from django.contrib.auth.models import User
+
 
 
 
@@ -83,7 +83,7 @@ def getServices(request):
         getMes = saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl %s %s'% (action,goName)])
         result.append(getMes)
         info = action + ' ' + goName
-        notification(host,info,getMes,username)
+        dingding_robo(host,info,getMes,username,request.POST['phone_number'])
     logs(username,ip,'%s services' % action,result)
 
 
@@ -340,5 +340,5 @@ def go_template_result(request):
     ip = request.META['REMOTE_ADDR']
     username = request.user
     Publish = goPublish(env)
-    mes = Publish.go_template(project,username,ip)
+    mes = Publish.go_template(project,username,ip,request.POST['phone_number'])
     return render(request,'getdata.html',{'result':mes})
