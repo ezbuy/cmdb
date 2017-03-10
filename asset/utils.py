@@ -1,3 +1,4 @@
+# coding=utf-8
 from asset.models import *
 from asset import models
 import os,time,commands,json,requests
@@ -6,8 +7,9 @@ from logs.models import goLog,publishLog
 from celery.task import task
 import xmlrpclib
 from salt_api.api import SaltApi
-from mico.settings import dingding_api,crontab_api
+from mico.settings import dingding_api,crontab_api,dingding_robo_url
 from functools import wraps
+from django.contrib.auth.models import User
 
 salt_api = SaltApi()
 
@@ -73,13 +75,14 @@ class goPublish:
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))
 
 
-    def deployGo(self,name,services,username,ip,tower_url):
+    def deployGo(self,name,services,username,ip,tower_url,phone_number):
 
         self.name = name
         self.services = services
         self.username = username
         self.ip = ip
         self.tower_url = tower_url
+        self.phone_number = phone_number
         hostInfo = {}
         result = []
 
@@ -117,8 +120,8 @@ class goPublish:
             result.append(restart)
 
             info = self.name + "(" + tower_url + ")"
-            ding = notification(host,info,restart,self.username)
-
+            #ding = notification(host,info,restart,self.username)
+            dingding_robo(host,info,restart,self.username,self.phone_number)
 
         action = 'deploy ' + info
         logs(self.username,self.ip,action,result)
@@ -476,6 +479,59 @@ def deny_resubmit(page_key=''):
                     from django.http import HttpResponseRedirect
                     return HttpResponseRedirect('/')
                 request.session['%s_submit' % page_key] = ''
+                
+                user = User.objects.get(username=request.user)
+                phone_number = UserProfile.objects.get(user=user).phone_number       
+                post_dict = request.POST
+                post_dict = post_dict.copy()
+                post_dict.update({'phone_number':phone_number})
+                request.POST = post_dict
             return func(request, *args, **kwargs)
         return _wrapped_view
     return decorator
+
+
+
+def dingding_robo(hostname,project,result,username,phone_number):
+    url = dingding_robo_url
+    headers = {'Content-Type': 'application/json'}
+    hs = str(hostname) + " by " + str(username)
+
+    try:
+        if type(result) == dict:
+            if result.values()[0].find('ERROR') > 0 or result.values()[0].find('error') > 0 or result.values()[0].find('Skip') > 0:
+                errmsg = 'Failed'
+            else:
+                errmsg = 'Success'
+        elif type(result) == list:
+            result = str(result)
+            if result.find('ERROR') > 0 or result.find('error') > 0 or result.find('Skip') > 0:
+                errmsg = 'Failed'
+            else:
+                errmsg = 'Success'
+        elif type(result) == str:
+            if result.find('ERROR') > 0 or result.find('error') > 0 or result.find('Skip') > 0:
+                errmsg = 'Failed'
+            else:
+                errmsg = 'Success'
+    except Exception, e:
+        print e
+        errmsg = 'Failed'
+    current_time = getNowTime()
+    content = current_time + " " + errmsg + ": " + "deploy " + str(project) + " to " + str(hostname) + " by " + str(username)
+    data ={
+        "msgtype": "text", 
+        "text": {
+            "content": content
+            }, 
+        "at": {
+            "atMobiles": [
+            phone_number
+             ], 
+             }
+        }
+    print data
+    try:
+        requests.post(url,headers=headers,data=json.dumps(data),timeout=3)
+    except Exception,e:
+        print e

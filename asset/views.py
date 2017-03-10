@@ -7,6 +7,7 @@ from salt.client import LocalClient
 import os,commands,re,json
 from asset.utils import getNowTime,get_cronjob_list
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+from django.contrib.auth.models import User
 
 
 
@@ -32,10 +33,9 @@ def getData(request):
     env = request.POST['env']
     services = request.POST['services']
     tower_url = request.POST['url']
-    username = request.user
     ip = request.META['REMOTE_ADDR']
     Publish = goPublish(env)
-    result = Publish.deployGo(data,services,username,ip,tower_url)
+    result = Publish.deployGo(data,services,request.user,ip,tower_url,request.POST['phone_number'])
 
 
     return render(request,'getdata.html',{'result':result})

@@ -166,3 +166,6 @@ kettle_install_dir = '/srv/kettle/data-integration/'
 kettle_svn_path = '/srv/kettle/bi/kettle/'
 kettle_log_path = '/tmp/'
 kettle_log_url = 'http://127.0.0.1/'
+
+##dingding_robo
+dingding_robo_url = "https://oapi.dingtalk.com/robot/send?access_token="

@@ -2,6 +2,7 @@
 
 import datetime
 from django.db import models
+from django.contrib.auth.models import User
 
 
 
@@ -194,6 +195,10 @@ class GOTemplate(models.Model):
 
     def __unicode__(self):
         return self.repo
+
+class UserProfile(models.Model):
+    phone_number = models.CharField(max_length=11)
+    user = models.ForeignKey(User,unique=True)
 
 
 

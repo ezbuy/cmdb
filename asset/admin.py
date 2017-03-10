@@ -30,6 +30,8 @@ class minionAdmin(admin.ModelAdmin):
 class gotemplateAdmin(admin.ModelAdmin):
     list_display = ('username','password','repo','localpath','env','project','hostname')
 
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user','phone_number')
 
 admin.site.register(IDC)
 admin.site.register(Asset,assetAdmin)
@@ -44,3 +46,4 @@ admin.site.register(gobuild,gobuildAdmin)
 admin.site.register(gostatus,gostatusAdmin)
 admin.site.register(crontab_svn,crontabSVNAdmin)
 admin.site.register(GOTemplate,gotemplateAdmin)
+admin.site.register(UserProfile,UserProfileAdmin)
