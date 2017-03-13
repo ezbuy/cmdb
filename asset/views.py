@@ -163,18 +163,20 @@ def revert(request):
 
 
 @login_required
+@deny_resubmit(page_key='deploy_goconf')
 def goConfHTML(request):
     return render(request,'goConf.html')
 
 
 @login_required
+@deny_resubmit(page_key='deploy_goconf')
 def goConfResult(request):
-    env = request.GET['env']
-    project = request.GET['project']
+    env = request.POST['env']
+    project = request.POST['project']
     ip = request.META['REMOTE_ADDR']
     username = request.user
     Publish = goPublish(env)
-    mes = Publish.goConf(project,username,ip)
+    mes = Publish.goConf(project,username,ip,request.POST['phone_number'])
     return render(request,'getdata.html',{'result':mes})
 
 

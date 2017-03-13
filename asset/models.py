@@ -198,7 +198,7 @@ class GOTemplate(models.Model):
 
 class UserProfile(models.Model):
     phone_number = models.CharField(max_length=11)
-    user = models.ForeignKey(User,unique=True)
+    user = models.OneToOneField(User)
 
 
 

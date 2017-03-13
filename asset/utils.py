@@ -13,49 +13,6 @@ from django.contrib.auth.models import User
 
 salt_api = SaltApi()
 
-def notification(hostname,project,result,username):
-    url = dingding_api
-    headers = {'Content-Type': 'application/json'}
-    hs = str(hostname) + " by " + str(username)
-
-    try:
-        if type(result) == dict:
-            if result.values()[0].find('ERROR') > 0 or result.values()[0].find('error') > 0 or result.values()[0].find('Skip') > 0:
-                errmsg = 'Failed'
-            else:
-                errmsg = 'Success'
-        elif type(result) == list:
-            result = str(result)
-            if result.find('ERROR') > 0 or result.find('error') > 0 or result.find('Skip') > 0:
-                errmsg = 'Failed'
-            else:
-                errmsg = 'Success'
-        elif type(result) == str:
-            if result.find('ERROR') > 0 or result.find('error') > 0 or result.find('Skip') > 0:
-                errmsg = 'Failed'
-            else:
-                errmsg = 'Success'
-    except Exception, e:
-        print e
-        errmsg = 'Failed'
-
-    data ={
-        "hostname": hs,
-        "ip": "null",
-        "project": project,
-        "gitcommit": "null",
-        "gitmsg": "null",
-        "errmsg": errmsg,
-        "errcode": True
-    }
-    print data
-    try:
-        requests.post(url,headers=headers,data=json.dumps(data),timeout=3)
-    except Exception,e:
-        print e
-
-
-
 
 def logs(user,ip,action,result):
     goLog.objects.create(user=user, remote_ip=ip, goAction=action, result=result)
@@ -120,7 +77,6 @@ class goPublish:
             result.append(restart)
 
             info = self.name + "(" + tower_url + ")"
-            #ding = notification(host,info,restart,self.username)
             dingding_robo(host,info,restart,self.username,self.phone_number)
 
         action = 'deploy ' + info
@@ -164,7 +120,7 @@ class goPublish:
 
                 mes = {self.host: mes}
                 info = 'revert ' + self.project
-                ding = notification(self.host,info,mes,username)
+                dingding_robo(self.host,info,mes,username)
 
                 result.append(mes)
 
@@ -173,10 +129,11 @@ class goPublish:
         return result
 
 
-    def goConf(self,project,usernmae,ip):
+    def goConf(self,project,usernmae,ip,phone_number):
         self.project = project
         self.username = usernmae
         self.ip = ip
+        self.phone_number = phone_number
         result = []
         conf = goconf.objects.all()
 
@@ -192,7 +149,7 @@ class goPublish:
 
                     info = self.project + ' conf'
 
-                    ding = notification(p.hostname, info, confResult, self.username)
+                    dingding_robo(p.hostname, info, confResult, self.username,self.phone_number)
             except Exception,e:
                 print e
         action = 'conf ' + self.project
@@ -238,10 +195,10 @@ class goPublish:
             f.write('done')
             f.close()
             if result.find('Failed:    0') < 0:
-                notification(self.hostname,'add ' + self.project + ' service','is error',self.username)
+                dingding_robo(self.hostname,'add ' + self.project + ' service','is error',self.username)
                 logs(self.username,self.ip,'add ' + self.project + ' service' ,'Failed')
             else:
-                notification(self.hostname, 'add ' + self.project + ' service', 'successful', self.username)
+                dingding_robo(self.hostname, 'add ' + self.project + ' service', 'successful', self.username)
                 logs(self.username, self.ip,'add ' + self.project + ' service', 'Successful')
         except Exception, e:
             print e
@@ -265,7 +222,6 @@ class goPublish:
                     confResult = self.saltCmd.cmd('%s' % p.hostname, 'cmd.run', ['%s' % confCmd])
                     result.append(confResult)
                     info = self.project + ' template'
-                    #ding = notification(p.hostname, info, confResult, self.username)
                     dingding_robo(p.hostname, info, confResult, self.username,self.phone_number)
             except Exception, e:
                 print e
@@ -417,11 +373,11 @@ class go_action(object):   #go "start,stop,restart" action
             if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] != 20:
                 supervisor_obj.supervisor.startProcess(self.service)
             if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] == 20:
-                notification(info.saltminion,'start "%s" service' % self.service,'successful',self.user)
+                dingding_robo(info.saltminion,'start "%s" service' % self.service,'successful',self.user)
                 logs(self.user, self.ip, 'start "%s" service' % self.service, 'successful')
                 self.result[str(info.saltminion)] = 'successful'
             else:
-                notification(info.saltminion, 'start "%s" service' % self.service, 'is error', self.user)
+                dingding_robo(info.saltminion, 'start "%s" service' % self.service, 'is error', self.user)
                 logs(self.user, self.ip, 'start "%s" service' % self.service , 'failed')
                 self.result[str(info.saltminion)] = 'failed'
         return  self.result
@@ -437,11 +393,11 @@ class go_action(object):   #go "start,stop,restart" action
             if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] != 0:
                 supervisor_obj.supervisor.stopProcess(self.service)
             if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] == 0:
-                notification(info.saltminion, 'stop "%s" service' % self.service, 'successful', self.user)
+                dingding_robo(info.saltminion, 'stop "%s" service' % self.service, 'successful', self.user)
                 logs(self.user,self.ip,'stop "%s" service' % self.service,'successful')
                 self.result[str(info.saltminion)] = 'successful'
             else:
-                notification(info.saltminion, 'stop "%s" service' % self.service, 'is error', self.user)
+                dingding_robo(info.saltminion, 'stop "%s" service' % self.service, 'is error', self.user)
                 logs(self.user, self.ip, 'stop "%s" service' % self.service, 'failed')
                 self.result[str(info.saltminion)] = 'failed'
         return self.result
@@ -457,11 +413,11 @@ class go_action(object):   #go "start,stop,restart" action
                 supervisor_obj.supervisor.stopProcess(self.service)
             supervisor_obj.supervisor.startProcess(self.service)
             if supervisor_obj.supervisor.getProcessInfo(self.service)['state'] == 20:
-                notification(info.saltminion, 'restart "%s" service' % self.service, 'successful', self.user)
+                dingding_robo(info.saltminion, 'restart "%s" service' % self.service, 'successful', self.user)
                 logs(self.user, self.ip, 'restart "%s" service' % self.service, 'successful')
                 self.result[str(info.saltminion)] = 'successful'
             else:
-                notification(info.saltminion, 'restart "%s" service' % self.service, 'is error', self.user)
+                dingding_robo(info.saltminion, 'restart "%s" service' % self.service, 'is error', self.user)
                 logs(self.user, self.ip, 'restart "%s" service' % self.service, 'failed')
                 self.result[str(info.saltminion)] = 'failed'
         return self.result
@@ -495,7 +451,7 @@ def deny_resubmit(page_key=''):
 
 
 
-def dingding_robo(hostname,project,result,username,phone_number):
+def dingding_robo(hostname,project,result,username,phone_number=''):
     url = dingding_robo_url
     headers = {'Content-Type': 'application/json'}
     hs = str(hostname) + " by " + str(username)
