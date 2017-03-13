@@ -440,7 +440,11 @@ def deny_resubmit(page_key=''):
                 request.session['%s_submit' % page_key] = ''
                 
                 user = User.objects.get(username=request.user)
-                phone_number = UserProfile.objects.get(user=user).phone_number       
+                try:
+                    phone_number = UserProfile.objects.get(user=user).phone_number  
+                except Exception, e:
+                    print e
+                    phone_number = ''     
                 post_dict = request.POST
                 post_dict = post_dict.copy()
                 post_dict.update({'phone_number':phone_number})
