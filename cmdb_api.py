@@ -67,7 +67,7 @@ def deploy_go():
             if gogroup.objects.filter(name=project):
                 if goservices.objects.filter(name=sub_project):
                     publish = goPublish(env)
-                    result = publish.deployGo(project, sub_project, username, ip, tower_url)
+                    result = publish.deployGo(project, sub_project, username, ip, tower_url, '')
                     connection.close()
                     print result
                     if result:
