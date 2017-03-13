@@ -168,4 +168,4 @@ kettle_log_path = '/tmp/'
 kettle_log_url = 'http://127.0.0.1/'
 
 ##dingding_robo
-dingding_robo_url = "https://oapi.dingtalk.com/robot/send?access_token="
+dingding_robo_url = "https://oapi.dingtalk.com/robot/send?access_token=6e710e17889d16a722064d6679c487781547ad9d2e804e474553992361f4563d"

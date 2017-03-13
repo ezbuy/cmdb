@@ -1,4 +1,3 @@
-//jumpserver 自定义js 2015-01-29
 
 //此函数用于checkbox的全选和反选
 var checked=false;

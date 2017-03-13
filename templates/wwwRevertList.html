@@ -4,7 +4,7 @@
 
 
 <div class="text-center">
-    <form  class="col-lg-12" action="{% url 'deployRevertIis' %}" method="get" id="submitform">
+    <form  class="col-lg-12" action="{% url 'deployRevertIis' %}" method="post" id="submitform">
         <fieldset class="form-group">
             <label for="formGroupExampleInput">运行环境</label>
                 <select id="env" class="selectpicker form-control" data-live-search="true" name="env"  onchange="getoption(this.value)">

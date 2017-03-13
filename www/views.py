@@ -4,18 +4,20 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 from www.utils import deployWww,deployWwwRecycle,deployWwwRevert
 from www.models import webSite
-from asset.utils import getNowTime
+from asset.utils import getNowTime,deny_resubmit
 import json
 
 
 
 
 @login_required
+@deny_resubmit(page_key='deploy_iis')
 def wwwList(request):
     return render(request,'wwwList.html')
 
 
 @login_required
+@deny_resubmit(page_key='deploy_revert')
 def wwwRevertList(request):
     return render(request,'wwwRevertList.html')
 
@@ -30,13 +32,14 @@ def getProjectName(request):
     return  HttpResponse(json.dumps(servicesList))
 
 @login_required
+@deny_resubmit(page_key='deploy_iis')
 def deployIis(request):
-     env = request.GET['env']
-     site = request.GET['project']
+     env = request.POST['env']
+     site = request.POST['project']
      username = request.user
      ip = request.META['REMOTE_ADDR']
      fileName = '/tmp/deployIis_' + getNowTime()
-     deploy = deployWww.delay(env,site,username,ip,fileName)
+     deploy = deployWww.delay(env,site,username,ip,fileName,request.POST['phone_number'])
      if deploy.id:
         return render(request,'getText.html',{'fileName':fileName})
      else:
@@ -44,6 +47,7 @@ def deployIis(request):
 
 
 @login_required
+@deny_resubmit(page_key='deploy_recycle')
 def recycleList(request):
     if 'env' in request.GET:
         env = request.GET['env']
@@ -54,13 +58,14 @@ def recycleList(request):
 
 
 @login_required
+@deny_resubmit(page_key='deploy_recycle')
 def deployRecycle(request):
-    data = request.GET.getlist('id')
+    data = request.POST.getlist('id')
     site,env = data[0].split(',')
     username = request.user
     ip = request.META['REMOTE_ADDR']
     fileName = '/tmp/deployRecycle_' + getNowTime()
-    deploy = deployWwwRecycle.delay(env,site,username,ip,fileName)
+    deploy = deployWwwRecycle.delay(env,site,username,ip,fileName,request.POST['phone_number'])
     if deploy.id:
         return render(request,'getText.html',{'fileName':fileName})
     else:
@@ -68,10 +73,11 @@ def deployRecycle(request):
 
 
 @login_required
+@deny_resubmit(page_key='deploy_revert')
 def deployRevertIis(request):
-     env = request.GET['env']
-     site = request.GET['project']
-     revision = request.GET['svnRevision']
+     env = request.POST['env']
+     site = request.POST['project']
+     revision = request.POST['svnRevision']
      username = request.user
      ip = request.META['REMOTE_ADDR']
      fileName = '/tmp/deployRevertIis_' + getNowTime()
@@ -79,7 +85,7 @@ def deployRevertIis(request):
      if int(revision) == 1:
          revision = 'PREV'
 
-     deploy = deployWwwRevert.delay(env,site,username,ip,fileName,revision)
+     deploy = deployWwwRevert.delay(env,site,username,ip,fileName,revision,request.POST['phone_number'])
      if deploy.id:
         return render(request,'getText.html',{'fileName':fileName})
      else:

@@ -352,9 +352,10 @@ class crontab_svn_status(object):
         obj = crontab_svn.objects.all()
         return obj
 
-    def crontab_svn_update(self,hostname,project):
+    def crontab_svn_update(self,hostname,project,phone_number):
         self.hostname = hostname
         self.project = project
+        self.phone_number = phone_number
         host = minion.objects.get(saltname=self.hostname)
         obj = crontab_svn.objects.get(hostname=host,project=self.project)
 
@@ -368,7 +369,7 @@ class crontab_svn_status(object):
         result = salt_api.salt_cmd(data)
         if result != 0:
             result = result['return']
-        notification(self.hostname,self.project,result,self.login_user)
+        dingding_robo(self.hostname,self.project + " repo",result,self.login_user,self.phone_number)
         logs(self.login_user,self.ip,'update svn',result)
         return result
 

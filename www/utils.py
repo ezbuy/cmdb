@@ -2,7 +2,7 @@ import os,time,commands,json
 from salt.client import LocalClient
 from www.models import *
 from celery.task import task
-from asset.utils import notification,logs
+from asset.utils import logs,dingding_robo
 
 
 
@@ -10,13 +10,14 @@ from asset.utils import notification,logs
 
 
 class wwwFun:
-    def __init__(self,env,username,ip,fileName):
+    def __init__(self,env,username,ip,fileName,phone_number):
         self.env = env
         self.username = username
         self.ip = ip
         self.fileName = fileName
         self.f = open(self.fileName,'w')
         self.result = []
+        self.phone_number = phone_number
 
 
 
@@ -43,7 +44,7 @@ class wwwFun:
             print e
             self.f.write('error')
             self.f.close()
-            notification(self.web_server, self.site, 'error', self.username)
+            dingding_robo(self.web_server, self.site, 'error', self.username, self.phone_number)
             logs(self.username, self.ip, self.site, 'Failed')
             return 1
 
@@ -74,7 +75,7 @@ class wwwFun:
             print e
             self.f.write('error')
             self.f.close()
-            notification(self.web_server, self.site, 'error', self.username)
+            dingding_robo(self.web_server, self.site, 'error', self.username, self.phone_number)
             logs(self.username, self.ip, self.site, 'Failed')
             return 1
 
@@ -118,22 +119,22 @@ class wwwFun:
                 self.f.close()
                 return 1
             if self.action == 'recycle':
-                notification(self.web_server, 'recycle ' + self.site, 'success', self.username)
+                dingding_robo(self.web_server, 'recycle ' + self.site, 'success', self.username, self.phone_number)
             elif self.action == 'revert':
-                notification(self.web_server, 'revert ' + self.site, 'success', self.username)
+                dingding_robo(self.web_server, 'revert ' + self.site, 'success', self.username, self.phone_number)
             else:
-                notification(self.web_server,self.site, 'success', self.username)
+                dingding_robo(self.web_server,self.site, 'success', self.username, self.phone_number)
             return 0
         except Exception, e:
             print e
             self.f.write('error')
             self.f.close()
             if self.action == 'recycle':
-                notification(self.web_server, 'recycle ' + self.site, 'error', self.username)
+                dingding_robo(self.web_server,self.site, 'error', self.username,self.phone_number)
             elif self.action == 'revert':
-                notification(self.web_server, 'revert ' + self.site, 'error', self.username)
+                dingding_robo(self.web_server,self.site, 'error', self.username,self.phone_number)
             else:
-                notification(self.web_server,self.site, 'error', self.username)
+                dingding_robo(self.web_server,self.site, 'error', self.username,self.phone_number)
             logs(self.username, self.ip, self.site, 'Failed')
             return 1
 
@@ -200,19 +201,19 @@ class wwwFun:
 
 
 @task
-def deployWww(env,site,username,ip,fileName):
-    obj = wwwFun(env,username,ip,fileName)
+def deployWww(env,site,username,ip,fileName,phone_number):
+    obj = wwwFun(env,username,ip,fileName,phone_number)
     obj.deploy(site,'svn')
 
 
 
 @task
-def deployWwwRecycle(env,site,username,ip,fileName):
-    obj = wwwFun(env,username,ip,fileName)
+def deployWwwRecycle(env,site,username,ip,fileName,phone_number):
+    obj = wwwFun(env,username,ip,fileName,phone_number)
     obj.deploy(site,'recycle')
 
 
 @task
-def deployWwwRevert(env,site,username,ip,fileName,reversion):
-    obj = wwwFun(env,username,ip,fileName)
+def deployWwwRevert(env,site,username,ip,fileName,reversion,phone_number):
+    obj = wwwFun(env,username,ip,fileName,phone_number)
     obj.deploy(site,'revert',reversion)

@@ -7,10 +7,11 @@ import json
 from winservices.utils import servicesPublish
 from winservices.models import winconf
 from salt.client import LocalClient
-from asset.utils import notification,logs
+from asset.utils import logs,deny_resubmit
 
 
 @login_required
+@deny_resubmit(page_key='deploy_winservices')
 def services(request):
     return render(request,'winservices.html')
 
@@ -26,16 +27,18 @@ def getServicesList(request):
     return  HttpResponse(json.dumps(servicesList))
 
 @login_required
+@deny_resubmit(page_key='deploy_winservices')
 def deployService(request):
     username = request.user
     ip = request.META['REMOTE_ADDR']
-    env = request.GET['env']
-    server = request.GET['services']
+    env = request.POST['env']
+    server = request.POST['services']
 
-    obj = servicesPublish(username,ip).deployServices(env,server)
+    obj = servicesPublish(username,ip).deployServices(env,server,request.POST['phone_number'])
     return render(request,'getdata.html',{'result':obj})
 
 @login_required
+@deny_resubmit(page_key='deploy_restartservices')
 def winServicesList(request):
 
     if 'env' in request.GET:
@@ -46,12 +49,13 @@ def winServicesList(request):
     return render(request,'winserviceslist.html',{'project':winServices})
 
 @login_required
+@deny_resubmit(page_key='deploy_restartservices')
 def winServicesRestart(request):
-    data = request.GET.getlist('id')
-    action = request.GET['action']
+    data = request.POST.getlist('id')
+    action = request.POST['action']
     username = request.user
     ip = request.META['REMOTE_ADDR']
 
-    result = servicesPublish(username,ip).servicesAction(data,action)
+    result = servicesPublish(username,ip).servicesAction(data,action,request.POST['phone_number'])
 
     return render(request,'getdata.html',{'result':result})

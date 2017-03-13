@@ -3,16 +3,18 @@ from django.contrib.auth.decorators import login_required
 from subversion.models import subversion
 import json,requests
 from salt.client import LocalClient
-from asset.utils import notification,logs
+from asset.utils import logs,deny_resubmit,dingding_robo
 
 saltCmd = LocalClient()
 
 
 @login_required
+@deny_resubmit(page_key='deploy_svn_add_repo')
 def subversionCreate(request):
     return render(request,'subversioncreate.html')
 
 @login_required
+@deny_resubmit(page_key='deploy_svn_add_user')
 def subversionAddUserHtml(request):
     return render(request,'subversionadduser.html')
 
@@ -28,14 +30,15 @@ def getSubversionHost(request):
 
 
 @login_required
+@deny_resubmit(page_key='deploy_svn_add_repo')
 def createRepo(request):
     result = []
     username = request.user
     ip = request.META['REMOTE_ADDR']
 
-    env = request.GET['env']
-    host = request.GET['hostname']
-    svnName =  request.GET['svnName']
+    env = request.POST['env']
+    host = request.POST['hostname']
+    svnName =  request.POST['svnName']
     obj = subversion.objects.filter(env=env)
     for info in obj:
         if info.hostname.saltname == host:
@@ -68,7 +71,7 @@ def createRepo(request):
             result.append(cmdinfo)
             notification_mes = 'The system is error.....'
 
-    notification(host,'create svn repo "%s"' % svnName,notification_mes,username)
+    dingding_robo(host,'create svn repo "%s"' % svnName,notification_mes,username,request.POST['phone_number'])
     logs(username,ip,'create svn repo "%s"' %svnName,notification_mes)
 
 
@@ -76,13 +79,14 @@ def createRepo(request):
 
 
 @login_required
+@deny_resubmit(page_key='deploy_svn_add_user')
 def svnAddUser(request):
     username = request.user
     ip = request.META['REMOTE_ADDR']
-    env = request.GET['env']
-    host = request.GET['hostname']
-    svnName = request.GET['svnName']
-    svnPassword = request.GET['svnPassword']
+    env = request.POST['env']
+    host = request.POST['hostname']
+    svnName = request.POST['svnName']
+    svnPassword = request.POST['svnPassword']
     result = []
 
     obj = subversion.objects.filter(env=env)
@@ -96,7 +100,7 @@ def svnAddUser(request):
         cmdinfo = {host:"Internal Server Error"}
 
     result.append(cmdinfo)
-    notification(host,"svn adduser %s " % svnName,cmdinfo,username)
+    dingding_robo(host,"svn adduser %s " % svnName,cmdinfo,username,request.POST['phone_number'])
     logs(username,ip,"svn adduser %s " % svnName,cmdinfo)
     return render(request, 'getdata.html', {'result': result})
 

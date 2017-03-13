@@ -1,6 +1,6 @@
 from winservices.models import winconf
 from salt.client import LocalClient
-from asset.utils import logs,notification
+from asset.utils import logs,dingding_robo
 import time
 
 
@@ -14,14 +14,13 @@ class servicesPublish:
         self.salt = LocalClient()
 
 
-    def deployServices(self,env,services):
+    def deployServices(self,env,services,phone_number):
         self.env = env
         self.services = services
+        self.phone_number = phone_number
         result = []
         obj = winconf.objects.filter(env=self.env).filter(servicename=self.services)
         for name in obj:
-
-
             stop = self.salt.cmd(name.hostname.saltname,'cmd.run',['net stop %s' % name.servicename])
             result.append(stop)
             while True:
@@ -38,16 +37,15 @@ class servicesPublish:
             action = 'deploy ' + name.servicename
             logs(self.user,self.ip,action,result)
             servicename = name.servicename.strip('"')
-            notification(name.hostname.saltname,servicename,start,self.user)
-
-
+            dingding_robo(name.hostname.saltname,servicename,start,self.user,self.phone_number)
 
         return result
 
 
-    def servicesAction(self,services,action):
+    def servicesAction(self,services,action,phone_number):
         self.services = services
         self.action = action
+        self.phone_number = phone_number
 
         result = []
 
@@ -66,9 +64,7 @@ class servicesPublish:
 
             result.append(getMes)
             info = self.action + ' ' + sName.strip('"')
-            notification(host, info, getMes, self.user)
+            dingding_robo(host, info, getMes, self.user,self.phone_number)
             logs(self.user, self.ip, info, result)
-
-
 
         return result
