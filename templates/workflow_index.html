@@ -1,0 +1,116 @@
+
+{% extends 'base.html' %}
+{% include 'link_css.html' %}
+{% block content %}
+
+
+
+
+
+<div class="tabbable" id="tabbable">
+		<ul class="nav nav-tabs">
+			<li id="one_tab" class="current"><a href="#tab1" data-toggle="tab">第一步</a></li>
+			<li id="two_tab"><a href="#tab2" data-toggle="tab">第二步</a></li>
+			<li><a href="#tab3" data-toggle="tab">第三步</a></li>
+			<li><a href="#tab4" data-toggle="tab">第四步</a></li>
+			<li><a href="#tab5" data-toggle="tab">完成</a></li>
+		</ul>
+		<div class="tab-content">
+			<div id="tab1">
+                <table align="center">
+                    <tr>   
+                        <fieldset class="form-group">
+                            <label for="formGroupExampleInput">abc</label>
+                            <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike" name="project" required="">
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label for="formGroupExampleInput2">123</label>
+                            <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="spike_shops" name="supervisorname" required="">
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label for="formGroupExampleInput3">233</label>
+                            <input type="text" class="form-control" id="formGroupExampleInput3" placeholder="spike shops -c config.toml" name="command" required="">
+                        </fieldset>
+                    <td><button type="button" id="btOne">下一步</button></td>
+                    </tr>
+                </table>
+			</div>
+			<div id="tab2" style="display: none">
+                <table align="center">
+                    <tr>   
+                    <fieldset class="form-group">
+                        <label for="formGroupExampleInput">go 项目名称</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike" name="project" required="">
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="formGroupExampleInput2">supervisor运行程序名称</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="spike_shops" name="supervisorname" required="">
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="formGroupExampleInput3">go运行命令</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput3" placeholder="spike shops -c config.toml" name="command" required="">
+                    </fieldset>
+                    <td>
+                        <button type="button" id="btTwo">提交</button>
+                        <button type="button" id="btReone">上一步</button>
+                    </td>
+                    </tr>
+                </table>
+			</div>
+			<div class="tab-pane" id="tab3">
+                <table align="center">
+                    <fieldset class="form-group">
+                        <label for="formGroupExampleInput">go 项目名称</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike" name="project" required="">
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="formGroupExampleInput2">supervisor运行程序名称</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="spike_shops" name="supervisorname" required="">
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="formGroupExampleInput3">go运行命令</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput3" placeholder="spike shops -c config.toml" name="command" required="">
+                    </fieldset>
+                    <td>
+                        <button type="button" id="btThree">提交</button>
+                        <button type="button" id="btRetwo">上一步</button>
+                    </td>
+                    </tr>
+                </table>
+			</div>
+			<div class="tab-pane" id="tab4">
+				<table align="center">
+                    <tr>   
+                    <td align="right" width="140px">取证方式</td>
+                    <td><input class="pwdTrigger" type="text" placeholder="请输入取证方式" /></td>
+                    </tr>
+                    <tr>   
+                    <td></td>
+                    <td>
+                        <button type="button">提交</button>
+                        <button type="button" id="btRethree">上一步</button>
+                    </td>
+                    </tr>
+                </table>
+			</div>
+			<div class="tab-pane" id="tab5">
+				<p>OK!!!配置已完成!!点击按钮完成初始化....</p>
+				<div class="progress">
+					<div class="bar bar-success" style="width:100%;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+<script type="text/javascript">
+function one() {
+    //window.location.hash = "#tab2";
+    
+    $("#tab1").hide();
+    $("#tab2").show();
+ 
+}
+  
+</script>
+{% endblock content %}
