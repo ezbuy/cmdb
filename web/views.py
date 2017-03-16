@@ -14,7 +14,7 @@ def login(request):
             auth.login(request,user)
             obj = userLogin.objects.create(username=username,remote_ip=ip)
             obj.save()
-            if request.GET.get('next') != 'None':
+            if request.GET.get('next') != 'None' and request.GET.get('next') != '':
                 return redirect(request.GET.get('next'))
             return HttpResponseRedirect('/')
         else:
