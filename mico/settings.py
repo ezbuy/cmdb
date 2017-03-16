@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'subversion',
     'web',
     'kettle',
+    'workflow',
 ]
 
 MIDDLEWARE_CLASSES = [
