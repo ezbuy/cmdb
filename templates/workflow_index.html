@@ -8,109 +8,150 @@
 
 
 <div class="tabbable" id="tabbable">
+    <form  class="col-lg-12" action="#" method="get">
 		<ul class="nav nav-tabs">
-			<li id="one_tab" class="current"><a href="#tab1" data-toggle="tab">第一步</a></li>
-			<li id="two_tab"><a href="#tab2" data-toggle="tab">第二步</a></li>
-			<li><a href="#tab3" data-toggle="tab">第三步</a></li>
-			<li><a href="#tab4" data-toggle="tab">第四步</a></li>
-			<li><a href="#tab5" data-toggle="tab">完成</a></li>
+			<li id="one_tab"><a href="#tab1">第一步</a></li>
+			<li id="two_tab"><a href="#tab2">第二步</a></li>
+			<!--li><a href="#tab3">第三步</a></li-->
+			<li><a href="#tab3">完成</a></li>
 		</ul>
 		<div class="tab-content">
 			<div id="tab1">
                 <table align="center">
-                    <tr>   
+                    <tr> 
+                        <label for="formGroupExampleInput">工单标题</label>
                         <fieldset class="form-group">
-                            <label for="formGroupExampleInput">abc</label>
-                            <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike" name="project" required="">
-                        </fieldset>
-                        <fieldset class="form-group">
-                            <label for="formGroupExampleInput2">123</label>
-                            <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="spike_shops" name="supervisorname" required="">
-                        </fieldset>
-                        <fieldset class="form-group">
-                            <label for="formGroupExampleInput3">233</label>
-                            <input type="text" class="form-control" id="formGroupExampleInput3" placeholder="spike shops -c config.toml" name="command" required="">
-                        </fieldset>
-                    <td><button type="button" id="btOne">下一步</button></td>
+                            <input type="text" class="form-control" id="title" placeholder="title" name="title" required="">
+                        </fieldset>  
+                        <label for="formGroupExampleInput">选择工单项目</label>
+                        <select id="ticket_type" class="selectpicker form-control" data-live-search="true" name="ticket_type"  onchange="getHosts(this.value)">
+                            <option value="none"></option>
+                            {% for i in ticket_type %}
+                                <option value="{{ i.type_name }}">{{ i.type_name }}项目</option>       
+                            {% endfor%}
+                        </select>
+                    <tr>
+                    <td><button type="button" onclick="one()">下一步</button></td>
                     </tr>
                 </table>
 			</div>
 			<div id="tab2" style="display: none">
                 <table align="center">
                     <tr>   
+                    <label for="formGroupExampleInput">选择主机</label>
                     <fieldset class="form-group">
-                        <label for="formGroupExampleInput">go 项目名称</label>
+                        <select id="hosts" name="hosts" class="selectpicker show-tick form-control" multiple data-live-search="false">               
+                        </select>
+                    </fieldset>
+                    <label for="formGroupExampleInput">go项目名称</label>
+                    <fieldset class="form-group">
                         <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike" name="project" required="">
                     </fieldset>
+                    <label for="formGroupExampleInput">go运行命令</label>
                     <fieldset class="form-group">
-                        <label for="formGroupExampleInput2">supervisor运行程序名称</label>
-                        <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="spike_shops" name="supervisorname" required="">
+                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike shop" name="command" required="">
                     </fieldset>
+                    <label for="formGroupExampleInput">supervisor运行程序名称</label>
                     <fieldset class="form-group">
-                        <label for="formGroupExampleInput3">go运行命令</label>
-                        <input type="text" class="form-control" id="formGroupExampleInput3" placeholder="spike shops -c config.toml" name="command" required="">
+                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike_shop" name="supervisor_name" required="">
+                    </fieldset>
+                    <label for="formGroupExampleInput">go项目svn地址</label>
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="http://svn.abc.com/svn/spike" name="svn_repo" required="">
                     </fieldset>
                     <td>
-                        <button type="button" id="btTwo">提交</button>
-                        <button type="button" id="btReone">上一步</button>
+                        <button type="button" onclick="two_left()">上一步</button>
+                        <button type="button" onclick="two_right()">下一步</button>
                     </td>
                     </tr>
                 </table>
 			</div>
-			<div class="tab-pane" id="tab3">
+			<!--div id="tab3" style="display: none">
                 <table align="center">
                     <fieldset class="form-group">
-                        <label for="formGroupExampleInput">go 项目名称</label>
-                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike" name="project" required="">
+                        <label for="formGroupExampleInput">step3</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike" name="step3_project" required="">
                     </fieldset>
                     <fieldset class="form-group">
                         <label for="formGroupExampleInput2">supervisor运行程序名称</label>
-                        <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="spike_shops" name="supervisorname" required="">
+                        <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="spike_shops" name="step3_supervisorname" required="">
                     </fieldset>
                     <fieldset class="form-group">
                         <label for="formGroupExampleInput3">go运行命令</label>
-                        <input type="text" class="form-control" id="formGroupExampleInput3" placeholder="spike shops -c config.toml" name="command" required="">
+                        <input type="text" class="form-control" id="formGroupExampleInput3" placeholder="spike shops -c config.toml" name="step3_command" required="">
                     </fieldset>
                     <td>
-                        <button type="button" id="btThree">提交</button>
-                        <button type="button" id="btRetwo">上一步</button>
+                        <button type="button" onclick="three_left()">上一步</button>
+                        <button type="button" onclick="three_right()">下一步</button>
                     </td>
                     </tr>
                 </table>
-			</div>
-			<div class="tab-pane" id="tab4">
-				<table align="center">
-                    <tr>   
-                    <td align="right" width="140px">取证方式</td>
-                    <td><input class="pwdTrigger" type="text" placeholder="请输入取证方式" /></td>
-                    </tr>
-                    <tr>   
-                    <td></td>
-                    <td>
-                        <button type="button">提交</button>
-                        <button type="button" id="btRethree">上一步</button>
-                    </td>
-                    </tr>
-                </table>
-			</div>
-			<div class="tab-pane" id="tab5">
+			</div-->
+			<div id="tab3" style="display: none">
 				<p>OK!!!配置已完成!!点击按钮完成初始化....</p>
 				<div class="progress">
 					<div class="bar bar-success" style="width:100%;"></div>
 				</div>
+                <button type="button" onclick="four_left()">上一步</button>
+                <input id="sub" type="submit" value="提交">
 			</div>
 		</div>
-	</div>
+        </form>
+</div>
 
 
 <script type="text/javascript">
 function one() {
-    //window.location.hash = "#tab2";
-    
     $("#tab1").hide();
     $("#tab2").show();
- 
 }
-  
+
+function two_left() {
+    $("#tab2").hide();
+    $("#tab1").show();
+}
+
+function two_right() {
+    $("#tab2").hide();
+    $("#tab3").show();
+}
+
+
+function three_left() {
+    $("#tab3").hide();
+    $("#tab2").show();
+}
+
+function three_right() {
+    $("#tab3").hide();
+    $("#tab4").show();
+}
+
+function four_left() {
+    $("#tab4").hide();
+    $("#tab3").show();
+} 
+
+
+
+
+
+function getHosts(val) {
+        var ticket_type = document.getElementById("ticket_type").value;
+        console.log(ticket_type)
+        var select = document.getElementById("hosts");
+        select.options.length = 0;   // del options
+        if (ticket_type != "none") {
+            $.getJSON("/workflow/get_hosts",{"ticket_type":ticket_type},function (result) {
+                for (i=0;i<result.length;i++) {
+                    var objOption = document.createElement("OPTION")
+                    objOption.value = result[i]
+                    objOption.text = result[i]
+                    select.add(objOption)
+                }
+                console.log(result.length)
+            })
+        }  
+ }
 </script>
 {% endblock content %}

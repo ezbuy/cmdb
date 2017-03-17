@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from asset.models import minion
 
 
 # Create your models here.
@@ -21,10 +22,11 @@ TICKET_RESULT = (
 
 class TicketType(models.Model):
     type_name = models.CharField(max_length=128, verbose_name=u"工单类型")
-    handler = models.ForeignKey(User, verbose_name=u"工单处理人")
+    handler = models.ManyToManyField(User, verbose_name=u"工单处理人")
     create_time = models.DateTimeField(default= timezone.now, verbose_name=u"工单创建时间")
     modify_time = models.DateTimeField(auto_now=True, verbose_name=u"工单修改时间")
     state = models.IntegerField(choices=TICKET_STATE, blank=True, null=True, verbose_name=u"工单状态")
+    hosts = models.ManyToManyField(minion, verbose_name=u'运行主机')
     
     def __unicode__(self):
         return self.type_name
