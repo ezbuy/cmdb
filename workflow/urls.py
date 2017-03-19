@@ -15,10 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from workflow.views import index,get_hosts
+from workflow.views import index,get_hosts,my_tickets
 
 
 urlpatterns = [
     url(r'^index/$', index, name='workflow_index'),
     url(r'^get_hosts/$', get_hosts, name='get_hosts'),
+    url(r'^my_tickets/$', my_tickets, name='my_tickets'),
 ]

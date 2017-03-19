@@ -59,6 +59,11 @@
                     <fieldset class="form-group">
                         <input type="text" class="form-control" id="formGroupExampleInput" placeholder="http://svn.abc.com/svn/spike" name="svn_repo" required="">
                     </fieldset>
+                    <label for="formGroupExampleInput">选择工单处理人</label>
+                    <fieldset class="form-group">
+                        <select id="handler" name="handler" class="selectpicker form-control" data-live-search="true">               
+                        </select>
+                    </fieldset>
                     <td>
                         <button type="button" onclick="two_left()">上一步</button>
                         <button type="button" onclick="two_right()">下一步</button>
@@ -128,8 +133,8 @@ function three_right() {
 }
 
 function four_left() {
-    $("#tab4").hide();
-    $("#tab3").show();
+    $("#tab3").hide();
+    $("#tab2").show();
 } 
 
 
@@ -141,13 +146,22 @@ function getHosts(val) {
         console.log(ticket_type)
         var select = document.getElementById("hosts");
         select.options.length = 0;   // del options
+        var handler = document.getElementById("handler");
+        handler.options.length = 0;   // del options
         if (ticket_type != "none") {
             $.getJSON("/workflow/get_hosts",{"ticket_type":ticket_type},function (result) {
-                for (i=0;i<result.length;i++) {
+                console.log(result[0])
+                for (i=0;i<result[0].length;i++) {
                     var objOption = document.createElement("OPTION")
-                    objOption.value = result[i]
-                    objOption.text = result[i]
+                    objOption.value = result[0][i]
+                    objOption.text = result[0][i]
                     select.add(objOption)
+                }
+                for (i=0;i<result[1].length;i++) {
+                    var objOption = document.createElement("OPTION")
+                    objOption.value = result[1][i]
+                    objOption.text = result[1][i]
+                    handler.add(objOption)
                 }
                 console.log(result.length)
             })
