@@ -8,7 +8,7 @@
 
 
 <div class="tabbable" id="tabbable">
-    <form  class="col-lg-12" action="#" method="get">
+    <form  class="col-lg-12" action="{% url 'submit_tickets' %}" method="get">
 		<ul class="nav nav-tabs">
 			<li id="one_tab"><a href="#tab1">第一步</a></li>
 			<li id="two_tab"><a href="#tab2">第二步</a></li>
@@ -45,19 +45,27 @@
                     </fieldset>
                     <label for="formGroupExampleInput">go项目名称</label>
                     <fieldset class="form-group">
-                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike" name="project" required="">
+                        <input type="text" class="form-control" id="project" placeholder="spike" name="project" required="">
                     </fieldset>
                     <label for="formGroupExampleInput">go运行命令</label>
                     <fieldset class="form-group">
-                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike shop" name="command" required="">
+                        <input type="text" class="form-control" id="go_command" placeholder="spike shop" name="go_command" required="">
                     </fieldset>
                     <label for="formGroupExampleInput">supervisor运行程序名称</label>
                     <fieldset class="form-group">
-                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike_shop" name="supervisor_name" required="">
+                        <input type="text" class="form-control" id="supervisor_name" placeholder="spike_shop" name="supervisor_name" required="">
                     </fieldset>
                     <label for="formGroupExampleInput">go项目svn地址</label>
                     <fieldset class="form-group">
-                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="http://svn.abc.com/svn/spike" name="svn_repo" required="">
+                        <input type="text" class="form-control" id="svn_repo" placeholder="http://svn.abc.com/svn/spike" name="svn_repo" required="">
+                    </fieldset>
+                    <label for="formGroupExampleInput">statsd地址</label>
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="statsd" placeholder="http://stats.abc.com/svn/spike" name="statsd" required="">
+                    </fieldset>
+                    <label for="formGroupExampleInput">sentry地址</label>
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="sentry" placeholder="http://sentry.abc.com/svn/spike" name="sentry" required="">
                     </fieldset>
                     <label for="formGroupExampleInput">选择工单处理人</label>
                     <fieldset class="form-group">
@@ -107,8 +115,10 @@
 
 <script type="text/javascript">
 function one() {
-    $("#tab1").hide();
-    $("#tab2").show();
+    if(formSubmit("title")){
+        $("#tab1").hide();
+        $("#tab2").show();
+    }
 }
 
 function two_left() {
@@ -117,8 +127,10 @@ function two_left() {
 }
 
 function two_right() {
-    $("#tab2").hide();
-    $("#tab3").show();
+    if(formSubmit("project") && formSubmit("sentry") && formSubmit("hosts") && formSubmit("go_command") && formSubmit("supervisor_name") && formSubmit("svn_repo") && formSubmit("statsd") && formSubmit("sentry")){
+        $("#tab2").hide();
+        $("#tab3").show();
+    }
 }
 
 
@@ -167,5 +179,20 @@ function getHosts(val) {
             })
         }  
  }
+
+
+ function formSubmit(argv) {  
+    var condId = document.getElementById(argv);  
+    var text = condId.value;  
+    console.log(text)
+    var textValue = text.replace(/(^\s*)|(\s*$)/g, "");    
+    if(textValue==null || textValue=="") {  
+        alert("输入的内容为空,请重新输入！");  
+        return false;  
+    }
+    return 1;  
+      
+}  
+
 </script>
 {% endblock content %}

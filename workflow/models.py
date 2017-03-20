@@ -32,7 +32,7 @@ class TicketType(models.Model):
         return self.type_name
 
 class TicketTasks(models.Model):
-    tasks_id = models.CharField(max_length=128, verbose_name=u"工单ID")
+    tasks_id = models.CharField(max_length=128,unique=True,verbose_name=u"工单ID")
     title = models.CharField(max_length=512, verbose_name=u"工单标题")
     ticket_type = models.ForeignKey(TicketType, verbose_name=u"工单类型")
     creator = models.CharField(max_length=128, verbose_name=u"工单创建人")
