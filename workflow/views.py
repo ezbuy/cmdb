@@ -5,6 +5,9 @@ from models import TicketType,TicketTasks,TicketOperating
 import json
 import uuid
 from django.contrib.auth.models import User
+from salt_api.api import SaltApi
+salt_api = SaltApi()
+
 
 # Create your views here.
 @login_required
@@ -57,12 +60,21 @@ def submit_tickets(request):
     sentry = request.GET['sentry']
     handler = request.GET['handler']
 
-    salt_command = '''salt '%s' state.sls goservices.supervisor_submodule pillar=\'{
-        "goprograme":"%s",
-        "svnrepo":"%s",
-        "supProgrameName":"%s",
-        "goRunCommand":"%s -c /srv/goconf/%s/conf/conf.cmtpl"}\'''' % (','.join(hosts),project,svn_repo,supervisor_name,go_command,project)
+    # salt_command = '''salt '%s' state.sls goservices.supervisor_submodule pillar=\'{
+    #     "goprograme":"%s",
+    #     "svnrepo":"%s",
+    #     "supProgrameName":"%s",
+    #     "goRunCommand":"%s -c /srv/goconf/%s/conf/conf.cmtpl"}\'''' % (','.join(hosts),project,svn_repo,supervisor_name,go_command,project)
+
+    # for h in hosts:
+    #     salt_command = '{"client":"local","tgt":"%s","fun":"state.sls","arg":["goservices.supervisor_submodule",\'pillar={"goprograme":"%s","svnrepo":"%s","svnusername":"deploy","svnpassword":"ezbuyisthebest","supProgrameName":"%s","goRunCommand":"%s -c /srv/gotemplate/%s/conf.ctmpl"}\']}' % (h,project,svn_repo,supervisor_name,go_command,project)
+
+    #     salt_command = json.dumps(salt_command)
+    #     print salt_command
     
+    salt_command = {"hosts":hosts,"project":project,"svn_repo":svn_repo,"supervisor_name":supervisor_name,'go_command':go_command}
+    salt_command = json.dumps(salt_command)
+  
     ticket_type = TicketType.objects.get(type_name=ticket_type)
     handler = User.objects.get(username=handler)
     task_id = str(uuid.uuid1())
@@ -83,7 +95,25 @@ def handle_tickets(request):
     if submit == 'reject':
         TicketTasks.objects.filter(tasks_id=task_id).update(state='4')
         TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='2')
-    salt_command = TicketTasks.objects.get(tasks_id=task_id).content
-    print salt_command
+    else:
+        content = TicketTasks.objects.get(tasks_id=task_id).content
+        content = json.loads(content)
+        for host in content['hosts']:
+            data = {
+                'client':'local',
+                'tgt':host,
+                'fun':'state.sls',
+                'arg':['goservices.supervisor_submodule','pillar={"svnusername":"deploy","svnpassword":"ezbuyisthebest","goprograme":"%s","svnrepo":"%s","supProgrameName":"%s","goRunCommand":"%s"}' % (content['project'],content['svn_repo'],content['supervisor_name'],content['go_command'])]
+            }
+            result = salt_api.salt_cmd(data)
+            if str(result).find('False') > 0:
+                TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
+                TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1')
+                print 'error-----------------------------'
+            else:
+                TicketTasks.objects.filter(tasks_id=task_id).update(state='3')
+                TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1')
+                print 'ok-----------------------------'
+
     return render(request,'get_ticket_tasks.html')
 

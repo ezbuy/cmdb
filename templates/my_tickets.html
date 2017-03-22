@@ -35,7 +35,7 @@
                                     <th class="text-center"> 工单标题 </th>
                                     <th class="text-center"> 工单类型 </th>
                                     <th class="text-center"> 工单创建人 </th>
-                                    <th class="text-center"> 工单内容 </th>
+                                    <th style="width: 240px;"> 工单内容 </th>
                                     <th class="text-center"> 工单处理人 </th>
                                     <th class="text-center"> 工单状态 </th>
 
@@ -51,7 +51,7 @@
                                     <td class="text-center"> {{ info.title }} </td>
                                     <td class="text-center">{{ info.ticket_type }}</td>
                                     <td class="text-center">{{ info.creator }}</td>
-                                    <td class="text-center"> {{ info.content }}</td>
+                                    <td style="display: block; width: 100%;overflow-x: hidden;word-break: break-word;white-space: pre-wrap;"> {{ info.content }}</td>
                                     <td class="text-center"> {{ info.handler }}</td>
                                     {% if info.state == 1 %}
                                         <td class="text-center">新创建</td>
@@ -61,6 +61,8 @@
                                         <td class="text-center">已完成</td>
                                     {% elif info.state == 4 %}
                                         <td class="text-center">拒绝</td>
+                                    {% elif info.state == 5 %}
+                                        <td class="text-center">失败</td>
                                     {% endif %}   
                                 </tr>
                             {% endfor %}
