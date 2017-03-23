@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from salt_api.api import SaltApi
 from asset.models import gogroup,svn,minion,GOTemplate,goservices,gostatus
 from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo,svn_gotemplate_local_path
+from asset.utils import dingding_robo
 import json
 import uuid
 import xmlrpclib
@@ -14,7 +15,7 @@ salt_api = SaltApi()
 
 # Create your views here.
 @login_required
-@deny_resubmit(page_key='workflow_index')
+@deny_resubmit(page_key='submit_tickets')
 def index(request):
     ticket_type = TicketType.objects.all()
     return render(request,'workflow_index.html',{'ticket_type':ticket_type})
@@ -43,24 +44,26 @@ def my_tickets(request):
 
 
 @login_required
+@deny_resubmit(page_key='handle_tickets')
 def get_ticket_tasks(request):
     username = User.objects.get(username=request.user)
     tasks = TicketTasks.objects.filter(handler=username).filter(state='1')
     return render(request,'get_ticket_tasks.html',{'tasks':tasks})
 
 @login_required
+@deny_resubmit(page_key='submit_tickets')
 def submit_tickets(request):
-    title = request.GET['title']
-    ticket_type = request.GET['ticket_type']
-    function = request.GET['function']
-    hosts = request.GET.getlist('hosts')
-    project = request.GET['project']
-    go_command = request.GET['go_command']
-    supervisor_name =  request.GET['supervisor_name']
-    svn_repo = request.GET['svn_repo']
-    statsd = request.GET['statsd']
-    sentry = request.GET['sentry']
-    handler = request.GET['handler']
+    title = request.POST['title']
+    ticket_type = request.POST['ticket_type']
+    function = request.POST['function']
+    hosts = request.POST.getlist('hosts')
+    project = request.POST['project']
+    go_command = request.POST['go_command']
+    supervisor_name =  request.POST['supervisor_name']
+    svn_repo = request.POST['svn_repo']
+    statsd = request.POST['statsd']
+    sentry = request.POST['sentry']
+    handler = request.POST['handler']
 
     
     salt_command = {
@@ -79,23 +82,32 @@ def submit_tickets(request):
         }
     salt_command = json.dumps(salt_command)
   
-    ticket_type = TicketType.objects.get(type_name=ticket_type)
-    handler = User.objects.get(username=handler)
-    task_id = str(uuid.uuid1())
-    TicketTasks.objects.create(tasks_id=task_id,title=title,ticket_type=ticket_type,creator=request.user,content=salt_command,handler=handler,state='1')
-    return render(request,'get_ticket_tasks.html')
+    try:
+        ticket_type = TicketType.objects.get(type_name=ticket_type)
+        handler = User.objects.get(username=handler)
+        task_id = str(uuid.uuid1())
+        TicketTasks.objects.create(tasks_id=task_id,title=title,ticket_type=ticket_type,creator=request.user,content=salt_command,handler=handler,state='1')
+        result = [{'TicketTasks':'The %s order submitted to success!' % (task_id)}]
+    except Exception, e:
+        result = [{'TicketTasks':'The order submitted to failed!'}]
+    
+    return render(request,'getdata.html',{'result':result})    
+    
+        
 
 
 @login_required
+@deny_resubmit(page_key='handle_tickets')
 def handle_tickets(request):
-    task_id = request.GET['id']
-    submit = request.GET['submit']
-    reply = request.GET['reply']
+    task_id = request.POST['id']
+    submit = request.POST['submit']
+    reply = request.POST['reply']
     operating_id = TicketTasks.objects.get(tasks_id=task_id)
     username = User.objects.get(username=request.user)
     if submit == 'reject':
         TicketTasks.objects.filter(tasks_id=task_id).update(state='4')
         TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='2')
+        result = [{'HandleTasks':'The task_id handle to success!'}]
     else:
         content = TicketTasks.objects.get(tasks_id=task_id).content
         content = json.loads(content)
@@ -123,6 +135,7 @@ def handle_tickets(request):
                 deploy_result = 0
                 TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
                 TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1')
+                result = [{'HandleTasks':'The task_id handle to failed!'}]
                 print '------failed-------------'           
             
             #-------------------------new project-----------------------------------
@@ -148,7 +161,6 @@ def handle_tickets(request):
 
                     #-------------------------gotemplate-----------------------------------
                     project = gogroup.objects.get(name=content['project'])
-                    #minion_host = minion.objects.get(saltname=host)
                     ip = minion_host.ip
 
                     if GOTemplate.objects.filter(hostname=minion_host).filter(project=project).filter(env=1):
@@ -182,15 +194,14 @@ def handle_tickets(request):
 
                     TicketTasks.objects.filter(tasks_id=task_id).update(state='3')
                     TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1')
+                    result = [{'HandleTasks':'The task_id handle to success!'}]
             except Exception, e:
+                print e
                 TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
                 TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1')
+                result = [{'HandleTasks':'The task_id handle to failed!'}]
 
-
-
-
-
-    return render(request,'get_ticket_tasks.html')
+    return render(request,'getdata.html',{'result':result}) 
 
 
 
