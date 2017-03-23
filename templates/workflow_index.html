@@ -37,7 +37,11 @@
 			</div>
 			<div id="tab2" style="display: none">
                 <table align="center">
-                    <tr>   
+                    <tr>
+                    <label for="formGroupExampleInput">项目作用</label>    
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="function" placeholder="商品详情" name="function" required="">
+                    </fieldset>   
                     <label for="formGroupExampleInput">选择主机</label>
                     <fieldset class="form-group">
                         <select id="hosts" name="hosts" class="selectpicker show-tick form-control" multiple data-live-search="false">               
@@ -127,7 +131,7 @@ function two_left() {
 }
 
 function two_right() {
-    if(formSubmit("project") && formSubmit("sentry") && formSubmit("hosts") && formSubmit("go_command") && formSubmit("supervisor_name") && formSubmit("svn_repo") && formSubmit("statsd") && formSubmit("sentry")){
+    if(formSubmit("function") && formSubmit("project") && formSubmit("sentry") && formSubmit("hosts") && formSubmit("go_command") && formSubmit("supervisor_name") && formSubmit("svn_repo") && formSubmit("statsd") && formSubmit("sentry")){
         $("#tab2").hide();
         $("#tab3").show();
     }
