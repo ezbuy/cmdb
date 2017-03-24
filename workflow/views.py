@@ -133,7 +133,7 @@ def handle_tickets(request):
                 'client':'local',
                 'tgt':host,
                 'fun':'state.sls',
-                'arg':['goservices.supervisor_submodule','pillar={"svnusername":"deploy","svnpassword":"ezbuyisthebest","goprograme":"%s","svnrepo":"%s","supProgrameName":"%s","goRunCommand":"%s"}' % (content['project'],content['svn_repo'],content['supervisor_name'],content['go_command'])]
+                'arg':['goservices.supervisor_submodule','pillar={"goprograme":"%s","svnrepo":"%s","supProgrameName":"%s","goRunCommand":"%s"}' % (content['project'],content['svn_repo'],content['supervisor_name'],content['go_command'])]
             }
             result = salt_api.salt_cmd(data)
             try:
@@ -211,9 +211,7 @@ def handle_tickets(request):
                         obj.save()
 
                     TicketTasks.objects.filter(tasks_id=task_id).update(state='3')
-                    TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
-                    
-                    
+                    TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])            
             except Exception, e:
                 print e
                 TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
