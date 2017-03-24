@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins" id="all">
+                <div class="ibox-title">
+                    <h5> 工单详细信息列表</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <form id="asset_form">
+
+                        <table class="table table-striped table-bordered table-hover " id="editable" name="editable">
+                            <thead>
+                                <tr>
+                                    <th class="text-center"> 工单ID </th>
+                                    <th class="text-center"> 工单提交人 </th>
+                                    <th class="text-center"> 工单处理人 </th>
+                                    <th class="text-center"> 工单操作时间 </th>
+                                    <th class="text-center"> 工单修改时间 </th>
+                                    <th style="width: 240px;"> 工单回复内容 </th>
+                                    <th class="text-center"> 工单结果 </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for info in tasks %}
+                                <tr class="gradeX">
+                                    <td class="text-center">{{ info.operating_id }}</td>
+                                    <td class="text-center"> {{ info.submitter }} </td>
+                                    <td class="text-center"> {{ info.handler }} </td>
+                                    <td class="text-center">{{ info.create_time }}</td>
+                                    <td class="text-center">{{ info.modify_time }}</td>
+                                    <td style="display: block; width: 100%;overflow-x: hidden;word-break: break-word;white-space: pre-wrap;"> {{ info.content }}</td>
+                                    {% if info.result == 1 %}
+                                        <td class="text-center">已执行</td>
+                                    {% elif info.result == 2 %}
+                                        <td class="text-center">拒绝</td>
+                                    {% elif info.result == 3 %}
+                                        <td class="text-center">进行中</td>
+                                    {% endif %}   
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

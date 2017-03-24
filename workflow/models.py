@@ -48,11 +48,13 @@ class TicketTasks(models.Model):
 
 class TicketOperating(models.Model):
     operating_id = models.ForeignKey(TicketTasks, verbose_name=u"工单ID")
+    submitter = models.CharField(max_length=128, verbose_name=u"工单提交人")
     handler = models.ForeignKey(User, verbose_name=u"工单处理人")
     create_time = models.DateTimeField(default= timezone.now, verbose_name=u"工单操作时间")
     modify_time = models.DateTimeField(auto_now=True, verbose_name=u"工单修改时间")
     content =  models.CharField(max_length=4096, verbose_name=u"工单回复内容")
     result = models.IntegerField(choices=TICKET_RESULT, blank=True, null=True, verbose_name=u"工单结果")
+
 
     #def __unicode__(self):
     #    return self.operating_id

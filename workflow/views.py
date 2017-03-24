@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from asset.utils import deny_resubmit
 from models import TicketType,TicketTasks,TicketOperating
 from django.contrib.auth.models import User
+from django.db.models import Q
 from salt_api.api import SaltApi
 from asset.models import gogroup,svn,minion,GOTemplate,goservices,gostatus,UserProfile
 from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo,svn_gotemplate_local_path
@@ -117,11 +118,14 @@ def handle_tickets(request):
     
     if submit == 'reject':
         TicketTasks.objects.filter(tasks_id=task_id).update(state='4')
-        TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='2')
+        TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='2',submitter=content['owner'])
         
         info = 'Your "%s" order be reject,please visit to workflow page.' % content['title']
-        dingding_robo(phone_number=phone_number,type=2,info=info)
+        owner = User.objects.get(username=content['owner'])
+        owner_phone_number = UserProfile.objects.get(user=owner).phone_number
+        dingding_robo(phone_number=owner_phone_number,type=2,info=info)
         result = [{'HandleTasks':'The task_id handle to success!'}]
+        return render(request,'getdata.html',{'result':result}) 
 
     else:
         for host in content['hosts']:
@@ -146,7 +150,7 @@ def handle_tickets(request):
                 deploy_result = 0
                 handle_result = 1
                 TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
-                TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1')
+                TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
                 info = 'The "%s" order is failed,please check in %s host.' % (content['title'],host)
                 dingding_robo(phone_number=phone_number,type=2,info=info)
                 result = [{'HandleTasks':'The task_id handle to failed!'}]
@@ -207,13 +211,13 @@ def handle_tickets(request):
                         obj.save()
 
                     TicketTasks.objects.filter(tasks_id=task_id).update(state='3')
-                    TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1')
+                    TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
                     
                     
             except Exception, e:
                 print e
                 TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
-                TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1')
+                TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
                 result = [{'HandleTasks':'The task_id handle to failed!'}]
     if handle_result == 0:
         username = User.objects.get(username=content['owner'])            
@@ -223,5 +227,14 @@ def handle_tickets(request):
         result = [{'HandleTasks':'The task_id handle to success!'}]
     return render(request,'getdata.html',{'result':result}) 
 
+
+
+@login_required
+def handled_tasks(request):
+    tasks = TicketOperating.objects.filter(
+        Q(handler=request.user) | Q(submitter=request.user)
+    )
+    return render(request,'handled_tasks.html',{'tasks':tasks})
+    
 
 

@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from workflow.views import index,get_hosts,my_tickets,get_ticket_tasks,submit_tickets,handle_tickets
+from workflow.views import index,get_hosts,my_tickets,get_ticket_tasks,submit_tickets,handle_tickets,handled_tasks
 
 
 urlpatterns = [
@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^get_ticket_tasks/$', get_ticket_tasks, name='get_ticket_tasks'),
     url(r'^submit_tickets/$', submit_tickets, name='submit_tickets'),
     url(r'^handle_tickets/$', handle_tickets, name='handle_tickets'),
+    url(r'^handled_tasks/$', handled_tasks, name='handled_tasks'),
 ]
