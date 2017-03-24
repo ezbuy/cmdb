@@ -4,7 +4,7 @@ from asset.utils import deny_resubmit
 from models import TicketType,TicketTasks,TicketOperating
 from django.contrib.auth.models import User
 from salt_api.api import SaltApi
-from asset.models import gogroup,svn,minion,GOTemplate,goservices,gostatus
+from asset.models import gogroup,svn,minion,GOTemplate,goservices,gostatus,UserProfile
 from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo,svn_gotemplate_local_path
 from asset.utils import dingding_robo
 import json
@@ -88,7 +88,13 @@ def submit_tickets(request):
         task_id = str(uuid.uuid1())
         TicketTasks.objects.create(tasks_id=task_id,title=title,ticket_type=ticket_type,creator=request.user,content=salt_command,handler=handler,state='1')
         result = [{'TicketTasks':'The %s order submitted to success!' % (task_id)}]
+        user = User.objects.get(username=handler)
+                
+        phone_number = UserProfile.objects.get(user=user).phone_number  
+        info = 'You have a message,please visit to workflow page.'
+        dingding_robo(phone_number=phone_number,type=2,info=info)
     except Exception, e:
+        print e
         result = [{'TicketTasks':'The order submitted to failed!'}]
     
     return render(request,'getdata.html',{'result':result})    
@@ -103,14 +109,21 @@ def handle_tickets(request):
     submit = request.POST['submit']
     reply = request.POST['reply']
     operating_id = TicketTasks.objects.get(tasks_id=task_id)
-    username = User.objects.get(username=request.user)
+    content = TicketTasks.objects.get(tasks_id=task_id).content
+    content = json.loads(content)
+    username = User.objects.get(username=content['handler'])
+    phone_number = UserProfile.objects.get(user=username).phone_number  
+    handle_result = 0
+    
     if submit == 'reject':
         TicketTasks.objects.filter(tasks_id=task_id).update(state='4')
         TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='2')
+        
+        info = 'Your "%s" order be reject,please visit to workflow page.' % content['title']
+        dingding_robo(phone_number=phone_number,type=2,info=info)
         result = [{'HandleTasks':'The task_id handle to success!'}]
+
     else:
-        content = TicketTasks.objects.get(tasks_id=task_id).content
-        content = json.loads(content)
         for host in content['hosts']:
             data = {
                 'client':'local',
@@ -119,22 +132,23 @@ def handle_tickets(request):
                 'arg':['goservices.supervisor_submodule','pillar={"svnusername":"deploy","svnpassword":"ezbuyisthebest","goprograme":"%s","svnrepo":"%s","supProgrameName":"%s","goRunCommand":"%s"}' % (content['project'],content['svn_repo'],content['supervisor_name'],content['go_command'])]
             }
             result = salt_api.salt_cmd(data)
-
-            minion_host = minion.objects.get(saltname=host)    
-            supervisor_info = gostatus.objects.get(hostname=minion_host)
-            supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (
-                supervisor_info.supervisor_username, supervisor_info.supervisor_password,
-                supervisor_info.supervisor_host, supervisor_info.supervisor_port))
-            
             try:
+                minion_host = minion.objects.get(saltname=host)    
+                supervisor_info = gostatus.objects.get(hostname=minion_host)
+                supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (
+                    supervisor_info.supervisor_username, supervisor_info.supervisor_password,
+                    supervisor_info.supervisor_host, supervisor_info.supervisor_port))
                 if supervisor_obj.supervisor.getProcessInfo(content['supervisor_name']):
                     deploy_result = 1
                     print '-------successful-----'
             except Exception, e:
                 print e
                 deploy_result = 0
+                handle_result = 1
                 TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
                 TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1')
+                info = 'The "%s" order is failed,please check in %s host.' % (content['title'],host)
+                dingding_robo(phone_number=phone_number,type=2,info=info)
                 result = [{'HandleTasks':'The task_id handle to failed!'}]
                 print '------failed-------------'           
             
@@ -169,8 +183,8 @@ def handle_tickets(request):
                         obj = GOTemplate(
                             username=svn_username,
                             password=svn_password,
-                            repo=content['svn_repo'],
-                            localpath=go_local_path + content['project'],
+                            repo=svn_gotemplate_repo,
+                            localpath=svn_gotemplate_local_path,
                             env=1,
                             hostname=minion_host,
                             project=project)
@@ -194,13 +208,19 @@ def handle_tickets(request):
 
                     TicketTasks.objects.filter(tasks_id=task_id).update(state='3')
                     TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1')
-                    result = [{'HandleTasks':'The task_id handle to success!'}]
+                    
+                    
             except Exception, e:
                 print e
                 TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
                 TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1')
                 result = [{'HandleTasks':'The task_id handle to failed!'}]
-
+    if handle_result == 0:
+        username = User.objects.get(username=content['owner'])            
+        phone_number = UserProfile.objects.get(user=username).phone_number  
+        info = 'Your "%s" order has been processed,please visit to workflow page.' % content['title']
+        dingding_robo(phone_number=phone_number,type=2,info=info)
+        result = [{'HandleTasks':'The task_id handle to success!'}]
     return render(request,'getdata.html',{'result':result}) 
 
 

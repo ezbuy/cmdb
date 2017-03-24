@@ -40,7 +40,7 @@
                             {% for info in tasks %}
                                 <tr class="gradeX">
                                     <td class="text-center" data-editable='false'>
-                                        <input name="id" value="{{ info.tasks_id }}" type="radio" class="i-checks">
+                                        <input name="id" value="{{ info.tasks_id }}" type="radio" class="i-checks" id='task_id' onchange="getSubmit(this.value)">
                                     </td>
                                     <td class="text-center">{{ info.tasks_id }}</td>
                                     <td class="text-center"> {{ info.title }} </td>
@@ -62,7 +62,7 @@
                             </tbody>
                         </table>
                         <tr>
-                            <td><button type="button" onclick="one()">下一步</button></td>
+                            <td><button type="button" id='sub' disabled="disabled" onclick="one()">下一步</button></td>
                         </tr>
                 </div>
                 <div id="tab2" class="form-group" style="display: none">
@@ -84,6 +84,25 @@ function one() {
     $("#tab1").hide();
     $("#tab2").show();
 }
+
+function getSubmit(val) {
+
+    var services = document.getElementsByName("id")
+    var count = 0
+    for (var i=0;i<services.length;i++) {
+
+        if (services[i].checked) {
+            count = count + 1
+        }
+    }
+    if (count != 0){
+            $("#sub").attr("disabled", false)
+    }
+    else {
+            $("#sub").attr("disabled", true)
+    }
+}
+
 </script>
 {% endblock %}
 
