@@ -93,7 +93,7 @@ def submit_tickets(request):
                 
         phone_number = UserProfile.objects.get(user=user).phone_number  
         info = 'You have a message,please visit to workflow page.'
-        dingding_robo(phone_number=phone_number,type=2,info=info)
+        dingding_robo(phone_number=phone_number,types=2,info=info)
     except Exception, e:
         print e
         result = [{'TicketTasks':'The order submitted to failed!'}]
@@ -126,7 +126,7 @@ def handle_tickets(request):
             info = 'Your "%s" order be reject,please visit to workflow page.' % content['title']
             owner = User.objects.get(username=content['owner'])
             owner_phone_number = UserProfile.objects.get(user=owner).phone_number
-            dingding_robo(phone_number=owner_phone_number,type=2,info=info)
+            dingding_robo(phone_number=owner_phone_number,types=2,info=info)
             result = [{'HandleTasks':'The task_id handle to success!'}]
             return render(request,'getdata.html',{'result':result}) 
 
@@ -155,7 +155,7 @@ def handle_tickets(request):
                     TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
                     TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
                     info = 'The "%s" order is failed,please check in %s host.' % (content['title'],host)
-                    dingding_robo(phone_number=phone_number,type=2,info=info)
+                    dingding_robo(phone_number=phone_number,types=2,info=info)
                     result = [{'HandleTasks':'The task_id handle to failed!'}]
                     print '------failed-------------'           
                 
@@ -224,7 +224,7 @@ def handle_tickets(request):
             username = User.objects.get(username=content['owner'])            
             phone_number = UserProfile.objects.get(user=username).phone_number  
             info = 'Your "%s" order has been processed,please visit to workflow page.' % content['title']
-            dingding_robo(phone_number=phone_number,type=2,info=info)
+            dingding_robo(phone_number=phone_number,types=2,info=info)
             result = [{'HandleTasks':'The task_id handle to success!'}]
     else:
         print '--------type is error...'

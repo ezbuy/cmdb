@@ -455,7 +455,7 @@ def deny_resubmit(page_key=''):
 
 
 
-def dingding_robo(hostname='',project='',result='',username='',phone_number='',type=1,info=''):
+def dingding_robo(hostname='',project='',result='',username='',phone_number='',types=1,info=''):
     url = dingding_robo_url
     headers = {'Content-Type': 'application/json'}
     hs = str(hostname) + " by " + str(username)
@@ -481,9 +481,9 @@ def dingding_robo(hostname='',project='',result='',username='',phone_number='',t
         print e
         errmsg = 'Failed'
     current_time = getNowTime()
-    if type == 1:
+    if types == 1:
         content = current_time + " " + errmsg + ": " + "deploy " + str(project) + " to " + str(hostname) + " by " + str(username)
-    elif type == 2:
+    elif types == 2:
         content = current_time + ": " + info
     data ={
         "msgtype": "text", 
