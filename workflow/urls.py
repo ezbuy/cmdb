@@ -15,24 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from cmdb.views import index
-from web.views import login,logout
+from workflow.views import index,get_hosts,my_tickets,get_ticket_tasks,submit_tickets,handle_tickets,handled_tasks
 
-
-import asset,logs,winservices,cache,www,subversion,kettle,workflow
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^$',index,name='index'),
-    url(r'^asset/', include('asset.urls')),
-    url(r'^logs/', include('logs.urls')),
-    url(r'^winservices/', include('winservices.urls')),
-    url(r'^cache/', include('cache.urls')),
-    url(r'^www/', include('www.urls')),
-    url(r'^login/',login,name='login'),
-    url(r'^logout/',logout,name='logout'),
-    url(r'^subversion/', include('subversion.urls')),
-    url(r'^kettle/', include('kettle.urls')),
-    url(r'^workflow/', include('workflow.urls')),
-    
+    url(r'^index/$', index, name='workflow_index'),
+    url(r'^get_hosts/$', get_hosts, name='get_hosts'),
+    url(r'^my_tickets/$', my_tickets, name='my_tickets'),
+    url(r'^get_ticket_tasks/$', get_ticket_tasks, name='get_ticket_tasks'),
+    url(r'^submit_tickets/$', submit_tickets, name='submit_tickets'),
+    url(r'^handle_tickets/$', handle_tickets, name='handle_tickets'),
+    url(r'^handled_tasks/$', handled_tasks, name='handled_tasks'),
 ]

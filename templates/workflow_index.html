@@ -1,0 +1,206 @@
+
+{% extends 'base.html' %}
+{% include 'link_css.html' %}
+{% block content %}
+
+
+
+<p class="text-center">
+    <a target="_blank" href="https://tower.im/projects/ddff17a6dd0a44dda7217658fed1621b/docs/4f67b116a9b645df8d24018ab1a69722/" class="center-block">工单帮助文档</a>
+</p>
+    
+
+
+<div class="tabbable" id="tabbable">
+    <form  class="col-lg-12" action="{% url 'submit_tickets' %}" method="post">
+		<ul class="nav nav-tabs">
+			<li id="one_tab"><a href="#tab1">第一步</a></li>
+			<li id="two_tab"><a href="#tab2">第二步</a></li>
+			<!--li><a href="#tab3">第三步</a></li-->
+			<li><a href="#tab3">完成</a></li>
+		</ul>
+		<div class="tab-content">
+			<div id="tab1">
+                <table align="center">
+                    <tr> 
+                        <label for="formGroupExampleInput">工单标题</label>
+                        <fieldset class="form-group">
+                            <input type="text" class="form-control" id="title" placeholder="title" name="title" required="">
+                        </fieldset>  
+                        <label for="formGroupExampleInput">选择工单项目</label>
+                        <select id="ticket_type" class="selectpicker form-control" data-live-search="true" name="ticket_type"  onchange="getHosts(this.value)">
+                            <option value="none"></option>
+                            {% for i in ticket_type %}
+                                <option value="{{ i.type_name }}">{{ i.type_name }}项目</option>       
+                            {% endfor%}
+                        </select>
+                    <tr>
+                    <td><button type="button" onclick="one()">下一步</button></td>
+                    </tr>
+                </table>
+			</div>
+			<div id="tab2" style="display: none">
+                <table align="center">
+                    <tr>
+                    <label for="formGroupExampleInput">项目作用</label>    
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="function" placeholder="商品详情" name="function" required="">
+                    </fieldset>   
+                    <label for="formGroupExampleInput">选择主机</label>
+                    <fieldset class="form-group">
+                        <select id="hosts" name="hosts" class="selectpicker show-tick form-control" multiple data-live-search="false">               
+                        </select>
+                    </fieldset>
+                    <label for="formGroupExampleInput">go项目名称</label>
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="project" placeholder="spike" name="project" required="">
+                    </fieldset>
+                    <label for="formGroupExampleInput">go运行命令</label>
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="go_command" placeholder="spike shop" name="go_command" required="">
+                    </fieldset>
+                    <label for="formGroupExampleInput">supervisor运行程序名称</label>
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="supervisor_name" placeholder="spike_shop" name="supervisor_name" required="">
+                    </fieldset>
+                    <label for="formGroupExampleInput">go项目svn地址</label>
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="svn_repo" placeholder="http://svn.abc.com/svn/spike" name="svn_repo" required="">
+                    </fieldset>
+                    <label for="formGroupExampleInput">statsd地址</label>
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="statsd" placeholder="http://stats.abc.com/svn/spike" name="statsd" required="">
+                    </fieldset>
+                    <label for="formGroupExampleInput">sentry地址</label>
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="sentry" placeholder="http://sentry.abc.com/svn/spike" name="sentry" required="">
+                    </fieldset>
+                    <label for="formGroupExampleInput">选择工单处理人</label>
+                    <fieldset class="form-group">
+                        <select id="handler" name="handler" class="selectpicker form-control" data-live-search="true">               
+                        </select>
+                    </fieldset>
+                    <td>
+                        <button type="button" onclick="two_left()">上一步</button>
+                        <button type="button" onclick="two_right()">下一步</button>
+                    </td>
+                    </tr>
+                </table>
+			</div>
+			<!--div id="tab3" style="display: none">
+                <table align="center">
+                    <fieldset class="form-group">
+                        <label for="formGroupExampleInput">step3</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike" name="step3_project" required="">
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="formGroupExampleInput2">supervisor运行程序名称</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="spike_shops" name="step3_supervisorname" required="">
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="formGroupExampleInput3">go运行命令</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput3" placeholder="spike shops -c config.toml" name="step3_command" required="">
+                    </fieldset>
+                    <td>
+                        <button type="button" onclick="three_left()">上一步</button>
+                        <button type="button" onclick="three_right()">下一步</button>
+                    </td>
+                    </tr>
+                </table>
+			</div-->
+			<div id="tab3" style="display: none">
+				<p>OK!!!点击提交按钮完成提交....</p>
+				<div class="progress">
+					<div class="bar bar-success" style="width:100%;"></div>
+				</div>
+                <button type="button" onclick="four_left()">上一步</button>
+                <input id="sub" type="submit" value="提交">
+			</div>
+		</div>
+        </form>
+</div>
+
+
+<script type="text/javascript">
+function one() {
+    if(formSubmit("title")){
+        $("#tab1").hide();
+        $("#tab2").show();
+    }
+}
+
+function two_left() {
+    $("#tab2").hide();
+    $("#tab1").show();
+}
+
+function two_right() {
+    if(formSubmit("function") && formSubmit("project") && formSubmit("sentry") && formSubmit("hosts") && formSubmit("go_command") && formSubmit("supervisor_name") && formSubmit("svn_repo") && formSubmit("statsd") && formSubmit("sentry")){
+        $("#tab2").hide();
+        $("#tab3").show();
+    }
+}
+
+
+function three_left() {
+    $("#tab3").hide();
+    $("#tab2").show();
+}
+
+function three_right() {
+    $("#tab3").hide();
+    $("#tab4").show();
+}
+
+function four_left() {
+    $("#tab3").hide();
+    $("#tab2").show();
+} 
+
+
+
+
+
+function getHosts(val) {
+        var ticket_type = document.getElementById("ticket_type").value;
+        console.log(ticket_type)
+        var select = document.getElementById("hosts");
+        select.options.length = 0;   // del options
+        var handler = document.getElementById("handler");
+        handler.options.length = 0;   // del options
+        if (ticket_type != "none") {
+            $.getJSON("/workflow/get_hosts",{"ticket_type":ticket_type},function (result) {
+                console.log(result[0])
+                for (i=0;i<result[0].length;i++) {
+                    var objOption = document.createElement("OPTION")
+                    objOption.value = result[0][i]
+                    objOption.text = result[0][i]
+                    select.add(objOption)
+                }
+                for (i=0;i<result[1].length;i++) {
+                    var objOption = document.createElement("OPTION")
+                    objOption.value = result[1][i]
+                    objOption.text = result[1][i]
+                    handler.add(objOption)
+                }
+                console.log(result.length)
+            })
+        }  
+ }
+
+
+ function formSubmit(argv) {  
+    var condId = document.getElementById(argv);  
+    var text = condId.value;  
+    console.log(text)
+    var textValue = text.replace(/(^\s*)|(\s*$)/g, "");    
+    if(textValue==null || textValue=="") {  
+        alert("输入的内容为空,请重新输入！");  
+        return false;  
+    }
+    return 1;  
+      
+}  
+
+</script>
+{% endblock content %}

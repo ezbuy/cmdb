@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'subversion',
     'web',
     'kettle',
+    'workflow',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -155,7 +156,7 @@ salt_password = 'saltapis'
 
 
 ##dingding notification
-dingding_api = 'http://dlog.65dg.me/dlog'
+dingding_api = 'http://dlog.abc.me/dlog'
 
 ##crontab api
 crontab_api = 'http://192.168.199.64:5000'
@@ -169,3 +170,12 @@ kettle_log_url = 'http://127.0.0.1/'
 
 ##dingding_robo
 dingding_robo_url = "https://oapi.dingtalk.com/robot/send?access_token=6e710e17889d16a722064d6679c487781547ad9d2e804e474553992361f4563d"
+
+##go info
+svn_username = '123456'
+svn_password = '123456'
+go_local_path = '/srv/'
+go_move_path = '/tmp/'
+go_revert_path = '/srv/revert'
+svn_gotemplate_repo = 'http://svn.abc.com/svn/gotemplate'
+svn_gotemplate_local_path = '/srv/gotemplate'

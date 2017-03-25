@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins" id="all">
+                <div id="master" class="ibox-title">
+                    <h5> 工单详细信息列表</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <form action="{% url 'handle_tickets' %}" method="POST">
+                    <div id="tab1" class="ibox-content">
+                        <table class="table table-striped table-bordered table-hover " id="editable" name="editable">
+                            <thead>
+                                <tr>
+                                    <th class="text-center"></th>
+                                    <th class="text-center"> 工单ID </th>
+                                    <th class="text-center"> 工单标题 </th>
+                                    <th class="text-center"> 工单类型 </th>
+                                    <th class="text-center"> 工单创建人 </th>
+                                    <th style="width: 240px;"> 工单内容 </th>
+                                    <th class="text-center"> 工单处理人 </th>
+                                    <th class="text-center"> 工单状态 </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for info in tasks %}
+                                <tr class="gradeX">
+                                    <td class="text-center" data-editable='false'>
+                                        <input name="id" value="{{ info.tasks_id }}" type="radio" class="i-checks" id='task_id' onchange="getSubmit(this.value)">
+                                    </td>
+                                    <td class="text-center">{{ info.tasks_id }}</td>
+                                    <td class="text-center"> {{ info.title }} </td>
+                                    <td class="text-center">{{ info.ticket_type }}</td>
+                                    <td class="text-center">{{ info.creator }}</td>
+                                    <td style="display: block; width: 100%;overflow-x: hidden;word-break: break-word;white-space: pre-wrap;"> {{ info.content }}</td>
+                                    <td class="text-center"> {{ info.handler }}</td>
+                                    {% if info.state == 1 %}
+                                        <td class="text-center">新创建</td>
+                                    {% elif info.state == 2 %}
+                                        <td class="text-center">进行中</td>
+                                    {% elif info.state == 3 %}
+                                        <td class="text-center">已完成</td>
+                                    {% elif info.state == 4 %}
+                                        <td class="text-center">拒绝</td>
+                                    {% endif %}   
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <tr>
+                            <td><button type="button" id='sub' disabled="disabled" onclick="one()">下一步</button></td>
+                        </tr>
+                </div>
+                <div id="tab2" class="form-group" style="display: none">
+		            <label for="name">工单回复</label>
+		            <textarea class="form-control" rows="3" name="reply"></textarea>
+                    <label for="name">是否同意执行工单</label>
+                    <input type="submit" name="submit" value="agree">
+                    <input type="submit" name="submit" value="reject">   
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+function one() {
+    $("#master").hide();
+    $("#tab1").hide();
+    $("#tab2").show();
+}
+
+function getSubmit(val) {
+
+    var services = document.getElementsByName("id")
+    var count = 0
+    for (var i=0;i<services.length;i++) {
+
+        if (services[i].checked) {
+            count = count + 1
+        }
+    }
+    if (count != 0){
+            $("#sub").attr("disabled", false)
+    }
+    else {
+            $("#sub").attr("disabled", true)
+    }
+}
+
+</script>
+{% endblock %}
+
+
