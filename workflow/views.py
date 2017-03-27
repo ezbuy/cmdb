@@ -48,7 +48,7 @@ def my_tickets(request):
 @deny_resubmit(page_key='handle_tickets')
 def get_ticket_tasks(request):
     username = User.objects.get(username=request.user)
-    tasks = TicketTasks.objects.filter(handler=username).filter(state='1')
+    tasks = TicketTasks.objects.filter(handler=username).filter(Q(state='1') | Q(state='5')).order_by('-modify_time')
     return render(request,'get_ticket_tasks.html',{'tasks':tasks})
     
 @login_required
@@ -156,7 +156,7 @@ def handle_tickets(request):
                     deploy_result = 0
                     handle_result = 1
                     TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
-                    TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
+                    TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
                     logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
                     info = 'The "%s" order is failed,please check in %s host.' % (content['title'],host)
                     dingding_robo(phone_number=phone_number,types=2,info=info)
@@ -220,7 +220,7 @@ def handle_tickets(request):
                 except Exception, e:
                     print e
                     TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
-                    TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
+                    TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
                     logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
                     result = [{'HandleTasks':'The task_id handle to failed!'}]
         if handle_result == 0:
