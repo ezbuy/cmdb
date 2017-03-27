@@ -67,19 +67,8 @@
                     <li class="asset"> <a href="{% url 'kettle_index' %}">运行kettle</a></li>
                 </ul>
             </li>
-            <li>
-                <a><i class="fa fa-inbox"></i> <span class="nav-label">WorkFlow</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li class="asset"> <a href="{% url 'my_tickets' %}">我的工单</a></li>
-                    <li class="asset"> <a href="{% url 'workflow_index' %}">工单提交</a></li>
-                    <li class="asset"> <a href="{% url 'get_ticket_tasks' %}">未处理工单</a></li>
-                    <li class="asset"> <a href="{% url 'handled_tasks' %}">已处理工单</a></li>
-                </ul>
-            </li>
-            <li id="setting">
-                   <a target="_blank" href="/admin"><i class="fa fa-gears"></i> <span class="nav-label">setting</span><span class="label label-info pull-right"></span></a>
-            </li>
-        {% elif request.user|has_group:'go' %}
+        {% endif %}
+        {% if request.user|has_group:'go' %}
             <li>
                 <a href="#"><i class="fa fa-group"></i> <span class="nav-label">Go Project</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -91,7 +80,8 @@
                     <li class="user"><a href="{% url 'cronjob_list' %}">cron job列表<span class="label pull-right"></span></a></li>
                 </ul>
             </li>
-        {% elif request.user|has_group:'qa' %}
+        {% endif %}
+        {% if request.user|has_group:'qa' %}
             <li>
                 <a href="#"><i class="fa fa-paperclip"></i> <span class="nav-label">Web IIS</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -114,8 +104,22 @@
             </li>
         {% endif %}
             <li>
+                <a><i class="fa fa-inbox"></i> <span class="nav-label">WorkFlow</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li class="asset"> <a href="{% url 'my_tickets' %}">我的工单</a></li>
+                    <li class="asset"> <a href="{% url 'workflow_index' %}">工单提交</a></li>
+                    <li class="asset"> <a href="{% url 'get_ticket_tasks' %}">未处理工单</a></li>
+                    <li class="asset"> <a href="{% url 'handled_tasks' %}">已处理工单</a></li>
+                </ul>
+            </li>
+            <li>
                 <a href="{% url 'logs' %}" ><i class="fa fa-files-o"></i> <span class="nav-label">logs</span><span class="label label-info pull-right"></span></a>
             </li>
+        {% if request.user|has_group:'admin' %}
+            <li id="setting">
+                   <a target="_blank" href="/admin"><i class="fa fa-gears"></i> <span class="nav-label">setting</span><span class="label label-info pull-right"></span></a>
+            </li>
+        {% endif %}
         </ul>
 
     </div>
