@@ -1,6 +1,6 @@
 from django.shortcuts import render,HttpResponse
 from django.contrib.auth.decorators import login_required
-from asset.utils import deny_resubmit
+from asset.utils import deny_resubmit,logs
 from models import TicketType,TicketTasks,TicketOperating
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -39,7 +39,7 @@ def get_hosts(request):
 
 @login_required
 def my_tickets(request):
-    tasks = TicketTasks.objects.filter(creator=request.user)
+    tasks = TicketTasks.objects.filter(creator=request.user).order_by('-modify_time')
     return render(request,'my_tickets.html',{'tasks':tasks})
 
 
@@ -50,7 +50,7 @@ def get_ticket_tasks(request):
     username = User.objects.get(username=request.user)
     tasks = TicketTasks.objects.filter(handler=username).filter(state='1')
     return render(request,'get_ticket_tasks.html',{'tasks':tasks})
-
+    
 @login_required
 @deny_resubmit(page_key='submit_tickets')
 def submit_tickets(request):
@@ -89,6 +89,7 @@ def submit_tickets(request):
         task_id = str(uuid.uuid1())
         TicketTasks.objects.create(tasks_id=task_id,title=title,ticket_type=ticket_type,creator=request.user,content=salt_command,handler=handler,state='1')
         result = [{'TicketTasks':'The %s order submitted to success!' % (task_id)}]
+        logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='add ticket (%s)' % title,result='successful')
         user = User.objects.get(username=handler)
                 
         phone_number = UserProfile.objects.get(user=user).phone_number  
@@ -97,6 +98,7 @@ def submit_tickets(request):
     except Exception, e:
         print e
         result = [{'TicketTasks':'The order submitted to failed!'}]
+        logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='add ticket (%s)' % title,result='failed')
     
     return render(request,'getdata.html',{'result':result})    
     
@@ -123,6 +125,7 @@ def handle_tickets(request):
             TicketTasks.objects.filter(tasks_id=task_id).update(state='4')
             TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='2',submitter=content['owner'])
             
+            logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='successful')
             info = 'Your "%s" order be reject,please visit to workflow page.' % content['title']
             owner = User.objects.get(username=content['owner'])
             owner_phone_number = UserProfile.objects.get(user=owner).phone_number
@@ -154,6 +157,7 @@ def handle_tickets(request):
                     handle_result = 1
                     TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
                     TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
+                    logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
                     info = 'The "%s" order is failed,please check in %s host.' % (content['title'],host)
                     dingding_robo(phone_number=phone_number,types=2,info=info)
                     result = [{'HandleTasks':'The task_id handle to failed!'}]
@@ -212,15 +216,17 @@ def handle_tickets(request):
                                 has_sentry=content['sentry'],
                                 comment=content['function'])
                             obj.save()
-
-                        TicketTasks.objects.filter(tasks_id=task_id).update(state='3')
-                        TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])            
+                                    
                 except Exception, e:
                     print e
                     TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
                     TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
+                    logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
                     result = [{'HandleTasks':'The task_id handle to failed!'}]
         if handle_result == 0:
+            TicketTasks.objects.filter(tasks_id=task_id).update(state='3')
+            TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
+            logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='successful')
             username = User.objects.get(username=content['owner'])            
             phone_number = UserProfile.objects.get(user=username).phone_number  
             info = 'Your "%s" order has been processed,please visit to workflow page.' % content['title']
@@ -237,7 +243,7 @@ def handle_tickets(request):
 def handled_tasks(request):
     tasks = TicketOperating.objects.filter(
         Q(handler=request.user) | Q(submitter=request.user)
-    )
+    ).order_by('-modify_time')
     return render(request,'handled_tasks.html',{'tasks':tasks})
     
 
