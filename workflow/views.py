@@ -56,34 +56,40 @@ def get_ticket_tasks(request):
 def submit_tickets(request):
     title = request.POST['title']
     ticket_type = request.POST['ticket_type']
-    function = request.POST['function']
-    hosts = request.POST.getlist('hosts')
-    project = request.POST['project']
-    go_command = request.POST['go_command']
-    supervisor_name =  request.POST['supervisor_name']
-    svn_repo = request.POST['svn_repo']
-    statsd = request.POST['statsd']
-    sentry = request.POST['sentry']
     handler = request.POST['handler']
-
-    
-    salt_command = {
-        "title":title,
-        "ticket_type":ticket_type,
-        "function":function,
-        "hosts":hosts,
-        "project":project,
-        "svn_repo":svn_repo,
-        "supervisor_name":supervisor_name,
-        'go_command':go_command,
-        'statsd':statsd,
-        'sentry':sentry,
-        'handler':handler,
-        'owner':str(request.user)
+    if ticket_type == 'go':
+        function = request.POST['function']
+        hosts = request.POST.getlist('hosts')
+        project = request.POST['project']
+        go_command = request.POST['go_command']
+        supervisor_name =  request.POST['supervisor_name']
+        svn_repo = request.POST['svn_repo']
+        statsd = request.POST['statsd']
+        sentry = request.POST['sentry']
+        
+        salt_command = {
+            "title":title,
+            "ticket_type":ticket_type,
+            "function":function,
+            "hosts":hosts,
+            "project":project,
+            "svn_repo":svn_repo,
+            "supervisor_name":supervisor_name,
+            'go_command':go_command,
+            'statsd':statsd,
+            'sentry':sentry,
+            'handler':handler,
+            'owner':str(request.user)
         }
-    salt_command = json.dumps(salt_command)
-  
+
+    elif ticket_type == 'sql':
+        salt_command = {
+            "title":title,
+            "ticket_type":ticket_type,
+            'handler':handler
+        }
     try:
+        salt_command = json.dumps(salt_command)
         ticket_type = TicketType.objects.get(type_name=ticket_type)
         handler = User.objects.get(username=handler)
         task_id = str(uuid.uuid1())
@@ -101,7 +107,7 @@ def submit_tickets(request):
         logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='add ticket (%s)' % title,result='failed')
     
     return render(request,'getdata.html',{'result':result})    
-    
+        
         
 
 
