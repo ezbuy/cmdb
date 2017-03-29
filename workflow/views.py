@@ -65,7 +65,7 @@ def submit_tickets(request):
     statsd = request.POST['statsd']
     sentry = request.POST['sentry']
     handler = request.POST['handler']
-
+    go_command = go_command + " -c /srv/gotemplate/%s/conf.ctmpl" % project
     
     salt_command = {
         "title":title,
