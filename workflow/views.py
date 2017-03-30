@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from salt_api.api import SaltApi
 from asset.models import gogroup,svn,minion,GOTemplate,goservices,gostatus,UserProfile
-from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo,svn_gotemplate_local_path
+from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo,svn_gotemplate_local_path,webpage_host
 from asset.utils import dingding_robo
 import json
 import uuid
@@ -67,6 +67,7 @@ def submit_tickets(request):
         svn_repo = request.POST['svn_repo']
         statsd = request.POST['statsd']
         sentry = request.POST['sentry']
+        go_command = go_command + " -c /srv/gotemplate/%s/conf.ctmpl" % project
         
         salt_command = {
             "title":title,
@@ -171,6 +172,7 @@ def handle_tickets(request):
                 dingding_robo(phone_number=phone_number,types=2,info=info)
                 result = [{'HandleTasks':'The task_id handle to failed!'}]
                 print '------failed-------------'           
+                return render(request,'getdata.html',{'result':result}) 
             
             #-------------------------new project-----------------------------------
             try:
@@ -224,15 +226,37 @@ def handle_tickets(request):
                             has_statsd=content['statsd'],
                             has_sentry=content['sentry'],
                             comment=content['function'])
-                        obj.save()
-                                
+                        obj.save()                     
             except Exception, e:
                 print e
+                handle_result = 1
                 TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
                 TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
                 logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
                 result = [{'HandleTasks':'The task_id handle to failed!'}]
-        if handle_result == 0:
+    elif content['ticket_type'] == 'webpage':
+        try:
+            data = {
+                'client':'local',
+                'tgt': webpage_host,
+                'fun':'cmd.script',
+                'arg':['salt://scripts/webpage.py','"%s"' % str(content['site_name'])] 
+            }
+            salt_api.salt_cmd(data)
+        except Exception, e:
+            print e
+            handle_result = 1
+            TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
+            TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
+            logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
+            info = 'The "%s" order is failed,please check in %s host.' % (content['title'],host)
+            dingding_robo(phone_number=phone_number,types=2,info=info)
+            result = [{'HandleTasks':'The task_id handle to failed!'}]
+    else:
+        print '--------type is error...'
+        handle_result = 1
+        result = [{'HandleTasks':'The type is error!'}]
+    if handle_result == 0:
             TicketTasks.objects.filter(tasks_id=task_id).update(state='3')
             TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
             logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='successful')
@@ -241,18 +265,6 @@ def handle_tickets(request):
             info = 'Your "%s" order has been processed,please visit to workflow page.' % content['title']
             dingding_robo(phone_number=phone_number,types=2,info=info)
             result = [{'HandleTasks':'The task_id handle to success!'}]
-    elif content['ticket_type'] == 'webpage':
-        data = {
-            'client':'local',
-            'tgt':'t-slq-web-1',
-            'fun':'cmd.script',
-            'arg':['salt://scripts/webpage.py','"%s"' % str(content['site_name'])] 
-        }
-        salt_api.salt_cmd(data)
-        result = [{'HandleTasks':'The type is error!'}]
-    else:
-        print '--------type is error...'
-        result = [{'HandleTasks':'The type is error!'}]
     return render(request,'getdata.html',{'result':result}) 
 
 
