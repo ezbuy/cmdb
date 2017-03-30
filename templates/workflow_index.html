@@ -12,15 +12,15 @@
 
 
 <div class="tabbable" id="tabbable">
-    <form  class="col-lg-12" action="{% url 'submit_tickets' %}" method="post">
+    <form  class="col-lg-12" action="{% url 'submit_tickets' %}" method="post" id="checkall">
 		<ul class="nav nav-tabs">
-			<li id="one_tab"><a href="#tab1">第一步</a></li>
-			<li id="two_tab"><a href="#tab2">第二步</a></li>
+			<li id="one_tab"><a href="#">第一步</a></li>
+			<li id="two_tab"><a href="#">第二步</a></li>
 			<!--li><a href="#tab3">第三步</a></li-->
-			<li><a href="#tab3">完成</a></li>
+			<li><a href="#">完成</a></li>
 		</ul>
 		<div class="tab-content">
-			<div id="tab1">
+			<div id="master">
                 <table align="center">
                     <tr> 
                         <label for="formGroupExampleInput">工单标题</label>
@@ -39,12 +39,12 @@
                     </tr>
                 </table>
 			</div>
-			<div id="tab2" style="display: none">
+			<div id="go" style="display: none">
                 <table align="center">
                     <tr>
                     <label for="formGroupExampleInput">项目作用</label>    
                     <fieldset class="form-group">
-                        <input type="text" class="form-control" id="function" placeholder="商品详情" name="function" required="">
+                        <input type="text" class="form-control" id="function" placeholder="商品详情" name="function">
                     </fieldset>   
                     <label for="formGroupExampleInput">选择主机</label>
                     <fieldset class="form-group">
@@ -53,143 +53,176 @@
                     </fieldset>
                     <label for="formGroupExampleInput">go项目名称</label>
                     <fieldset class="form-group">
-                        <input type="text" class="form-control" id="project" placeholder="spike" name="project" required="">
+                        <input type="text" class="form-control" id="project" placeholder="spike" name="project">
                     </fieldset>
                     <label for="formGroupExampleInput">go运行命令</label>
                     <fieldset class="form-group">
-                        <input type="text" class="form-control" id="go_command" placeholder="spike shop" name="go_command" required="">
+                        <input type="text" class="form-control" id="go_command" placeholder="spike shop" name="go_command">
                     </fieldset>
                     <label for="formGroupExampleInput">supervisor运行程序名称</label>
                     <fieldset class="form-group">
-                        <input type="text" class="form-control" id="supervisor_name" placeholder="spike_shop" name="supervisor_name" required="">
+                        <input type="text" class="form-control" id="supervisor_name" placeholder="spike_shop" name="supervisor_name">
                     </fieldset>
                     <label for="formGroupExampleInput">go项目svn地址</label>
                     <fieldset class="form-group">
-                        <input type="text" class="form-control" id="svn_repo" placeholder="http://svn.abc.com/svn/spike" name="svn_repo" required="">
+                        <input type="text" class="form-control" id="svn_repo" placeholder="http://svn.abc.com/svn/spike" name="svn_repo">
                     </fieldset>
                     <label for="formGroupExampleInput">statsd地址</label>
                     <fieldset class="form-group">
-                        <input type="text" class="form-control" id="statsd" placeholder="http://stats.abc.com/svn/spike" name="statsd" required="">
+                        <input type="text" class="form-control" id="statsd" placeholder="http://stats.abc.com/svn/spike" name="statsd">
                     </fieldset>
                     <label for="formGroupExampleInput">sentry地址</label>
                     <fieldset class="form-group">
-                        <input type="text" class="form-control" id="sentry" placeholder="http://sentry.abc.com/svn/spike" name="sentry" required="">
-                    </fieldset>
-                    <label for="formGroupExampleInput">选择工单处理人</label>
-                    <fieldset class="form-group">
-                        <select id="handler" name="handler" class="selectpicker form-control" data-live-search="true">               
-                        </select>
+                        <input type="text" class="form-control" id="sentry" placeholder="http://sentry.abc.com/svn/spike" name="sentry">
                     </fieldset>
                     <td>
-                        <button type="button" onclick="two_left()">上一步</button>
-                        <button type="button" onclick="two_right()">下一步</button>
+                        <button type="button" onclick="go_left()">上一步</button>
+                        <button type="button" onclick="go_right()">下一步</button>
                     </td>
                     </tr>
                 </table>
 			</div>
-			<!--div id="tab3" style="display: none">
-                <table align="center">
-                    <fieldset class="form-group">
-                        <label for="formGroupExampleInput">step3</label>
-                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike" name="step3_project" required="">
-                    </fieldset>
-                    <fieldset class="form-group">
-                        <label for="formGroupExampleInput2">supervisor运行程序名称</label>
-                        <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="spike_shops" name="step3_supervisorname" required="">
-                    </fieldset>
-                    <fieldset class="form-group">
-                        <label for="formGroupExampleInput3">go运行命令</label>
-                        <input type="text" class="form-control" id="formGroupExampleInput3" placeholder="spike shops -c config.toml" name="step3_command" required="">
-                    </fieldset>
+			<div id="webpage" style="display: none">
+                <table class="table table-striped table-bordered table-hover " id="editable" name="editable">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('checkall')">
+                            </th>
+                            <th class="text-center"> 站点名称 </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="gradeX">
+                            <td class="text-center"  data-editable='false'>
+                                <input name="site_name" value="ezbuy_sg" type="checkbox" class="i-checks">
+                            </td>
+                            <td class="text-center"> <a href="#">ezbuy.sg</a></td>
+                        </tr>
+                            <tr class="gradeX">
+                            <td class="text-center"  data-editable='false'>
+                                <input name="site_name" value="ezbuy_my" type="checkbox" class="i-checks">
+                            </td>
+                            <td class="text-center"> <a href="#">ezbuy.my</a></td>
+                        </tr>
+                            <tr class="gradeX">
+                            <td class="text-center"  data-editable='false'>
+                                <input name="site_name" value="ezbuy_co_th" type="checkbox" class="i-checks">
+                            </td>
+                            <td class="text-center"> <a href="#">ezbuy.co.th</a></td>
+                        </tr>
+                            <tr class="gradeX">
+                            <td class="text-center"  data-editable='false'>
+                                <input name="site_name" value="ezbuy_co_id" type="checkbox" class="i-checks">
+                            </td>
+                            <td class="text-center"> <a href="#">ezbuy.co.id</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table>
                     <td>
-                        <button type="button" onclick="three_left()">上一步</button>
-                        <button type="button" onclick="three_right()">下一步</button>
+                        <button type="button" onclick="webpage_left()">上一步</button>
+                        <button type="button" onclick="webpage_right()">下一步</button>
                     </td>
                     </tr>
                 </table>
-			</div-->
-			<div id="tab3" style="display: none">
-				<p>OK!!!点击提交按钮完成提交....</p>
-				<div class="progress">
+			</div>
+			<div id="end" style="display: none">
+                <div class="progress">
 					<div class="bar bar-success" style="width:100%;"></div>
 				</div>
-                <button type="button" onclick="four_left()">上一步</button>
+                <label for="formGroupExampleInput">选择工单处理人</label>
+                    <fieldset class="form-group">
+                        <select id="handler" name="handler" class="selectpicker form-control" data-live-search="true">               
+                        </select>
+                    </fieldset>
+				<p>OK!!!点击提交按钮完成提交....</p>
+
+                <button type="button" onclick="end()">上一步</button>
                 <input id="sub" type="submit" value="提交">
 			</div>
 		</div>
         </form>
 </div>
 
+  
 
 <script type="text/javascript">
 function one() {
-    if(formSubmit("title")){
-        $("#tab1").hide();
-        $("#tab2").show();
+    if(formSubmit("title") && ticket_types("go")){
+        $("#master").hide();
+        $("#go").show();
     }
+    else if(formSubmit("title") && ticket_types("webpage")){
+        $("#master").hide();
+        $("#webpage").show();
+    } 
 }
 
-function two_left() {
-    $("#tab2").hide();
-    $("#tab1").show();
+function go_left() {
+    $("#go").hide();
+    $("#master").show();
 }
 
-function two_right() {
+function go_right() {
     if(formSubmit("function") && formSubmit("project") && formSubmit("sentry") && formSubmit("hosts") && formSubmit("go_command") && formSubmit("supervisor_name") && formSubmit("svn_repo") && formSubmit("statsd") && formSubmit("sentry")){
-        $("#tab2").hide();
-        $("#tab3").show();
+        $("#go").hide();
+        $("#end").show();
     }
 }
 
 
-function three_left() {
-    $("#tab3").hide();
-    $("#tab2").show();
+function webpage_left() {
+    $("#webpage").hide();
+    $("#master").show();
 }
 
-function three_right() {
-    $("#tab3").hide();
-    $("#tab4").show();
+function webpage_right() {
+    $("#webpage").hide();
+    $("#end").show();
 }
 
-function four_left() {
-    $("#tab3").hide();
-    $("#tab2").show();
+function end() {
+    if(ticket_types("go")){
+        $("#end").hide();
+        $("#go").show();
+    }
+    else if(ticket_types("webpage")){
+        $("#end").hide();
+        $("#webpage").show();
+    }
 } 
 
 
 
-
-
 function getHosts(val) {
-        var ticket_type = document.getElementById("ticket_type").value;
-        console.log(ticket_type)
-        var select = document.getElementById("hosts");
-        select.options.length = 0;   // del options
-        var handler = document.getElementById("handler");
-        handler.options.length = 0;   // del options
-        if (ticket_type != "none") {
-            $.getJSON("/workflow/get_hosts",{"ticket_type":ticket_type},function (result) {
-                console.log(result[0])
-                for (i=0;i<result[0].length;i++) {
-                    var objOption = document.createElement("OPTION")
-                    objOption.value = result[0][i]
-                    objOption.text = result[0][i]
-                    select.add(objOption)
-                }
-                for (i=0;i<result[1].length;i++) {
-                    var objOption = document.createElement("OPTION")
-                    objOption.value = result[1][i]
-                    objOption.text = result[1][i]
-                    handler.add(objOption)
-                }
-                console.log(result.length)
-            })
-        }  
- }
+    var ticket_type = document.getElementById("ticket_type").value;
+    console.log(ticket_type)
+    var select = document.getElementById("hosts");
+    select.options.length = 0;   // del options
+    var handler = document.getElementById("handler");
+    handler.options.length = 0;   // del options
+    if (ticket_type != "none") {
+        $.getJSON("/workflow/get_hosts",{"ticket_type":ticket_type},function (result) {
+            console.log(result[0])
+            for (i=0;i<result[0].length;i++) {
+                var objOption = document.createElement("OPTION")
+                objOption.value = result[0][i]
+                objOption.text = result[0][i]
+                select.add(objOption)
+            }
+            for (i=0;i<result[1].length;i++) {
+                var objOption = document.createElement("OPTION")
+                objOption.value = result[1][i]
+                objOption.text = result[1][i]
+                handler.add(objOption)
+            }
+            console.log(result.length)
+        })
+    }  
+}
 
-
- function formSubmit(argv) {  
+function formSubmit(argv) {  
     var condId = document.getElementById(argv);  
     var text = condId.value;  
     console.log(text)
@@ -198,9 +231,17 @@ function getHosts(val) {
         alert("输入的内容为空,请重新输入！");  
         return false;  
     }
-    return 1;  
-      
+    return 1;       
 }  
+
+function ticket_types(value){
+    if (document.getElementById("ticket_type").value == value)
+    {
+        return 1
+    }
+}
+
+
 
 </script>
 {% endblock content %}

@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from salt_api.api import SaltApi
 from asset.models import gogroup,svn,minion,GOTemplate,goservices,gostatus,UserProfile
-from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo,svn_gotemplate_local_path
+from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo,svn_gotemplate_local_path,webpage_host
 from asset.utils import dingding_robo
 import json
 import uuid
@@ -56,34 +56,46 @@ def get_ticket_tasks(request):
 def submit_tickets(request):
     title = request.POST['title']
     ticket_type = request.POST['ticket_type']
-    function = request.POST['function']
-    hosts = request.POST.getlist('hosts')
-    project = request.POST['project']
-    go_command = request.POST['go_command']
-    supervisor_name =  request.POST['supervisor_name']
-    svn_repo = request.POST['svn_repo']
-    statsd = request.POST['statsd']
-    sentry = request.POST['sentry']
     handler = request.POST['handler']
-    go_command = go_command + " -c /srv/gotemplate/%s/conf.ctmpl" % project
-    
-    salt_command = {
-        "title":title,
-        "ticket_type":ticket_type,
-        "function":function,
-        "hosts":hosts,
-        "project":project,
-        "svn_repo":svn_repo,
-        "supervisor_name":supervisor_name,
-        'go_command':go_command,
-        'statsd':statsd,
-        'sentry':sentry,
-        'handler':handler,
-        'owner':str(request.user)
+    owner = str(request.user)
+    if ticket_type == 'go':
+        function = request.POST['function']
+        hosts = request.POST.getlist('hosts')
+        project = request.POST['project']
+        go_command = request.POST['go_command']
+        supervisor_name =  request.POST['supervisor_name']
+        svn_repo = request.POST['svn_repo']
+        statsd = request.POST['statsd']
+        sentry = request.POST['sentry']
+        go_command = go_command + " -c /srv/gotemplate/%s/conf.ctmpl" % project
+        
+        salt_command = {
+            "title":title,
+            "ticket_type":ticket_type,
+            "function":function,
+            "hosts":hosts,
+            "project":project,
+            "svn_repo":svn_repo,
+            "supervisor_name":supervisor_name,
+            "go_command":go_command,
+            "statsd":statsd,
+            "sentry":sentry,
+            "handler":handler,
+            "owner":owner
         }
-    salt_command = json.dumps(salt_command)
-  
+
+    elif ticket_type == 'webpage':
+        print '--------site_name-----:',request.POST.getlist('site_name')
+        site_name = request.POST.getlist('site_name')
+        salt_command = {
+            "title":title,
+            "ticket_type":ticket_type,
+            "site_name":site_name,
+            "handler":handler,
+            "owner":owner
+	}
     try:
+        salt_command = json.dumps(salt_command)
         ticket_type = TicketType.objects.get(type_name=ticket_type)
         handler = User.objects.get(username=handler)
         task_id = str(uuid.uuid1())
@@ -101,7 +113,7 @@ def submit_tickets(request):
         logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='add ticket (%s)' % title,result='failed')
     
     return render(request,'getdata.html',{'result':result})    
-    
+        
         
 
 
@@ -114,116 +126,137 @@ def handle_tickets(request):
     operating_id = TicketTasks.objects.get(tasks_id=task_id)
     content = TicketTasks.objects.get(tasks_id=task_id).content
     content = json.loads(content)
+    username = User.objects.get(username=content['handler'])
+    phone_number = UserProfile.objects.get(user=username).phone_number  
+    handle_result = 0
 
-    #'----------------------------ticket_type--------------------'
+    if submit == 'reject':
+        TicketTasks.objects.filter(tasks_id=task_id).update(state='4')
+        TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='2',submitter=content['owner'])
+        
+        logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='successful')
+        info = 'Your "%s" order be reject,please visit to workflow page.' % content['title']
+        owner = User.objects.get(username=content['owner'])
+        owner_phone_number = UserProfile.objects.get(user=owner).phone_number
+        dingding_robo(phone_number=owner_phone_number,types=2,info=info)
+        result = [{'HandleTasks':'The task_id handle to success!'}]
+        return render(request,'getdata.html',{'result':result}) 
+
     if content['ticket_type'] == 'go':
-        username = User.objects.get(username=content['handler'])
-        phone_number = UserProfile.objects.get(user=username).phone_number  
-        handle_result = 0
-    
-        if submit == 'reject':
-            TicketTasks.objects.filter(tasks_id=task_id).update(state='4')
-            TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='2',submitter=content['owner'])
+        #'----------------------------ticket_type--------------------'
+        for host in content['hosts']:
+            data = {
+                'client':'local',
+                'tgt':host,
+                'fun':'state.sls',
+                'arg':['goservices.supervisor_submodule','pillar={"goprograme":"%s","svnrepo":"%s","supProgrameName":"%s","goRunCommand":"%s"}' % (content['project'],content['svn_repo'],content['supervisor_name'],content['go_command'])]
+            }
+            result = salt_api.salt_cmd(data)
+            try:
+                minion_host = minion.objects.get(saltname=host)    
+                supervisor_info = gostatus.objects.get(hostname=minion_host)
+                supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (
+                    supervisor_info.supervisor_username, supervisor_info.supervisor_password,
+                    supervisor_info.supervisor_host, supervisor_info.supervisor_port))
+                if supervisor_obj.supervisor.getProcessInfo(content['supervisor_name']):
+                    deploy_result = 1
+                    print '-------successful-----'
+            except Exception, e:
+                print e
+                deploy_result = 0
+                handle_result = 1
+                TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
+                TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
+                logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
+                info = 'The "%s" order is failed,please check in %s host.' % (content['title'],host)
+                dingding_robo(phone_number=phone_number,types=2,info=info)
+                result = [{'HandleTasks':'The task_id handle to failed!'}]
+                print '------failed-------------'           
+                return render(request,'getdata.html',{'result':result}) 
             
-            logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='successful')
-            info = 'Your "%s" order be reject,please visit to workflow page.' % content['title']
-            owner = User.objects.get(username=content['owner'])
-            owner_phone_number = UserProfile.objects.get(user=owner).phone_number
-            dingding_robo(phone_number=owner_phone_number,types=2,info=info)
-            result = [{'HandleTasks':'The task_id handle to success!'}]
-            return render(request,'getdata.html',{'result':result}) 
+            #-------------------------new project-----------------------------------
+            try:
+                if deploy_result == 1:
+                    if gogroup.objects.filter(name=content['project']):
+                        print 'The %s project is existing!!' % content['project']
+                    else:
+                        obj = gogroup(name=content['project'])
+                        obj.save()
 
-        else:
-            for host in content['hosts']:
-                data = {
-                    'client':'local',
-                    'tgt':host,
-                    'fun':'state.sls',
-                    'arg':['goservices.supervisor_submodule','pillar={"goprograme":"%s","svnrepo":"%s","supProgrameName":"%s","goRunCommand":"%s"}' % (content['project'],content['svn_repo'],content['supervisor_name'],content['go_command'])]
-                }
-                result = salt_api.salt_cmd(data)
-                try:
-                    minion_host = minion.objects.get(saltname=host)    
-                    supervisor_info = gostatus.objects.get(hostname=minion_host)
-                    supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (
-                        supervisor_info.supervisor_username, supervisor_info.supervisor_password,
-                        supervisor_info.supervisor_host, supervisor_info.supervisor_port))
-                    if supervisor_obj.supervisor.getProcessInfo(content['supervisor_name']):
-                        deploy_result = 1
-                        print '-------successful-----'
-                except Exception, e:
-                    print e
-                    deploy_result = 0
-                    handle_result = 1
-                    TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
-                    TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
-                    logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
-                    info = 'The "%s" order is failed,please check in %s host.' % (content['title'],host)
-                    dingding_robo(phone_number=phone_number,types=2,info=info)
-                    result = [{'HandleTasks':'The task_id handle to failed!'}]
-                    print '------failed-------------'           
-                
-                #-------------------------new project-----------------------------------
-                try:
-                    if deploy_result == 1:
-                        if gogroup.objects.filter(name=content['project']):
-                            print 'The %s project is existing!!' % content['project']
-                        else:
-                            obj = gogroup(name=content['project'])
-                            obj.save()
-
-                            project = gogroup.objects.get(name=content['project'])
-                            obj = svn(username=svn_username,
-                                password=svn_password,
-                                repo=content['svn_repo'],
-                                localpath=go_local_path + content['project'],
-                                movepath=go_move_path + content['project'],
-                                revertpath=go_revert_path,
-                                executefile=go_local_path + content['project'] + '/' + content['project']
-                                ,project=project)
-                            obj.save()
-
-
-                        #-------------------------gotemplate-----------------------------------
                         project = gogroup.objects.get(name=content['project'])
-                        ip = minion_host.ip
+                        obj = svn(username=svn_username,
+                            password=svn_password,
+                            repo=content['svn_repo'],
+                            localpath=go_local_path + content['project'],
+                            movepath=go_move_path + content['project'],
+                            revertpath=go_revert_path,
+                            executefile=go_local_path + content['project'] + '/' + content['project']
+                            ,project=project)
+                        obj.save()
 
-                        if GOTemplate.objects.filter(hostname=minion_host).filter(project=project).filter(env=1):
-                            print 'The %s gotemplate project is existing!!' % content['project']
-                        else:
-                            obj = GOTemplate(
-                                username=svn_username,
-                                password=svn_password,
-                                repo=svn_gotemplate_repo,
-                                localpath=svn_gotemplate_local_path,
-                                env=1,
-                                hostname=minion_host,
-                                project=project)
-                            obj.save()
 
-                        #-------------------------goservices-----------------------------------
-                        if goservices.objects.filter(saltminion=minion_host).filter(group=project).filter(name=content['supervisor_name']).filter(env=1):
-                            print 'The %s goservice is existing!!' % content['supervisor_name']
-                        else:
-                            obj = goservices(
-                                ip=ip,
-                                name=content['supervisor_name'] ,
-                                env=1,
-                                group=project,
-                                saltminion=minion_host,
-                                owner=content['owner'],
-                                has_statsd=content['statsd'],
-                                has_sentry=content['sentry'],
-                                comment=content['function'])
-                            obj.save()
-                                    
-                except Exception, e:
-                    print e
-                    TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
-                    TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
-                    logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
-                    result = [{'HandleTasks':'The task_id handle to failed!'}]
-        if handle_result == 0:
+                    #-------------------------gotemplate-----------------------------------
+                    project = gogroup.objects.get(name=content['project'])
+                    ip = minion_host.ip
+
+                    if GOTemplate.objects.filter(hostname=minion_host).filter(project=project).filter(env=1):
+                        print 'The %s gotemplate project is existing!!' % content['project']
+                    else:
+                        obj = GOTemplate(
+                            username=svn_username,
+                            password=svn_password,
+                            repo=svn_gotemplate_repo,
+                            localpath=svn_gotemplate_local_path,
+                            env=1,
+                            hostname=minion_host,
+                            project=project)
+                        obj.save()
+
+                    #-------------------------goservices-----------------------------------
+                    if goservices.objects.filter(saltminion=minion_host).filter(group=project).filter(name=content['supervisor_name']).filter(env=1):
+                        print 'The %s goservice is existing!!' % content['supervisor_name']
+                    else:
+                        obj = goservices(
+                            ip=ip,
+                            name=content['supervisor_name'] ,
+                            env=1,
+                            group=project,
+                            saltminion=minion_host,
+                            owner=content['owner'],
+                            has_statsd=content['statsd'],
+                            has_sentry=content['sentry'],
+                            comment=content['function'])
+                        obj.save()                     
+            except Exception, e:
+                print e
+                handle_result = 1
+                TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
+                TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
+                logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
+                result = [{'HandleTasks':'The task_id handle to failed!'}]
+    elif content['ticket_type'] == 'webpage':
+        try:
+            data = {
+                'client':'local',
+                'tgt': webpage_host,
+                'fun':'cmd.script',
+                'arg':['salt://scripts/webpage.py','"%s"' % str(content['site_name'])] 
+            }
+            salt_api.salt_cmd(data)
+        except Exception, e:
+            print e
+            handle_result = 1
+            TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
+            TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
+            logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
+            info = 'The "%s" order is failed,please check in %s host.' % (content['title'],host)
+            dingding_robo(phone_number=phone_number,types=2,info=info)
+            result = [{'HandleTasks':'The task_id handle to failed!'}]
+    else:
+        print '--------type is error...'
+        handle_result = 1
+        result = [{'HandleTasks':'The type is error!'}]
+    if handle_result == 0:
             TicketTasks.objects.filter(tasks_id=task_id).update(state='3')
             TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
             logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='successful')
@@ -232,9 +265,6 @@ def handle_tickets(request):
             info = 'Your "%s" order has been processed,please visit to workflow page.' % content['title']
             dingding_robo(phone_number=phone_number,types=2,info=info)
             result = [{'HandleTasks':'The task_id handle to success!'}]
-    else:
-        print '--------type is error...'
-        result = [{'HandleTasks':'The type is error!'}]
     return render(request,'getdata.html',{'result':result}) 
 
 
