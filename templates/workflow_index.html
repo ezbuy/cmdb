@@ -12,7 +12,7 @@
 
 
 <div class="tabbable" id="tabbable">
-    <form  class="col-lg-12" action="{% url 'submit_tickets' %}" method="post">
+    <form  class="col-lg-12" action="{% url 'submit_tickets' %}" method="post" id="checkall">
 		<ul class="nav nav-tabs">
 			<li id="one_tab"><a href="#">第一步</a></li>
 			<li id="two_tab"><a href="#">第二步</a></li>
@@ -82,23 +82,47 @@
                     </tr>
                 </table>
 			</div>
-			<div id="sql" style="display: none">
-                <table align="center">
-                    <fieldset class="form-group">
-                        <label for="formGroupExampleInput">step3</label>
-                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="spike" name="step3_project">
-                    </fieldset>
-                    <fieldset class="form-group">
-                        <label for="formGroupExampleInput2">supervisor运行程序名称</label>
-                        <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="spike_shops" name="step3_supervisorname">
-                    </fieldset>
-                    <fieldset class="form-group">
-                        <label for="formGroupExampleInput3">go运行命令</label>
-                        <input type="text" class="form-control" id="formGroupExampleInput3" placeholder="spike shops -c config.toml" name="step3_command">
-                    </fieldset>
+			<div id="webpage" style="display: none">
+                <table class="table table-striped table-bordered table-hover " id="editable" name="editable">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('checkall')">
+                            </th>
+                            <th class="text-center"> 站点名称 </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="gradeX">
+                            <td class="text-center"  data-editable='false'>
+                                <input name="site_name" value="ezbuy_sg" type="checkbox" class="i-checks">
+                            </td>
+                            <td class="text-center"> <a href="#">ezbuy.sg</a></td>
+                        </tr>
+                            <tr class="gradeX">
+                            <td class="text-center"  data-editable='false'>
+                                <input name="site_name" value="ezbuy_my" type="checkbox" class="i-checks">
+                            </td>
+                            <td class="text-center"> <a href="#">ezbuy.my</a></td>
+                        </tr>
+                            <tr class="gradeX">
+                            <td class="text-center"  data-editable='false'>
+                                <input name="site_name" value="ezbuy_co_th" type="checkbox" class="i-checks">
+                            </td>
+                            <td class="text-center"> <a href="#">ezbuy.co.th</a></td>
+                        </tr>
+                            <tr class="gradeX">
+                            <td class="text-center"  data-editable='false'>
+                                <input name="site_name" value="ezbuy_co_id" type="checkbox" class="i-checks">
+                            </td>
+                            <td class="text-center"> <a href="#">ezbuy.co.id</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table>
                     <td>
-                        <button type="button" onclick="sql_left()">上一步</button>
-                        <button type="button" onclick="sql_right()">下一步</button>
+                        <button type="button" onclick="webpage_left()">上一步</button>
+                        <button type="button" onclick="webpage_right()">下一步</button>
                     </td>
                     </tr>
                 </table>
@@ -121,6 +145,7 @@
         </form>
 </div>
 
+  
 
 <script type="text/javascript">
 function one() {
@@ -128,9 +153,9 @@ function one() {
         $("#master").hide();
         $("#go").show();
     }
-    else if(formSubmit("title") && ticket_types("sql")){
+    else if(formSubmit("title") && ticket_types("webpage")){
         $("#master").hide();
-        $("#sql").show();
+        $("#webpage").show();
     } 
 }
 
@@ -147,13 +172,13 @@ function go_right() {
 }
 
 
-function sql_left() {
-    $("#sql").hide();
+function webpage_left() {
+    $("#webpage").hide();
     $("#master").show();
 }
 
-function sql_right() {
-    $("#sql").hide();
+function webpage_right() {
+    $("#webpage").hide();
     $("#end").show();
 }
 
@@ -162,9 +187,9 @@ function end() {
         $("#end").hide();
         $("#go").show();
     }
-    else if(ticket_types("sql")){
+    else if(ticket_types("webpage")){
         $("#end").hide();
-        $("#sql").show();
+        $("#webpage").show();
     }
 } 
 
