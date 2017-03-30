@@ -103,6 +103,15 @@
                 </ul>
             </li>
         {% endif %}
+        {% if request.user|has_group:'winservices' %}
+            <li>
+                <a href="#"><i class="fa fa-bars"></i> <span class="nav-label">Windows Services</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li><a href="{% url 'winservices' %}">发布</a></li>
+                    <li><a href="{% url 'winServicesList' %}">重启服务<span class="label pull-right"></span></a></li>
+                </ul>
+            </li>
+        {% endif %}
             <li>
                 <a><i class="fa fa-inbox"></i> <span class="nav-label">WorkFlow</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
