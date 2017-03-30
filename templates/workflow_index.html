@@ -12,7 +12,7 @@
 
 
 <div class="tabbable" id="tabbable">
-    <form  class="col-lg-12" action="{% url 'submit_tickets' %}" method="post" id="checkall">
+    <form  class="col-lg-12" action="{% url 'submit_tickets' %}" method="post" id="checkall" name="site_name" onchange="getSubmit()">
 		<ul class="nav nav-tabs">
 			<li id="one_tab"><a href="#">第一步</a></li>
 			<li id="two_tab"><a href="#">第二步</a></li>
@@ -95,25 +95,25 @@
                     <tbody>
                         <tr class="gradeX">
                             <td class="text-center"  data-editable='false'>
-                                <input name="site_name" value="ezbuy_sg" type="checkbox" class="i-checks">
+                                <input name="site_name" value="ezbuy_sg" type="checkbox" class="i-checks" onchange="getSubmit()">
                             </td>
                             <td class="text-center"> <a href="#">ezbuy.sg</a></td>
                         </tr>
                             <tr class="gradeX">
                             <td class="text-center"  data-editable='false'>
-                                <input name="site_name" value="ezbuy_my" type="checkbox" class="i-checks">
+                                <input name="site_name" value="ezbuy_my" type="checkbox" class="i-checks" onchange="getSubmit()">
                             </td>
                             <td class="text-center"> <a href="#">ezbuy.my</a></td>
                         </tr>
                             <tr class="gradeX">
                             <td class="text-center"  data-editable='false'>
-                                <input name="site_name" value="ezbuy_co_th" type="checkbox" class="i-checks">
+                                <input name="site_name" value="ezbuy_co_th" type="checkbox" class="i-checks" onchange="getSubmit()">
                             </td>
                             <td class="text-center"> <a href="#">ezbuy.co.th</a></td>
                         </tr>
                             <tr class="gradeX">
                             <td class="text-center"  data-editable='false'>
-                                <input name="site_name" value="ezbuy_co_id" type="checkbox" class="i-checks">
+                                <input name="site_name" value="ezbuy_co_id" type="checkbox" class="i-checks" onchange="getSubmit()">
                             </td>
                             <td class="text-center"> <a href="#">ezbuy.co.id</a></td>
                         </tr>
@@ -122,7 +122,7 @@
                 <table>
                     <td>
                         <button type="button" onclick="webpage_left()">上一步</button>
-                        <button type="button" onclick="webpage_right()">下一步</button>
+                        <button id='sub' type="button" disabled="disabled" onclick="webpage_right()">下一步</button>
                     </td>
                     </tr>
                 </table>
@@ -242,6 +242,23 @@ function ticket_types(value){
 }
 
 
+
+function getSubmit() {
+    var services = document.getElementsByName("site_name")
+    var count = 0
+    for (var i=0;i<services.length;i++) {
+
+        if (services[i].checked) {
+            count = count + 1
+        }
+    }
+    if (count != 0){
+            $("#sub").attr("disabled", false)     
+    }
+    else {
+            $("#sub").attr("disabled", true)
+    }
+}
 
 </script>
 {% endblock content %}
