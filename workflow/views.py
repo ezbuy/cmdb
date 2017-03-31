@@ -6,7 +6,8 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from salt_api.api import SaltApi
 from asset.models import gogroup,svn,minion,GOTemplate,goservices,gostatus,UserProfile
-from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo,svn_gotemplate_local_path,webpage_host
+from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo
+from mico.settings import svn_gotemplate_local_path,webpage_host,svn_host,svn_repo_url
 from asset.utils import dingding_robo
 import json
 import uuid
@@ -54,6 +55,7 @@ def get_ticket_tasks(request):
 @login_required
 @deny_resubmit(page_key='submit_tickets')
 def submit_tickets(request):
+    TicketTasks = []
     title = request.POST['title']
     ticket_type = request.POST['ticket_type']
     handler = request.POST['handler']
@@ -84,6 +86,21 @@ def submit_tickets(request):
             "owner":owner
         }
 
+        if not gogroup.objects.filter(name=project):
+            print "create repo"
+            data = {
+                'client':'local',
+                'tgt': svn_host,
+                'fun':'cmd.script',
+                'arg':['salt://scripts/create_svn.sh',project] 
+            }
+            salt_result = salt_api.salt_cmd(data)
+            if salt_result['return'][0][svn_host]['stdout'] == 'ok':
+                print '-----------------ok---',svn_repo_url + project
+            else:
+                print '-----------------false'
+
+
     elif ticket_type == 'webpage':
         print '--------site_name-----:',request.POST.getlist('site_name')
         site_name = request.POST.getlist('site_name')
@@ -100,7 +117,8 @@ def submit_tickets(request):
         handler = User.objects.get(username=handler)
         task_id = str(uuid.uuid1())
         TicketTasks.objects.create(tasks_id=task_id,title=title,ticket_type=ticket_type,creator=request.user,content=salt_command,handler=handler,state='1')
-        result = [{'TicketTasks':'The %s order submitted to success!' % (task_id)}]
+        TicketTasks.append('The %s order submitted to success!' % task_id)
+        result = [{'TicketTasks':TicketTasks}]
         logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='add ticket (%s)' % title,result='successful')
         user = User.objects.get(username=handler)
                 

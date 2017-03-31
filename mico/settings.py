@@ -179,6 +179,8 @@ go_move_path = '/tmp/'
 go_revert_path = '/srv/revert'
 svn_gotemplate_repo = 'http://svn.abc.com/svn/gotemplate'
 svn_gotemplate_local_path = '/srv/gotemplate'
+svn_host = 't-slq-web-1'
+svn_repo_url = 'http://svn.abc.com/svn/'
 
 ##webpage
 webpage_host = 't-slq-web-1'
