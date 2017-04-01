@@ -63,10 +63,6 @@
                     <fieldset class="form-group">
                         <input type="text" class="form-control" id="supervisor_name" placeholder="spike_shop" name="supervisor_name">
                     </fieldset>
-                    <label for="formGroupExampleInput">go项目svn地址</label>
-                    <fieldset class="form-group">
-                        <input type="text" class="form-control" id="svn_repo" placeholder="http://svn.abc.com/svn/spike" name="svn_repo">
-                    </fieldset>
                     <label for="formGroupExampleInput">statsd地址</label>
                     <fieldset class="form-group">
                         <input type="text" class="form-control" id="statsd" placeholder="http://stats.abc.com/svn/spike" name="statsd">
@@ -165,7 +161,7 @@ function go_left() {
 }
 
 function go_right() {
-    if(formSubmit("function") && formSubmit("project") && formSubmit("sentry") && formSubmit("hosts") && formSubmit("go_command") && formSubmit("supervisor_name") && formSubmit("svn_repo") && formSubmit("statsd") && formSubmit("sentry")){
+    if(formSubmit("function") && formSubmit("project") && formSubmit("sentry") && formSubmit("hosts") && formSubmit("go_command") && formSubmit("supervisor_name") && formSubmit("statsd") && formSubmit("sentry")){
         $("#go").hide();
         $("#end").show();
     }

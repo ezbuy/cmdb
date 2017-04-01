@@ -67,7 +67,7 @@ def submit_tickets(request):
         project = request.POST['project']
         go_command = request.POST['go_command']
         supervisor_name =  request.POST['supervisor_name']
-        svn_repo = request.POST['svn_repo']
+        svn_repo = svn_repo_url + project
         statsd = request.POST['statsd']
         sentry = request.POST['sentry']
         go_command = go_command + " -c /srv/gotemplate/%s/conf.ctmpl" % project
@@ -96,10 +96,12 @@ def submit_tickets(request):
             }
             salt_result = salt_api.salt_cmd(data)
             if salt_result['return'][0][svn_host]['stdout'] == 'ok':
-                tasks_info = 'Your project svn_repo is %s%s.\n\n' % (svn_repo_url,project)
+                tasks_info = 'Your project svn_repo is %s.\n\n' % (svn_repo)
                 
             else:
-                tasks_info = 'Error creating svn repo.'
+                tasks_info = 'Error creating svn repo(%s),please tell ops..\n\n' % (svn_repo)
+        else:
+            tasks_info = 'Your project svn_repo is %s.\n\n' % (svn_repo)
 
 
 
