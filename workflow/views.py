@@ -1,3 +1,4 @@
+# coding: utf-8
 from django.shortcuts import render,HttpResponse
 from django.contrib.auth.decorators import login_required
 from asset.utils import deny_resubmit,logs
@@ -55,7 +56,7 @@ def get_ticket_tasks(request):
 @login_required
 @deny_resubmit(page_key='submit_tickets')
 def submit_tickets(request):
-    TicketTasks = []
+    tasks_info = ''
     title = request.POST['title']
     ticket_type = request.POST['ticket_type']
     handler = request.POST['handler']
@@ -85,9 +86,8 @@ def submit_tickets(request):
             "handler":handler,
             "owner":owner
         }
-
+        ## create svn repo address
         if not gogroup.objects.filter(name=project):
-            print "create repo"
             data = {
                 'client':'local',
                 'tgt': svn_host,
@@ -96,9 +96,12 @@ def submit_tickets(request):
             }
             salt_result = salt_api.salt_cmd(data)
             if salt_result['return'][0][svn_host]['stdout'] == 'ok':
-                print '-----------------ok---',svn_repo_url + project
+                tasks_info = 'Your project svn_repo is %s%s.\n\n' % (svn_repo_url,project)
+                
             else:
-                print '-----------------false'
+                tasks_info = 'Error creating svn repo.'
+
+
 
 
     elif ticket_type == 'webpage':
@@ -117,8 +120,8 @@ def submit_tickets(request):
         handler = User.objects.get(username=handler)
         task_id = str(uuid.uuid1())
         TicketTasks.objects.create(tasks_id=task_id,title=title,ticket_type=ticket_type,creator=request.user,content=salt_command,handler=handler,state='1')
-        TicketTasks.append('The %s order submitted to success!' % task_id)
-        result = [{'TicketTasks':TicketTasks}]
+        tasks_info = tasks_info + 'The %s order submitted to success!' % task_id
+        result = [{'TicketTasks':tasks_info}]
         logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='add ticket (%s)' % title,result='successful')
         user = User.objects.get(username=handler)
                 
