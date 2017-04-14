@@ -41,7 +41,7 @@ def kettle_run(user,ip,cmd_type,file_path,kettle_log_file,phone_number):
     	result = result['return']
     
     logs(user,ip,cmd,'running')
-    dingding_robo(kettle_host,'kettle job','it is error',user,phone_number)
+    dingding_robo(kettle_host,'kettle job',result,user,phone_number)
     return result
 
 
