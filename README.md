@@ -26,14 +26,25 @@ CMDB是一个发布平台，主要有以下功能：
 
 ![image](https://github.com/pengzihe/cmdb/blob/master/static/screen/6.png)
 
-
-6.日记统计
+6.asset
 
 ![image](https://github.com/pengzihe/cmdb/blob/master/static/screen/7.png)
 
-
-7.后台管理
+7.kettle运行
 
 ![image](https://github.com/pengzihe/cmdb/blob/master/static/screen/8.png)
+
+8.工单处理
+
+![image](https://github.com/pengzihe/cmdb/blob/master/static/screen/9.png)
+
+9.日记统计
+
+![image](https://github.com/pengzihe/cmdb/blob/master/static/screen/10.png)
+
+
+10.后台管理
+
+![image](https://github.com/pengzihe/cmdb/blob/master/static/screen/11.png)
 
 
