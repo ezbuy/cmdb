@@ -65,6 +65,7 @@ def submit_tickets(request):
         function = request.POST['function']
         hosts = request.POST.getlist('hosts')
         project = request.POST['project']
+        project = project.strip()
         go_command = request.POST['go_command']
         supervisor_name =  request.POST['supervisor_name']
         svn_repo = svn_repo_url + project
