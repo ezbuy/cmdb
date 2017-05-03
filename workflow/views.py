@@ -116,7 +116,17 @@ def submit_tickets(request):
             "site_name":site_name,
             "handler":handler,
             "owner":owner
-	}
+	    }
+    elif ticket_type == 'uat_jenkins':
+        print request.POST
+        jenkins_name = request.POST['jenkins_name']
+        salt_command = {
+            "title":title,
+            "ticket_type":ticket_type,
+            "jenkins_name":jenkins_name,
+            "handler":handler,
+            "owner":owner
+	    }
     try:
         salt_command = json.dumps(salt_command)
         ticket_type = TicketType.objects.get(type_name=ticket_type)

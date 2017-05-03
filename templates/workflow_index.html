@@ -123,6 +123,25 @@
                     </tr>
                 </table>
 			</div>
+            <div id="uat_jenkins" style="display: none">
+                <table align="center">
+                    <fieldset class="form-group">
+                        <label for="formGroupExampleInput">go project name</label>
+                        <input type="text" class="form-control" id="jenkins_name" placeholder="请输入你需要添加到jenkins的项目名称" name="jenkins_name" required="" >
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="formGroupExampleInput2">Re-enter go project name</label>
+                        <input type="text" class="form-control" id="jenkins_name_again" placeholder="请再次确认你需要添加到jenkins的项目名称" name="jenkins_name_again" required="" >
+                    </fieldset>
+                </table>
+                <table>
+                    <td>
+                        <button type="button" onclick="uat_jenkins_left()">上一步</button>
+                        <button id='jenkinsbutton' type="button" onclick="uat_jenkins_right()">下一步</button>
+                    </td>
+                    </tr>
+                </table>
+            </div>
 			<div id="end" style="display: none">
                 <div class="progress">
 					<div class="bar bar-success" style="width:100%;"></div>
@@ -153,6 +172,10 @@ function one() {
         $("#master").hide();
         $("#webpage").show();
     } 
+    else if(formSubmit("title") && ticket_types("uat_jenkins")){
+        $("#master").hide();
+        $("#uat_jenkins").show();
+    } 
 }
 
 function go_left() {
@@ -178,6 +201,17 @@ function webpage_right() {
     $("#end").show();
 }
 
+
+function uat_jenkins_left() {
+    $("#uat_jenkins").hide();
+    $("#master").show();
+}
+
+function uat_jenkins_right() {
+    $("#uat_jenkins").hide();
+    $("#end").show();
+}
+
 function end() {
     if(ticket_types("go")){
         $("#end").hide();
@@ -186,6 +220,10 @@ function end() {
     else if(ticket_types("webpage")){
         $("#end").hide();
         $("#webpage").show();
+    }
+    else if(ticket_types("uat_jenkins")){
+        $("#end").hide();
+        $("#uat_jenkins").show();
     }
 } 
 
