@@ -184,3 +184,13 @@ svn_repo_url = 'http://svn.abc.com/svn/'
 
 ##webpage
 webpage_host = 't-slq-web-1'
+
+##gitlab
+gitlab_url = 'http://abc.com'
+gitlab_private_token = 'sdadasdadwwe'
+
+##jenkins
+jenkins_url = ['http://abc.com/job/uat/','http://abc.com/job/deploy/']
+jenkins_webhook_url = ['http://abc.com/project/uat','http://abc.com/project/deploy']
+jenkins_username = 'abc'
+jenkins_password = 'abc'

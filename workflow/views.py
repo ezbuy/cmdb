@@ -13,6 +13,8 @@ from asset.utils import dingding_robo
 import json
 import uuid
 import xmlrpclib
+from utils import existGitlabProject
+
 salt_api = SaltApi()
 
 
@@ -285,6 +287,16 @@ def handle_tickets(request):
             logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
             info = 'The "%s" order is failed,please check in %s host.' % (content['title'],host)
             dingding_robo(phone_number=phone_number,types=2,info=info)
+            result = [{'HandleTasks':'The task_id handle to failed!'}]
+    elif content['ticket_type'] == 'uat_jenkins':
+        try:
+            existGitlabProject(content['jenkins_name'])
+        except Exception, e:
+            print e
+            handle_result = 1
+            TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
+            TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
+            logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
             result = [{'HandleTasks':'The task_id handle to failed!'}]
     else:
         print '--------type is error...'

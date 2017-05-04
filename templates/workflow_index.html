@@ -208,6 +208,18 @@ function uat_jenkins_left() {
 }
 
 function uat_jenkins_right() {
+    var jenkins_name = document.getElementById("jenkins_name").value;
+    var jenkins_name_again = document.getElementById("jenkins_name_again").value;
+    console.log(jenkins_name)
+    if(jenkins_name==null || jenkins_name=="") {  
+        alert('Please enter the correct project name,try again....')
+        return false
+    }
+    
+    if (jenkins_name != jenkins_name_again) {
+        alert('Please enter the correct project name,try again....')
+        return false
+    }
     $("#uat_jenkins").hide();
     $("#end").show();
 }
