@@ -290,13 +290,25 @@ def handle_tickets(request):
             result = [{'HandleTasks':'The task_id handle to failed!'}]
     elif content['ticket_type'] == 'uat_jenkins':
         try:
-            existGitlabProject(content['jenkins_name'])
+            jenkins = existGitlabProject(content['jenkins_name'])
+            print '-----jenkins---',jenkins
+            if jenkins == 2:
+                result = [{'HandleTasks': 'The project name is not exist.'}]
+                handle_result = 1
+            elif jenkins == 3:
+                result = [{'HandleTasks': 'jenkins creating is error.'}]
+                handle_result = 1
+            elif jenkins == 4:
+                result = [{'HandleTasks': 'svn repo creating is error.'}]
+                handle_result = 1
         except Exception, e:
             print e
             handle_result = 1
             TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
             TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
             logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
+            info = 'The "%s" order is failed.' % (content['title'])
+            dingding_robo(phone_number=phone_number, types=2, info=info)
             result = [{'HandleTasks':'The task_id handle to failed!'}]
     else:
         print '--------type is error...'

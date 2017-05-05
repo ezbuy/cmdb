@@ -2,8 +2,19 @@ import gitlab
 from jenkinsapi.jenkins import Jenkins
 from mico.settings import gitlab_url,gitlab_private_token,jenkins_webhook_url
 from mico.settings import jenkins_url,jenkins_username,jenkins_password
+from mico.settings import svn_host
+from salt_api.api import SaltApi
+
+salt_api = SaltApi()
 
 def existGitlabProject(project_name):
+    '''
+    error code:
+     1. sucessful.
+     2. gitlab  project name is not exist.
+     3. jenkins creating is error.
+     4. svn repo creating is error.
+    '''
     gl = gitlab.Gitlab(gitlab_url,gitlab_private_token)
     project = gl.projects.search(project_name)
     print '------------1---',project
@@ -17,12 +28,28 @@ def existGitlabProject(project_name):
                         'url': hook + '/' + project_name,
                         'push_events': 1},
                         project_id = project_id)
-            return True
+
+                    print '---------create svn repo------------'
+                    data = {
+                        'client': 'local',
+                        'tgt': svn_host,
+                        'fun': 'cmd.script',
+                        'arg': ['salt://scripts/create_svn.sh', project_name]
+                    }
+                    salt_result = salt_api.salt_cmd(data)
+                    print '-----------salt_result---',salt_result
+                    if salt_result['return'][0][svn_host]['stdout'] == 'ok':
+                        print '-----create svn repo is sucessful.'
+                        return 1
+                    else:
+                        tasks_info = 'Error creating svn repo,please tell ops..\n\n'
+                        return 4
+            return 1
         else:
-            return False
+            return 3
     else:
-        print 'The project name is error.'
-        return 'The project name is error.'
+        print 'The project name is not exist.'
+        return 2
    
 
 def jenkins_create_job(project):
@@ -34,7 +61,6 @@ def jenkins_create_job(project):
             job.enable()
         else:
             print 'The project is exist in jenkins.'
-            return False
     return True
 
 
