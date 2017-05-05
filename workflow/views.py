@@ -301,6 +301,9 @@ def handle_tickets(request):
             elif jenkins == 4:
                 result = [{'HandleTasks': 'svn repo creating is error.'}]
                 handle_result = 1
+            elif jenkins == 5:
+                result = [{'HandleTasks': 'gitlab webhook creating is error.'}]
+                handle_result = 1
         except Exception, e:
             print e
             handle_result = 1

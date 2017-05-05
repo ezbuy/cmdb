@@ -14,21 +14,43 @@ def existGitlabProject(project_name):
      2. gitlab  project name is not exist.
      3. jenkins creating is error.
      4. svn repo creating is error.
+     5. gitlab webhook creating is error.
     '''
     gl = gitlab.Gitlab(gitlab_url,gitlab_private_token)
     project = gl.projects.search(project_name)
+
     print '------------1---',project
     if len(project) > 0:
         if jenkins_create_job(project_name):
             for info in project:
                 if info.name == project_name:
                     project_id = info.id
-                    for hook in jenkins_webhook_url:
-                        gl.project_hooks.create({
-                        'url': hook + '/' + project_name,
-                        'push_events': 1},
-                        project_id = project_id)
+                    #####webhook url is exist#######
+                    hooks_list = gl.project_hooks.list(project_id=project_id)
+                    print '----------hooks_list',hooks_list
+                    try:
+                        for hook in jenkins_webhook_url:
+                            hook = hook + '/' + project_name
+                            webhook_num = 0
+                            print hook
 
+                            ####if exist,pass###
+                            for webhook in hooks_list:
+                                if webhook.url == hook:
+                                    print '---------webhook_url=====:',hook
+                                    webhook_num = 1
+                                    break
+                            ###if not exist,add a webhook url###
+                            print '---------------webhook_num------:',webhook_num
+                            if webhook_num == 0:
+                                    print '---------creating_webhook--------'
+                                    gl.project_hooks.create({
+                                        'url': hook,
+                                        'push_events': 1},
+                                        project_id = project_id)
+                    except Exception, e:
+                        print e
+                        return 5
                     print '---------create svn repo------------'
                     data = {
                         'client': 'local',
@@ -37,7 +59,6 @@ def existGitlabProject(project_name):
                         'arg': ['salt://scripts/create_svn.sh', project_name]
                     }
                     salt_result = salt_api.salt_cmd(data)
-                    print '-----------salt_result---',salt_result
                     if salt_result['return'][0][svn_host]['stdout'] == 'ok':
                         print '-----create svn repo is sucessful.'
                         return 1
