@@ -248,37 +248,43 @@ class goServicesni:
 
 
 def syncAsset():
-    salt = LocalClient()
-    grains = salt.cmd('*','grains.items')
-    obj = Asset.objects.all()
-    host_list = []
-    for i in obj:
-        host_list.append(i.hostname)
+    data = {
+        'client': 'local',
+        'tgt': '*',
+        'fun': 'grains.items',
+    }
+    result = salt_api.salt_cmd(data)
+    if result != 0:
+        result = result['return']
 
+    print result
 
     try:
-        for host in grains.keys():
-            ip = grains[host]['ipv4'][-1]
-            hostname_id = grains[host]['id']
-            cpu = grains[host]['cpu_model']
-            memory = grains[host]['mem_total']
-            if grains[host].has_key('virtual'):
-                asset_type = grains[host]['virtual']
-            else:
-                asset_type = 'physical'
-            if grains[host].has_key('osfinger'):
-                os = grains[host]['osfinger']
-            else:
-                os = grains[host]['osfullname']
+        for r in result:
+            for host,info in r.items():
+                ip = info['ipv4']
 
+                hostname_id = host
+                cpu = info['cpu_model']
+                memory = info['mem_total']
+                if info.has_key('virtual'):
+                    asset_type = info['virtual']
+                else:
+                    asset_type = 'physical'
+                if info.has_key('osfinger'):
+                    os = info['osfinger']
+                else:
+                    os = info['osfullname']
+                print '---%s-%s--' %(ip,hostname_id)
 
-            if host not in host_list:
                 try:
-                    Asset.objects.create(ip=ip,hostname=hostname_id,system_type=os,cpu=cpu,memory=memory,asset_type=asset_type)
+                    if not Asset.objects.filter(hostname=hostname_id):
+                        Asset.objects.create(ip=ip,hostname=hostname_id,system_type=os,cpu=cpu,memory=memory,asset_type=asset_type)
                 except Exception,e:
                     print e
     except Exception,e:
         print e
+
 
 
 
