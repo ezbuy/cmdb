@@ -126,14 +126,21 @@
             <div id="uat_jenkins" style="display: none">
                 <table align="center">
                     <fieldset class="form-group">
-                        <label for="formGroupExampleInput">go project name</label>
+                        <label for="formGroupExampleInput">go项目名称</label>
                         <input type="text" class="form-control" id="jenkins_name" placeholder="请输入你需要添加到jenkins的项目名称" name="jenkins_name">
                     </fieldset>
                     <fieldset class="form-group">
-                        <label for="formGroupExampleInput2">Re-enter go project name</label>
+                        <label for="formGroupExampleInput2">再次输入go项目名称</label>
                         <input type="text" class="form-control" id="jenkins_name_again" placeholder="请再次确认你需要添加到jenkins的项目名称" name="jenkins_name_again">
                     </fieldset>
+                    <label for="formGroupExampleInput3">选择部署uat环境</label>
+                    <select id="uat_env" class="selectpicker form-control"  name="uat_env">
+                        <option value="uat">uat</option>
+                        <option value="uat_aws">uat_aws</option>
+                    </select>
+                    <br/>
                 </table>
+
                 <table>
                     <td>
                         <button type="button" onclick="uat_jenkins_left()">上一步</button>

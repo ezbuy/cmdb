@@ -122,9 +122,11 @@ def submit_tickets(request):
     elif ticket_type == 'uat_jenkins':
         print request.POST
         jenkins_name = request.POST['jenkins_name']
+        uat_env = request.POST['uat_env']
         salt_command = {
             "title":title,
             "ticket_type":ticket_type,
+            "uat_env": uat_env,
             "jenkins_name":jenkins_name,
             "handler":handler,
             "owner":owner
@@ -290,7 +292,7 @@ def handle_tickets(request):
             result = [{'HandleTasks':'The task_id handle to failed!'}]
     elif content['ticket_type'] == 'uat_jenkins':
         try:
-            jenkins = existGitlabProject(content['jenkins_name'])
+            jenkins = existGitlabProject(content['jenkins_name'],content['uat_env'])
             print '-----jenkins---',jenkins
             if jenkins == 2:
                 result = [{'HandleTasks': 'The project name is not exist.'}]
