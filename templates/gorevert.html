@@ -4,36 +4,94 @@
 
 
 <div class="text-center" xmlns="http://www.w3.org/1999/html">
-<form class="col-lg-12" action="{% url 'goRevertResulttwo' %}" method="get">
-  <div class="input-group my-group text-center" style="margin: 0px 0px 100px;">
-    <span class="input-group-btn">
-      <button class="btn btn-default active" type="submit">项目名称</button>
-    </span>
-    <select id="lunch" class="selectpicker form-control" data-live-search="true" name="goProject" title="Please select a lunch ...">
+<form class="col-lg-12" action="{% url 'revert' %}" method="POST" id="submitform">
+    <fieldset class="form-group">
+    <label for="formGroupExampleInput">项目名称</label>
+    <select id="project" class="selectpicker form-control" data-live-search="true" name="project">
         {% for name in groupname %}
             <option>{{ name.name }}</option>
         {% endfor %}
     </select>
+    </fieldset>
 
-  </div>
+    <fieldset class="form-group">
+        <label for="formGroupExampleInput">运行环境</label>
+        <select id="env" class="selectpicker form-control" data-live-search="true" name="env" onchange="getoption(this.value)">
+            <option></option>
+            <option value="1">生产环境</option>
+            <option value="2">测试环境</option>
+        </select>
+    </fieldset>
 
-  <div class="input-group my-group text-center">
-    <span class="input-group-btn">
-      <button class="btn btn-default active" type="submit">运行环境</button>
-    </span>
-    <select id="lunch2" class="selectpicker form-control" data-live-search="true" name="env">
-      <option value="1">生产环境</option>
-      <option value="2">测试环境</option>
-    </select>
+    <fieldset class="form-group">
+        <label for="formGroupExampleInput">重启服务</label>
+        <select id="services" class="selectpicker form-control" data-live-search="true" name="services"></select>
+    </fieldset>
 
-  </div>
+    <fieldset class="form-group">
+        <label for="formGroupExampleInput">请输入SVN回滚版本号</label>
+        <input type="text" class="form-control" id="svnRevision" placeholder="请输入你需要回滚的版本号(如果回滚到上一个COMMIT,请输入1)" name="svnRevision" required="" >
+    </fieldset>
 
+    <fieldset class="form-group">
+        <label for="formGroupExampleInput2">再次输入SVN回滚版本号</label>
+        <input type="text" class="form-control" id="svnRevisionAgain" placeholder="请再次确认你需要回滚的版本号" name="svnRevisionAgain" required="" >
+    </fieldset>
 
-<br/>
-    <input class="btn btn-danger" type="submit" value="choice revert version">
+    <br/>
+    <input class="btn btn-danger" id="sub" type="submit" value="deploy"  disabled="disabled">
 </form>
 </div>
 
+<script>
+    function getoption(val) {
+
+        var project = document.getElementById("project").value;
+        var env = document.getElementById("env").value;
+        var select = document.getElementById("services");
+
+        select.options.length = 0;   // del options
+        if (env != "none") {
+            $.getJSON("/asset/getProjectList",{"project":project,"env":env},function (result) {
+                //console.log(result)
+                for (i=0;i<result.length;i++) {
+                    var objOption = document.createElement("OPTION")
+                    objOption.value = result[i]
+                    objOption.text = result[i]
+                    select.add(objOption)
+                }
+                if (result.length != 0) {
+                    $("#sub").attr("disabled", false)
+                }
+                else{
+                    $("#sub").attr("disabled", true)
+                }
+                console.log(result.length)
+            })
+        }
+        else{
+            $("#sub").attr("disabled", true)
+        }
+    }
+
+
+    $("#submitform").on("submit",function(e){
+        var svnRevision = document.getElementById("svnRevision").value;
+        var svnRevisionAgain = document.getElementById("svnRevisionAgain").value;
+
+
+        if (!isNaN(svnRevision)) {
+            if (svnRevision != svnRevisionAgain) {
+                alert('Please enter the correct revision,try again....')
+                return false
+            }
+        }
+        else{
+            alert('Please input a number.')
+            return false
+        }
+    })
+</script>
 
 {% endblock %}
 

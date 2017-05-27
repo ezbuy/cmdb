@@ -32,7 +32,7 @@ class goPublish:
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))
 
 
-    def deployGo(self,name,services,username,ip,tower_url,phone_number):
+    def deployGo(self,name,services,username,ip,tower_url,phone_number,svn_revision='head'):
 
         self.name = name
         self.services = services
@@ -40,6 +40,7 @@ class goPublish:
         self.ip = ip
         self.tower_url = tower_url
         self.phone_number = phone_number
+        self.svn_revision = svn_revision
         hostInfo = {}
         result = []
 
@@ -68,7 +69,7 @@ class goPublish:
                     os.system("salt '%s' state.sls logs.gologs %s" % (host, deploy_pillar))
                     currentTime = self.getNowTime()
                     self.saltCmd.cmd('%s' % host, 'cmd.run',['mv %s %s/%s_%s' % (p.executefile, p.movepath,self.name, currentTime)])
-                    svn = self.saltCmd.cmd('%s' % host, 'cmd.run', ['svn update --username=%s --password=%s --non-interactive %s' % (p.username, p.password, p.localpath)])
+                    svn = self.saltCmd.cmd('%s' % host, 'cmd.run', ['svn update -r%s --username=%s --password=%s --non-interactive %s' % (self.svn_revision,p.username, p.password, p.localpath)])
                     result.append(svn)
 
 
@@ -77,9 +78,15 @@ class goPublish:
             result.append(restart)
 
             info = self.name + "(" + tower_url + ")"
-            dingding_robo(host,info,restart,self.username,self.phone_number)
+            if self.svn_revision == 'head':
+                action = 'deploy ' + info
+                dingding_robo(host,info,restart,self.username,self.phone_number,types=1)
+            else:
+                action = 'revert ' + info
+                dingding_robo(host, info, restart, self.username, self.phone_number, types=3)
 
-        action = 'deploy ' + info
+        print '-------------------svn:',self.svn_revision
+
         logs(self.username,self.ip,action,result)
         publish_logs(self.username,self.ip,self.tower_url,result)
 
@@ -460,7 +467,6 @@ def deny_resubmit(page_key=''):
     return decorator
 
 
-
 def dingding_robo(hostname='',project='',result='',username='',phone_number='',types=1,info=''):
     url = dingding_robo_url
     headers = {'Content-Type': 'application/json'}
@@ -491,6 +497,9 @@ def dingding_robo(hostname='',project='',result='',username='',phone_number='',t
         content = current_time + " " + errmsg + ": " + "deploy " + str(project) + " to " + str(hostname) + " by " + str(username)
     elif types == 2:
         content = current_time + ": " + info
+    elif types == 3:
+        content = current_time + " " + errmsg + ": " + "revert " + str(project) + " to " + str(hostname) + " by " + str(username)
+
     data ={
         "msgtype": "text", 
         "text": {
