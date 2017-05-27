@@ -154,9 +154,10 @@ def revert(request):
     ip = request.META['REMOTE_ADDR']
     tower_url = 'http://tower.im'
 
+    if int(svn_revision) == 1:
+        svn_revision = 'PREV'
+
     Publish = goPublish(env)
-
-
     mes = Publish.deployGo(project,services,request.user,ip,tower_url,request.POST['phone_number'],svn_revision)
     return render(request, 'getdata.html', {'result': mes})
 
