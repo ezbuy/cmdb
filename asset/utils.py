@@ -69,7 +69,8 @@ class goPublish:
                     os.system("salt '%s' state.sls logs.gologs %s" % (host, deploy_pillar))
                     currentTime = self.getNowTime()
                     self.saltCmd.cmd('%s' % host, 'cmd.run',['mv %s %s/%s_%s' % (p.executefile, p.movepath,self.name, currentTime)])
-                    svn = self.saltCmd.cmd('%s' % host, 'cmd.run', ['svn update -r%s --username=%s --password=%s --non-interactive %s' % (self.svn_revision,p.username, p.password, p.localpath)])
+                    svn = self.saltCmd.cmd('%s' % host, 'cmd.run', ['svn update -r%s --username=%s --password=%s --non-interactive %s && svn log -l 1 --username=%s --password=%s --non-interactive %s'
+                        % (self.svn_revision,p.username, p.password, p.localpath, p.username, p.password, p.localpath)])
                     result.append(svn)
 
 
