@@ -29,6 +29,8 @@ def get(request):
 @login_required
 @deny_resubmit(page_key='deploy_go')
 def getData(request):
+    if not request.POST.keys():
+        return HttpResponseRedirect('/')
     data = request.POST['goProject']
     env = request.POST['env']
     services = request.POST['services']
