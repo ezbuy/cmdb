@@ -2,15 +2,15 @@
 
 {% block content %}
 
-<form action="{% url 'goServices' %}" method="get">
-    <div class="btn-group" role="group">
-        {% for list in groupName %}
-            <button type="submit" class="btn btn-default" name="projectName" value="{{ list }}">{{ list }}</button>
-        {% endfor %}
+
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>查看用户</h2>
     </div>
-</form>
-
-
+    <div class="col-lg-2">
+    </div>
+</div>
 
 
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -42,12 +42,13 @@
                                     <th class="text-center"> 姓名 </th>
                                     <th class="text-center"> 电话 </th>
                                     <th class="text-center"> 状态 </th>
+                                    <th class="text-center"> 操作 </th>
                                 </tr>
                             </thead>
                             <tbody>
                             {% for info in user_list %}
                                 <tr class="gradeX">
-                                    <td class="text-center"> <a href="#">{{ info.username }}</a></td>
+                                    <td class="text-center"> {{ info.username }}</a></td>
                                     <td class="text-center"> {{ info.first_name }} </td>
                                     <td class="text-center"> {{ info.userprofile.phone_number }} </td>
                                     {% if info.is_active %}
@@ -55,6 +56,7 @@
                                     {% else %}
                                         <td class="text-center">禁用</td>
                                     {% endif %}
+                                    <td><a href="/users/user_edit/{{ info.id }}/" class="btn btn-xs btn-info">修改</a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
