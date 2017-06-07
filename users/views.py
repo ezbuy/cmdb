@@ -81,6 +81,12 @@ def user_edit(request, id):
             phone_obj.save()
             if password != '':
                 user_info.set_password(password)
+
+            for id in group_id:
+                user_info.groups.add(int(id))
+            for info in user_info.groups.all():
+                if str(info.id) not in group_id:
+                    user_info.groups.remove(info.id)
             user_info.save()
             result = [{'user_update': 'successful'}]
         except Exception, e:
