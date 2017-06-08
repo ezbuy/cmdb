@@ -7,6 +7,9 @@ from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 from asset.models import UserProfile
 from asset.utils import deny_resubmit
 from django.forms import ModelForm
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 
 
