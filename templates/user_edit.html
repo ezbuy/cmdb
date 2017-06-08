@@ -9,43 +9,45 @@
     </div>
 </div>
 <div class="wrapper wrapper-content animated fadeInRight">
-    <form  class="col-lg-12" action="/users/user_edit/{{ user_info.id }}/" method="post">
-		<div class="tab-content">
-            <div>
-                <table align="center">
-                    <tr>
-                    <label for="formGroupExampleInput">用户名</label>
-                    <fieldset class="form-group">
-                        <input type="text" class="form-control" name="name" value="{{ user_info.username }}">
-                    </fieldset>
-                    <label for="formGroupExampleInput">姓名</label>
-                    <fieldset class="form-group">
-                        <input type="text" class="form-control" name="full_name" value="{{ user_info.first_name }}">
-                    </fieldset>
-                    <label for="formGroupExampleInput">密码</label>
-                    <fieldset class="form-group">
-                        <input type="text" class="form-control" name="password" value=""  placeholder="不更改密码则不填">
-                    </fieldset>
-                    <label for="formGroupExampleInput">所属组</label>
-                    <fieldset class="form-group">
-                        <select id="group_id" name="group_id" class="selectpicker show-tick form-control" multiple data-live-search="false">
-                                {% for g in groups %}
-                                    {% if user_info|has_group:g %}
-                                        <option value="{{ g.id }}" selected="">{{ g.name }}</option>
-                                    {% else %}
-                                        <option value="{{ g.id }}">{{ g.name }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                        </select>
-                    </fieldset>
-                    <label for="formGroupExampleInput">手机号码</label>
-                    <fieldset class="form-group">
-                        <input type="text" class="form-control" name="phone" value="{{ user_info.userprofile.phone_number }}">
-                    </fieldset>
-                </table>
+    {% if request.user.is_superuser %}
+        <form  class="col-lg-12" action="/users/user_edit/{{ user_info.id }}/" method="post">
+            <div class="tab-content">
+                <div>
+                    <table align="center">
+                        <tr>
+                        <label for="formGroupExampleInput">用户名</label>
+                        <fieldset class="form-group">
+                            <input type="text" class="form-control" name="name" value="{{ user_info.username }}">
+                        </fieldset>
+                        <label for="formGroupExampleInput">姓名</label>
+                        <fieldset class="form-group">
+                            <input type="text" class="form-control" name="full_name" value="{{ user_info.first_name }}">
+                        </fieldset>
+                        <label for="formGroupExampleInput">密码</label>
+                        <fieldset class="form-group">
+                            <input type="text" class="form-control" name="password" value=""  placeholder="不更改密码则不填">
+                        </fieldset>
+                        <label for="formGroupExampleInput">所属组</label>
+                        <fieldset class="form-group">
+                            <select id="group_id" name="group_id" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                                    {% for g in groups %}
+                                        {% if user_info|has_group:g %}
+                                            <option value="{{ g.id }}" selected="">{{ g.name }}</option>
+                                        {% else %}
+                                            <option value="{{ g.id }}">{{ g.name }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                            </select>
+                        </fieldset>
+                        <label for="formGroupExampleInput">手机号码</label>
+                        <fieldset class="form-group">
+                            <input type="text" class="form-control" name="phone" value="{{ user_info.userprofile.phone_number }}">
+                        </fieldset>
+                    </table>
+                </div>
+                    <input id="sub" type="submit" value="提交">
             </div>
-                <input id="sub" type="submit" value="提交">
-		</div>
-    </form>
+        </form>
+    {% endif %}
 </div>
 {% endblock %}

@@ -12,40 +12,42 @@
 </div>
 
 <div class="wrapper wrapper-content animated fadeInRight">
-    <form  class="col-lg-12" action="{% url 'user_add' %}" method="post" id="checkall" name="">
-		<div class="tab-content">
-			<div>
-                <table align="center">
-                    <tr>
-                    <label for="formGroupExampleInput">用户名</label>
-                    <fieldset class="form-group">
-                        <input type="text" class="form-control" id="name" placeholder="注册登陆用户名" name="name" required="">
-                    </fieldset>
-                    <label for="formGroupExampleInput">姓名</label>
-                    <fieldset class="form-group">
-                        <input type="text" class="form-control" id="full_name" placeholder="中文名称" name="full_name" required="">
-                    </fieldset>
-                    <label for="formGroupExampleInput">密码</label>
-                    <fieldset class="form-group">
-                        <input type="text" class="form-control" id="password" placeholder="密码" name="password" required="">
-                    </fieldset>
-                    <label for="formGroupExampleInput">所属组</label>
-                    <fieldset class="form-group">
-                        <select id="group_id" name="group_id" class="selectpicker show-tick form-control" multiple data-live-search="false">
-                            {% for info in groups %}
-                                <option value="{{ info.id }}">{{ info.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </fieldset>
-                    <label for="formGroupExampleInput">手机号码</label>
-                    <fieldset class="form-group">
-                        <input type="text" class="form-control" id="phone" placeholder="用来发送钉钉消息" name="phone" required="">
-                    </fieldset>
-                </table>
-			</div>
-                <input id="sub" type="submit" value="提交">
-		</div>
-    </form>
+    {% if request.user.is_superuser %}
+        <form  class="col-lg-12" action="{% url 'user_add' %}" method="post" id="checkall" name="">
+            <div class="tab-content">
+                <div>
+                    <table align="center">
+                        <tr>
+                        <label for="formGroupExampleInput">用户名</label>
+                        <fieldset class="form-group">
+                            <input type="text" class="form-control" id="name" placeholder="注册登陆用户名" name="name" required="">
+                        </fieldset>
+                        <label for="formGroupExampleInput">姓名</label>
+                        <fieldset class="form-group">
+                            <input type="text" class="form-control" id="full_name" placeholder="中文名称" name="full_name" required="">
+                        </fieldset>
+                        <label for="formGroupExampleInput">密码</label>
+                        <fieldset class="form-group">
+                            <input type="text" class="form-control" id="password" placeholder="密码" name="password" required="">
+                        </fieldset>
+                        <label for="formGroupExampleInput">所属组</label>
+                        <fieldset class="form-group">
+                            <select id="group_id" name="group_id" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                                {% for info in groups %}
+                                    <option value="{{ info.id }}">{{ info.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </fieldset>
+                        <label for="formGroupExampleInput">手机号码</label>
+                        <fieldset class="form-group">
+                            <input type="text" class="form-control" id="phone" placeholder="用来发送钉钉消息" name="phone" required="">
+                        </fieldset>
+                    </table>
+                </div>
+                    <input id="sub" type="submit" value="提交">
+            </div>
+        </form>
+    {% endif %}
 </div>
 
 
