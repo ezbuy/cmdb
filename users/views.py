@@ -42,7 +42,7 @@ def user_add(request):
         password = request.POST.get('password')
         group_id = request.POST.getlist('group_id')
         phone = request.POST.get('phone')
-        info = User.objects.create_user(username=name,password=password,last_name=full_name)
+        info = User.objects.create_user(username=name,password=password,first_name=full_name)
         UserProfile.objects.create(phone_number=phone, user=info)
         for id in group_id:
             info.groups.add(id)
