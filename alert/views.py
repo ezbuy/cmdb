@@ -20,6 +20,7 @@ def find_metrics(request):
     try:
         resp = requests.get(url)
         metrics = resp.json()
+        metrics = [dict(id=metric['path'], text=metric['path']) for metric in metrics['metrics']]
         data = dict(errcode=0, errmsg='ok', metrics=metrics)
     except Exception as e:
         data = dict(errcode=500, errmsg=str(e))

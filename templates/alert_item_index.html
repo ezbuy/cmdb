@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block self_head_css_js %}
     <link href="/static/alert/chosen.min.css" rel="stylesheet">
+    <link href="/static/alert/select2.min.css" rel="stylesheet">
 {% endblock %}
 {% block content %}
 
@@ -80,7 +81,7 @@
     </div>
 </div>
 
-    <div id="modal-form" class="modal fade" tabindex="-1">
+    <div id="modal-form" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -107,7 +108,7 @@
                                         <div class="clearfix">
                                             <select class="chosen-select form-control" name="ref" id="modal-form-ref">
                                                 <option value="graphite" selected>Graphite</option>
-                                                <option value="prometheus">Prometheus</option>
+{#                                                <option value="prometheus">Prometheus</option>#}
                                             </select>
                                         </div>
                                     </div>
@@ -118,7 +119,7 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-key">KEY值：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required type="text" id="modal-form-key" name="key" class="col-xs-12 col-sm-10">
+                                                <select style="width:100%" required class="form-control" id="modal-form-key" name="key"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -135,10 +136,10 @@
                                 <div class="space-2"></div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-interval">触发间隔：</label>
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-interval">触发间隔(秒)：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required type="text" id="modal-form-interval" name="interval" class="col-xs-12 col-sm-10" value="60"> 秒
+                                            <input required type="text" id="modal-form-interval" name="interval" class="col-xs-12 col-sm-10" value="60">
                                         </div>
                                     </div>
                                 </div>
@@ -216,8 +217,8 @@
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
                                             <select class="chosen-select form-control" name="ref" id="modal-form-edit-ref">
-                                                <option value="graphite">Graphite</option>
-                                                <option value="prometheus">Prometheus</option>
+                                                <option value="graphite" selected>Graphite</option>
+{#                                                <option value="prometheus">Prometheus</option>#}
                                             </select>
                                         </div>
                                     </div>
@@ -299,124 +300,140 @@
             </div>
         </div>
     </div>
+{% endblock %}
 
-    {% block self_footer_js %}
-        <script src="/static/alert/bootbox.js"></script>
-        <script src="/static/alert/jquery.validate.min.js"></script>
-        <script src="/static/alert/chosen.jquery.min.js"></script>
-    {% endblock %}
-<script type="text/javascript">
-function addModal(){
-    $('#modal-form').modal('show');
-}
-function editModal(item_id, name, ref, key, state, expr, interval, error, recovery){
-    $('#modal-form-edit-id').val(item_id);
-    $('#modal-form-edit-name').val(name);
-    $('#modal-form-edit-key').val(key);
-    $('#modal-form-edit-ref').find('option[value='+ref+']').prop('selected', true).trigger('chosen:updated');
-    $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
-    $('#modal-form-edit-expr').val(expr);
-    $('#modal-form-edit-interval').val(interval);
-    $('#modal-form-edit-error').val(error);
-    $('#modal-form-edit-recovery').val(recovery);
-    $('#modal-form-edit').modal('show');
-}
-function addProject(form) {
-    var fd=new FormData(form);
-    fd.append('pid', '{{ pid }}');
-    $.ajax({
-        url: "/alert/items/add/",
-        type: "POST",
-        data: fd,
-        enctype: "multipart/form-data",
-        processData: false,
-        contentType: false
-    }).done(function (result) {
-        bootbox.alert(result.errmsg);
-        if (result.errcode === 0) {window.location.reload();}
-    });
-    return false;
-}
-function editProject(form) {
-    var fd=new FormData(form);
-    var item_id=$('#modal-form-edit-id').val();
-    $.ajax({
-        url: "/alert/items/edit/?item_id="+item_id,
-        type: "POST",
-        data: fd,
-        enctype: "multipart/form-data",
-        processData: false,
-        contentType: false
-    }).done(function (result) {
-        bootbox.alert(result.errmsg);
-        if (result.errcode === 0) {window.location.reload();}
-    });
-    return false;
-}
-
-jQuery(function($) {
-    $('#modal-form form.form-horizontal').validate({
-        errorElement: 'div',
-        errorClass: 'help-block',
-        focusInvalid: false,
-        ignore: '',
-        highlight: function(e) {
-            $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
-        },
-        success: function(e) {
-            $(e).closest('.form-group').removeClass('has-error');
-            $(e).remove();
-        },
-        errorPlacement: function(error, element) {
-            if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
-                var controls = element.closest('div[class*="col-"]');
-                if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
-                else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
-            } else if (element.is('.select2')) {
-                error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
-            } else if (element.is('.chosen-select')) {
-                error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
-            } else {
-                error.insertAfter(element.parent());
-            }
-        },
-        submitHandler: function(form) {
-            addProject(form);
-        },
-        invalidHandler: function(form) {
+{% block self_footer_js %}
+    <script src="/static/alert/bootbox.js"></script>
+    <script src="/static/alert/jquery.validate.min.js"></script>
+    <script src="/static/alert/chosen.jquery.min.js"></script>
+    <script src="/static/alert/select2.min.js"></script>
+    <script type="text/javascript">
+        function addModal(){
+            $('#modal-form').modal('show');
         }
-    });
-    $('#modal-form-edit form.form-horizontal').validate({
-            errorElement: 'div',
-            errorClass: 'help-block',
-            focusInvalid: false,
-            ignore: '',
-            highlight: function(e) {
-                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
-            },
-            success: function(e) {
-                $(e).closest('.form-group').removeClass('has-error');
-                $(e).remove();
-            },
-            errorPlacement: function(error, element) {
-                if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
-                    var controls = element.closest('div[class*="col-"]');
-                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
-                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
-                } else if (element.is('.select2')) {
-                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
-                } else if (element.is('.chosen-select')) {
-                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
-                } else {
-                    error.insertAfter(element.parent());
+        function editModal(item_id, name, ref, key, state, expr, interval, error, recovery){
+            $('#modal-form-edit-id').val(item_id);
+            $('#modal-form-edit-name').val(name);
+            $('#modal-form-edit-key').val(key);
+            $('#modal-form-edit-ref').find('option[value='+ref+']').prop('selected', true).trigger('chosen:updated');
+            $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
+            $('#modal-form-edit-expr').val(expr);
+            $('#modal-form-edit-interval').val(interval);
+            $('#modal-form-edit-error').val(error);
+            $('#modal-form-edit-recovery').val(recovery);
+            $('#modal-form-edit').modal('show');
+        }
+        function addProject(form) {
+            var fd=new FormData(form);
+            fd.append('pid', '{{ pid }}');
+            $.ajax({
+                url: "/alert/items/add/",
+                type: "POST",
+                data: fd,
+                enctype: "multipart/form-data",
+                processData: false,
+                contentType: false
+            }).done(function (result) {
+                bootbox.alert(result.errmsg);
+                if (result.errcode === 0) {window.location.reload();}
+            });
+            return false;
+        }
+        function editProject(form) {
+            var fd=new FormData(form);
+            var item_id=$('#modal-form-edit-id').val();
+            $.ajax({
+                url: "/alert/items/edit/?item_id="+item_id,
+                type: "POST",
+                data: fd,
+                enctype: "multipart/form-data",
+                processData: false,
+                contentType: false
+            }).done(function (result) {
+                bootbox.alert(result.errmsg);
+                if (result.errcode === 0) {window.location.reload();}
+            });
+            return false;
+        }
+
+        jQuery(function($) {
+            $('#modal-form form.form-horizontal').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                focusInvalid: false,
+                ignore: '',
+                highlight: function(e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+                success: function(e) {
+                    $(e).closest('.form-group').removeClass('has-error');
+                    $(e).remove();
+                },
+                errorPlacement: function(error, element) {
+                    if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                        var controls = element.closest('div[class*="col-"]');
+                        if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                        else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                    } else if (element.is('.select2')) {
+                        error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                    } else if (element.is('.chosen-select')) {
+                        error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                    } else {
+                        error.insertAfter(element.parent());
+                    }
+                },
+                submitHandler: function(form) {
+                    addProject(form);
+                },
+                invalidHandler: function(form) {
                 }
-            },
-            submitHandler: function(form) {
-                editProject(form);
-            },
-            invalidHandler: function(form) {
-            }
-        });
-})
-</script>
+            });
+            $('#modal-form-edit form.form-horizontal').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                focusInvalid: false,
+                ignore: '',
+                highlight: function(e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+                success: function(e) {
+                    $(e).closest('.form-group').removeClass('has-error');
+                    $(e).remove();
+                },
+                errorPlacement: function(error, element) {
+                    if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                        var controls = element.closest('div[class*="col-"]');
+                        if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                        else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                    } else if (element.is('.select2')) {
+                        error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                    } else if (element.is('.chosen-select')) {
+                        error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                    } else {
+                        error.insertAfter(element.parent());
+                    }
+                },
+                submitHandler: function(form) {
+                    editProject(form);
+                },
+                invalidHandler: function(form) {
+                }
+            });
+            $('#modal-form-key').select2({
+                placeholder: '请输入字符查找KEY',
+                ajax: {
+                    url: '{% url "find_metrics" %}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {query: params.term}
+                    },
+                    processResults: function(data){return {results: data.metrics}},
+                    cache: true
+                },
+                escapeMarkup: function (m) {return m},
+                minimumInputLength: 3
+            });
+        })
+    </script>
 {% endblock %}
