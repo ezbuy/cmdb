@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'web',
     'kettle',
     'workflow',
+    'alert',
+    'users',
 ]
 
 MIDDLEWARE_CLASSES = [

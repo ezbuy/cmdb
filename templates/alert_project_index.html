@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% block self_head_css_js %}
+    <link href="/static/alert/chosen.min.css" rel="stylesheet">
+{% endblock %}
+{% block content %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins" id="all">
+                <div class="ibox-title">
+                    <h5> 项目列表</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <form id="asset_form">
+                        <table class="table table-striped table-bordered table-hover " id="editable">
+                            <thead>
+                                <tr>
+                                    <th class="text-center"> 项目ID </th>
+                                    <th class="text-center"> 项目名称 </th>
+                                    <th class="text-center"> 项目负责人 </th>
+                                    <th class="text-center"> 项目状态 </th>
+                                    <th class="text-center"> </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for info in projects %}
+                                <tr class="gradeX">
+                                    <td class="text-center">{{ info.id }}</td>
+                                    <td class="text-center"> {{ info.name }} </td>
+                                    <td class="text-center">{{ info.owner }}</td>
+                                    {% if info.state == 0 %}
+                                        <td class="text-center">启用告警</td>
+                                    {% else %}
+                                        <td class="text-center">禁用告警</td>
+                                    {% endif %}
+                                    <td class="text-center">
+                                        <button onclick="addModal();return false;">新增</button>
+                                        <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.owner }}', '{{ info.state }}');return false;">编辑</button>
+                                        <button onclick="viewItem('{{ info.id }}');return false;">查看监控项</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div id="modal-form" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="$('#modal-form').modal('hide');">&times;</button>
+                    <h4 class="blue bigger">请填写项目信息:</h4>
+                </div>
+                <form class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-9">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-name">名称：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-name" name="name" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-owner">负责人：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-owner" name="owner" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-state">状态：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <select class="chosen-select form-control" name="state" id="modal-form-state">
+                                                <option value="0" selected>启用告警</option>
+                                                <option value="1">禁用告警</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm btn-primary">
+                            <i class="ace-icon fa fa-check"></i>
+                            提交
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="modal-form-edit" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="$('#modal-form-edit').modal('hide');">&times;</button>
+                    <h4 class="blue bigger">请编辑项目信息:</h4>
+                </div>
+                <form class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-9">
+                                <input style="display:none;" required type="text" title="id" id="modal-form-edit-id" name="id" class="col-xs-12 col-sm-10">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-name">名称：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-edit-name" name="name" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-owner">负责人：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-edit-owner" name="owner" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-state">状态：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <select class="chosen-select form-control" name="state" id="modal-form-edit-state">
+                                                <option value="0">启用告警</option>
+                                                <option value="1">禁用告警</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm btn-primary">
+                            <i class="ace-icon fa fa-check"></i>
+                            提交
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% block self_footer_js %}
+        <script src="/static/alert/bootbox.js"></script>
+        <script src="/static/alert/jquery.validate.min.js"></script>
+        <script src="/static/alert/chosen.jquery.min.js"></script>
+    {% endblock %}
+<script type="text/javascript">
+function addModal(){
+    $('#modal-form-name').attr('value', '');
+    $('#modal-form-owner').attr('value', '');
+    $('#modal-form').modal('show');
+}
+function editModal(pid, name, owner, state){
+    $('#modal-form-edit-id').val(pid);
+    $('#modal-form-edit-name').val(name);
+    $('#modal-form-edit-owner').val(owner);
+    $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
+    $('#modal-form-edit').modal('show');
+}
+function viewItem(pid){
+    window.location.href='/alert/items/?pid='+pid;
+}
+function addProject(form) {
+    var fd=new FormData(form);
+    $.ajax({
+        url: "/alert/projects/add/",
+        type: "POST",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false
+    }).done(function (result) {
+        bootbox.alert(result.errmsg);
+        if (result.errcode === 0) {window.location.reload();}
+    });
+    return false;
+}
+function editProject(form) {
+    var fd=new FormData(form);
+    var pid=$('#modal-form-edit-id').val();
+    $.ajax({
+        url: "/alert/projects/edit/?pid="+pid,
+        type: "POST",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false
+    }).done(function (result) {
+        bootbox.alert(result.errmsg);
+        if (result.errcode === 0) {window.location.reload();}
+    });
+    return false;
+}
+
+jQuery(function($) {
+    $('#modal-form form.form-horizontal').validate({
+        errorElement: 'div',
+        errorClass: 'help-block',
+        focusInvalid: false,
+        ignore: '',
+        highlight: function(e) {
+            $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+        },
+        success: function(e) {
+            $(e).closest('.form-group').removeClass('has-error');
+            $(e).remove();
+        },
+        errorPlacement: function(error, element) {
+            if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                var controls = element.closest('div[class*="col-"]');
+                if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+            } else if (element.is('.select2')) {
+                error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+            } else if (element.is('.chosen-select')) {
+                error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+            } else {
+                error.insertAfter(element.parent());
+            }
+        },
+        submitHandler: function(form) {
+            addProject(form);
+        },
+        invalidHandler: function(form) {
+        }
+    });
+    $('#modal-form-edit form.form-horizontal').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            ignore: '',
+            highlight: function(e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+            success: function(e) {
+                $(e).closest('.form-group').removeClass('has-error');
+                $(e).remove();
+            },
+            errorPlacement: function(error, element) {
+                if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                } else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                } else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+            submitHandler: function(form) {
+                editProject(form);
+            },
+            invalidHandler: function(form) {
+            }
+        });
+})
+</script>
+{% endblock %}
