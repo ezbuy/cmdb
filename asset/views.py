@@ -29,6 +29,8 @@ def get(request):
 @login_required
 @deny_resubmit(page_key='deploy_go')
 def getData(request):
+    if not request.POST.keys():
+        return HttpResponseRedirect('/')
     data = request.POST['goProject']
     env = request.POST['env']
     services = request.POST['services']
@@ -91,6 +93,7 @@ def getServices(request):
 
 
 @login_required
+@deny_resubmit(page_key='revert_go')
 def goRevert(request):
     groupname = gogroup.objects.all()
 
@@ -140,25 +143,26 @@ def goRevertResulttwo(request):
 
 
 @login_required
+@deny_resubmit(page_key='revert_go')
 def revert(request):
-
-    if not request.GET.keys():
+    if not request.POST.keys():
         mes = 'argv is error,not revert version!!'
         return render(request,'goRevertResult.html', {'mes': mes})
 
-    data = request.GET['id']
-    username = request.user
+    svn_revision = request.POST['svnRevision']
+    env = request.POST['env']
+    project = request.POST['project']
+    services = request.POST['services']
     ip = request.META['REMOTE_ADDR']
-    data = data.split(',')
-    env = data[0]
-    revertFile = data[1]
-    project = revertFile.split('_')[0]
-    host = data[2]
+    tower_url = 'http://tower.im'
+
+    if int(svn_revision) == 1:
+        svn_revision = 'PREV'
+
     Publish = goPublish(env)
-    mes = Publish.go_revert(project,revertFile,host,username,ip)
+    mes = Publish.deployGo(project,services,request.user,ip,tower_url,request.POST['phone_number'],svn_revision)
+    return render(request, 'getdata.html', {'result': mes})
 
-
-    return render(request,'getdata.html',{'result':mes})
 
 
 
@@ -176,7 +180,7 @@ def goConfResult(request):
     ip = request.META['REMOTE_ADDR']
     username = request.user
     Publish = goPublish(env)
-    mes = Publish.goConf(project,username,ip,request.POST['phone_number'])
+    mes = Publish.goConf(project,username,ip,request.GET['phone_number'])
     return render(request,'getdata.html',{'result':mes})
 
 
