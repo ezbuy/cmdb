@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from django.shortcuts import render,render_to_response
+from django.shortcuts import render,render_to_response,HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User,Group
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
@@ -62,6 +62,7 @@ class user_edit_form(ModelForm):
         fields = ["username","first_name"]
 
 @login_required
+@deny_resubmit(page_key='edit_user')
 def user_edit(request, id):
     user_info = User.objects.get(id=id)
     print '-----user_info---',user_info
@@ -96,6 +97,18 @@ def user_edit(request, id):
             print e
             result = [{'user_update': 'failed'}]
         return render(request, 'getdata.html', {'result': result})
+
+
+@login_required
+def user_is_active(request,id):
+    user_info = User.objects.get(id=id)
+    if user_info.is_active:
+        user_info.is_active = False
+    else:
+        user_info.is_active = True
+
+    user_info.save()
+    return HttpResponseRedirect('/users/user_list/')
 
 
 
