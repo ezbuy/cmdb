@@ -53,10 +53,17 @@
                                         <td class="text-center"> {{ info.userprofile.phone_number }} </td>
                                         {% if info.is_active %}
                                             <td class="text-center">有效</td>
+                                            <td class="text-center">
+                                                <a href="/users/user_edit/{{ info.id }}/" class="btn btn-xs btn-info">修改</a>
+                                                <a href="/users/user_is_active/{{ info.id }}/" class="btn btn-xs btn-danger">禁用</a>
+                                            </td>
                                         {% else %}
                                             <td class="text-center">禁用</td>
+                                            <td class="text-center">
+                                                <a href="/users/user_edit/{{ info.id }}/" class="btn btn-xs btn-info">修改</a>
+                                                <a href="/users/user_is_active/{{ info.id }}/" class="btn btn-xs btn-success">启用</a>
+                                            </td>
                                         {% endif %}
-                                        <td><a href="/users/user_edit/{{ info.id }}/" class="btn btn-xs btn-info">修改</a></td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
