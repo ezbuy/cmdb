@@ -19,10 +19,11 @@ from alert.views import *
 
 urlpatterns = [
     url(r'^index/$', project_view),
-    url(r'^projects/$', project_view),
-    url(r'^projects/add/$', project_add),
-    url(r'^projects/edit/$', project_edit),
-    url(r'^items/$', item_view),
-    url(r'^items/add/$', item_add),
-    url(r'^items/edit/$', item_edit),
+    url(r'^projects/$', project_view, name='project_view'),
+    url(r'^projects/add/$', project_add, name='project_add'),
+    url(r'^projects/edit/$', project_edit, name='project_edit'),
+    url(r'^items/$', item_view, name='item_view'),
+    url(r'^items/add/$', item_add, name='item_add'),
+    url(r'^items/edit/$', item_edit, name='item_edit'),
+    url(r'^find_metrics/$', find_metrics, name='find_metrics'),
 ]
