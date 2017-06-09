@@ -4,9 +4,7 @@ import requests
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponse
 
-graphite_api = 'http://192.168.199.61:8080'
-aac_api = 'http://192.168.199.178:9090/api/v1.0'
-aac_headers = {'X-AUTH-TOKEN': 'd14b7042a2af18a9ffe15a0da343497f'}
+from mico.settings import graphite_api, aac_api, aac_headers
 
 
 # Create your views here.
