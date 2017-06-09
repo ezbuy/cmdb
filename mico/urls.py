@@ -34,5 +34,6 @@ urlpatterns = [
     url(r'^subversion/', include('subversion.urls')),
     url(r'^kettle/', include('kettle.urls')),
     url(r'^workflow/', include('workflow.urls')),
-    
+    url(r'^alert/', include('alert.urls')),
+
 ]
