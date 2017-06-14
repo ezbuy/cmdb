@@ -12,14 +12,11 @@
                 <div class="ibox-title">
                     <h5> 告警项列表</h5>
                     <div class="ibox-tools">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i title="新增监控" class="fa fa-plus" onclick="addModal();return false;"></i>
+                        </a>
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
-                        </a>
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="fa fa-wrench"></i>
-                        </a>
-                        <a class="close-link">
-                            <i class="fa fa-times"></i>
                         </a>
                     </div>
                 </div>
@@ -67,7 +64,6 @@
                                         <td class="text-center">告警</td>
                                     {% endif %}
                                     <td class="text-center">
-                                        <button onclick="addModal();return false;">新增</button>
                                         <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.ref }}', '{{ info.key }}', '{{ info.state }}', '{{ info.expr }}', '{{ info.interval }}', '{{ info.error }}', '{{ info.recovery }}');return false;">编辑</button>
                                     </td>
                                 </tr>
