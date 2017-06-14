@@ -13,10 +13,7 @@
                     <h5> 告警项列表</h5>
                     <div class="ibox-tools">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i title="新增监控" class="fa fa-plus" onclick="addModal();return false;"></i>
-                        </a>
-                        <a class="collapse-link">
-                            <i class="fa fa-chevron-up"></i>
+                            <i title="新增监控" class="fa fa-plus" onclick="addModal();return false;">新增监控</i>
                         </a>
                     </div>
                 </div>
@@ -36,8 +33,6 @@
                                     <th class="text-center"> 触发间隔 </th>
 {#                                    <th class="text-center"> 告警信息格式 </th>#}
 {#                                    <th class="text-center"> 恢复信息格式 </th>#}
-                                    <th class="text-center"> 最近的数据 </th>
-                                    <th class="text-center"> 最近的结果 </th>
                                     <th class="text-center"> </th>
                                 </tr>
                             </thead>
@@ -57,12 +52,6 @@
                                     <td class="text-center">{{ info.interval }}秒</td>
 {#                                    <td class="text-center">{{ info.error }}</td>#}
 {#                                    <td class="text-center">{{ info.recovery }}</td>#}
-                                    <td class="text-center">{{ info.value }}</td>
-                                    {% if info.status == 0 %}
-                                        <td class="text-center">恢复</td>
-                                    {% else %}
-                                        <td class="text-center">告警</td>
-                                    {% endif %}
                                     <td class="text-center">
                                         <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.ref }}', '{{ info.key }}', '{{ info.state }}', '{{ info.expr }}', '{{ info.interval }}', '{{ info.error }}', '{{ info.recovery }}');return false;">编辑</button>
                                     </td>
@@ -186,7 +175,7 @@
             </div>
         </div>
     </div>
-    <div id="modal-form-edit" class="modal fade" tabindex="-1">
+    <div id="modal-form-edit" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -225,7 +214,7 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-key">KEY值：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required type="text" id="modal-form-edit-key" name="key" class="col-xs-12 col-sm-10">
+                                            <select style="width:100%" required class="form-control" id="modal-form-edit-key" name="key"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -310,7 +299,7 @@
         function editModal(item_id, name, ref, key, state, expr, interval, error, recovery){
             $('#modal-form-edit-id').val(item_id);
             $('#modal-form-edit-name').val(name);
-            $('#modal-form-edit-key').val(key);
+            $('#modal-form-edit-key').html('<option value="'+key+'" selected>'+key+'</option>').trigger('change');
             $('#modal-form-edit-ref').find('option[value='+ref+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-expr').val(expr);
@@ -415,16 +404,22 @@
                 invalidHandler: function(form) {
                 }
             });
-            $('#modal-form-key').select2({
+            $('#modal-form-key, #modal-form-edit-key').select2({
                 placeholder: '请输入字符查找KEY',
                 ajax: {
-                    url: '{% url "find_metrics" %}',
+                    url: '{% url "search_metrics" %}',
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
-                        return {query: params.term}
+                        return {query: params.term, page: params.page}
                     },
-                    processResults: function(data){return {results: data.metrics}},
+                    processResults: function(data, params){
+                        params.page = params.page || 1;
+                        return {
+                            results: data.items,
+                            pagination: {more: (params.page * 50) < data.total_count}
+                        }
+                    },
                     cache: true
                 },
                 escapeMarkup: function (m) {return m},
