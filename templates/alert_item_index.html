@@ -31,8 +31,6 @@
                                     <th class="text-center"> 状态 </th>
                                     <th class="text-center"> 触发条件 </th>
                                     <th class="text-center"> 触发间隔 </th>
-{#                                    <th class="text-center"> 告警信息格式 </th>#}
-{#                                    <th class="text-center"> 恢复信息格式 </th>#}
                                     <th class="text-center"> </th>
                                 </tr>
                             </thead>
@@ -50,8 +48,6 @@
                                     {% endif %}
                                     <td class="text-center">{{ info.expr }}</td>
                                     <td class="text-center">{{ info.interval }}秒</td>
-{#                                    <td class="text-center">{{ info.error }}</td>#}
-{#                                    <td class="text-center">{{ info.recovery }}</td>#}
                                     <td class="text-center">
                                         <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.ref }}', '{{ info.key }}', '{{ info.state }}', '{{ info.expr }}', '{{ info.interval }}', '{{ info.error }}', '{{ info.recovery }}');return false;">编辑</button>
                                     </td>
@@ -93,7 +89,7 @@
                                         <div class="clearfix">
                                             <select class="chosen-select form-control" name="ref" id="modal-form-ref">
                                                 <option value="graphite" selected>Graphite</option>
-{#                                                <option value="prometheus">Prometheus</option>#}
+                                                {#<option value="prometheus">Prometheus</option>#}
                                             </select>
                                         </div>
                                     </div>
@@ -111,11 +107,22 @@
                                 <div class="space-2"></div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-expr">触发条件：</label>
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right">触发条件：</label>
                                     <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <input required type="text" id="modal-form-expr" name="expr" class="col-xs-12 col-sm-10">
-                                        </div>
+                                        <span>
+                                            <select required id="modal-form-expr-logic" name="expr-logic">
+                                                <option></option>
+                                                <option value=">">大于</option>
+                                                <option value=">=">大于等于</option>
+                                                <option value="<">小于</option>
+                                                <option value="<=">小于等于</option>
+                                                <option value="==">等于</option>
+                                                <option value="!=">不等于</option>
+                                            </select>
+                                        </span>
+                                        <span>
+                                            <input required digits="true" type="text" id="modal-form-expr-threshold" name="expr-threshold">
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="space-2"></div>
@@ -124,7 +131,7 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-interval">触发间隔(秒)：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required type="text" id="modal-form-interval" name="interval" class="col-xs-12 col-sm-10" value="60">
+                                            <input required digits="true" type="text" id="modal-form-interval" name="interval" class="col-xs-12 col-sm-10" value="60">
                                         </div>
                                     </div>
                                 </div>
@@ -221,11 +228,22 @@
                                 <div class="space-2"></div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-expr">触发条件：</label>
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right">触发条件：</label>
                                     <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <input required type="text" id="modal-form-edit-expr" name="expr" class="col-xs-12 col-sm-10">
-                                        </div>
+                                        <span>
+                                            <select required id="modal-form-edit-expr-logic" name="expr-logic">
+                                                <option></option>
+                                                <option value=">">大于</option>
+                                                <option value=">=">大于等于</option>
+                                                <option value="<">小于</option>
+                                                <option value="<=">小于等于</option>
+                                                <option value="==">等于</option>
+                                                <option value="!=">不等于</option>
+                                            </select>
+                                        </span>
+                                        <span>
+                                            <input required digits="true" type="text" id="modal-form-edit-expr-threshold" name="expr-threshold">
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="space-2"></div>
@@ -234,7 +252,7 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-interval">触发间隔：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required type="text" id="modal-form-edit-interval" name="interval" class="col-xs-12 col-sm-10" value="60"> 秒
+                                            <input required digits="true" type="text" id="modal-form-edit-interval" name="interval" class="col-xs-12 col-sm-10" value="60"> 秒
                                         </div>
                                     </div>
                                 </div>
@@ -297,20 +315,26 @@
             $('#modal-form').modal('show');
         }
         function editModal(item_id, name, ref, key, state, expr, interval, error, recovery){
+            var eee=expr.match(/(<|<=|>|>=|==|!=)\s*(\d+)\s*/);
+            var exprLogic=eee[1], exprThreshold=eee[2];
+            $('#modal-form-edit-expr-threshold').val(exprThreshold);
+            $('#modal-form-edit-expr-logic').find('option[value="'+exprLogic+'"]').prop('selected', true).trigger('chosen:updated');
+
             $('#modal-form-edit-id').val(item_id);
             $('#modal-form-edit-name').val(name);
             $('#modal-form-edit-key').html('<option value="'+key+'" selected>'+key+'</option>').trigger('change');
             $('#modal-form-edit-ref').find('option[value='+ref+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
-            $('#modal-form-edit-expr').val(expr);
             $('#modal-form-edit-interval').val(interval);
             $('#modal-form-edit-error').val(error);
             $('#modal-form-edit-recovery').val(recovery);
             $('#modal-form-edit').modal('show');
         }
         function addProject(form) {
+            var exprLogic=$('#modal-form-expr-logic').val(), exprThreshold=$('#modal-form-expr-threshold').val();
             var fd=new FormData(form);
             fd.append('pid', '{{ pid }}');
+            fd.append('expr', exprLogic+exprThreshold);
             $.ajax({
                 url: "/alert/items/add/",
                 type: "POST",
@@ -325,7 +349,9 @@
             return false;
         }
         function editProject(form) {
+            var exprLogic=$('#modal-form-edit-expr-logic').val(), exprThreshold=$('#modal-form-edit-expr-threshold').val();
             var fd=new FormData(form);
+            fd.append('expr', exprLogic+exprThreshold);
             var item_id=$('#modal-form-edit-id').val();
             $.ajax({
                 url: "/alert/items/edit/?item_id="+item_id,

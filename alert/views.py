@@ -181,7 +181,9 @@ def item_edit(request):
 
     aac_url = '%s/items/%s' % (aac_api, item_id)
     try:
-        resp = requests.put(aac_url, headers=aac_headers, data=request.POST)
+        keys = ('pid', 'name', 'ref', 'key', 'state', 'expr', 'interval', 'error', 'recovery')
+        data = {k: v for k, v in request.POST if k in keys}
+        resp = requests.put(aac_url, headers=aac_headers, data=data)
         data = resp.json()
     except Exception as e:
         print e
