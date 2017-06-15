@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block self_head_css_js %}
     <link href="/static/alert/chosen.min.css" rel="stylesheet">
+    <link href="/static/alert/select2.min.css" rel="stylesheet">
 {% endblock %}
 {% block content %}
 
@@ -12,10 +13,7 @@
                     <h5> 项目列表</h5>
                     <div class="ibox-tools">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i title="新增项目" class="fa fa-plus" onclick="addModal();return false;"></i>
-                        </a>
-                        <a class="collapse-link">
-                            <i class="fa fa-chevron-up"></i>
+                            <i title="新增项目" class="fa fa-plus" onclick="addModal();return false;">新增项目</i>
                         </a>
                     </div>
                 </div>
@@ -37,14 +35,14 @@
                                 <tr class="gradeX">
                                     <td class="text-center">{{ info.id }}</td>
                                     <td class="text-center"> {{ info.name }} </td>
-                                    <td class="text-center">{{ info.owner }}</td>
+                                    <td class="text-center">{{ info.owner_name }}</td>
                                     {% if info.state == 0 %}
                                         <td class="text-center">启用告警</td>
                                     {% else %}
                                         <td class="text-center">禁用告警</td>
                                     {% endif %}
                                     <td class="text-center">
-                                        <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.owner }}', '{{ info.state }}');return false;">编辑</button>
+                                        <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.owner }}', '{{ info.state }}', '{{ info.owner_name }}');return false;">编辑</button>
                                         <button onclick="viewItem('{{ info.id }}');return false;">查看监控项</button>
                                     </td>
                                 </tr>
@@ -58,7 +56,7 @@
     </div>
 </div>
 
-    <div id="modal-form" class="modal fade" tabindex="-1">
+    <div id="modal-form" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -83,12 +81,13 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-owner">负责人：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required type="text" id="modal-form-owner" name="owner" class="col-xs-12 col-sm-10">
+                                            <div class="form-ctrl form-ctrl-select">
+                                                <select style="width:100%" required class="form-control" id="modal-form-owner" name="owner"></select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="space-2"></div>
-
 
                                 <div class="form-group">
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-state">状态：</label>
@@ -115,7 +114,7 @@
             </div>
         </div>
     </div>
-    <div id="modal-form-edit" class="modal fade" tabindex="-1">
+    <div id="modal-form-edit" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -141,7 +140,9 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-owner">负责人：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required type="text" id="modal-form-edit-owner" name="owner" class="col-xs-12 col-sm-10">
+                                            <div class="form-ctrl form-ctrl-select">
+                                                <select style="width:100%;" required class="form-control" id="modal-form-edit-owner" name="owner"></select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -173,22 +174,22 @@
             </div>
         </div>
     </div>
+{% endblock %}
 
-    {% block self_footer_js %}
-        <script src="/static/alert/bootbox.js"></script>
-        <script src="/static/alert/jquery.validate.min.js"></script>
-        <script src="/static/alert/chosen.jquery.min.js"></script>
-    {% endblock %}
+{% block self_footer_js %}
+    <script src="/static/alert/bootbox.js"></script>
+    <script src="/static/alert/jquery.validate.min.js"></script>
+    <script src="/static/alert/chosen.jquery.min.js"></script>
+    <script src="/static/alert/select2.min.js"></script>
 <script type="text/javascript">
 function addModal(){
-    $('#modal-form-name').attr('value', '');
-    $('#modal-form-owner').attr('value', '');
     $('#modal-form').modal('show');
 }
-function editModal(pid, name, owner, state){
+function editModal(pid, name, owner, state, owner_name){
+    var opts='<option value="'+owner+'" selected>'+owner_name+'</option>';
     $('#modal-form-edit-id').val(pid);
     $('#modal-form-edit-name').val(name);
-    $('#modal-form-edit-owner').val(owner);
+    $('#modal-form-edit-owner').html(opts).trigger('change');
     $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
     $('#modal-form-edit').modal('show');
 }
@@ -290,6 +291,21 @@ jQuery(function($) {
             invalidHandler: function(form) {
             }
         });
+    $('#modal-form-owner, #modal-form-edit-owner').select2({
+                placeholder: '请输入用户名查找',
+                ajax: {
+                    url: '{% url "search_user" %}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {query: params.term}
+                    },
+                    processResults: function(data){return {results: data.users}},
+                    cache: true
+                },
+                escapeMarkup: function (m) {return m},
+                minimumInputLength: 2
+            });
 })
 </script>
 {% endblock %}

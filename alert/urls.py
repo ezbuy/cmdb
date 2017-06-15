@@ -26,4 +26,6 @@ urlpatterns = [
     url(r'^items/add/$', item_add, name='item_add'),
     url(r'^items/edit/$', item_edit, name='item_edit'),
     url(r'^find_metrics/$', find_metrics, name='find_metrics'),
+    url(r'^search_user/$', search_user, name='search_user'),
+    url(r'^search_metrics/$', search_metrics, name='search_metrics'),
 ]
