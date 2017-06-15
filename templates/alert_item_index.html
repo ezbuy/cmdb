@@ -1,0 +1,456 @@
+{% extends 'base.html' %}
+{% block self_head_css_js %}
+    <link href="/static/alert/chosen.min.css" rel="stylesheet">
+    <link href="/static/alert/select2.min.css" rel="stylesheet">
+{% endblock %}
+{% block content %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins" id="all">
+                <div class="ibox-title">
+                    <h5> 告警项列表</h5>
+                    <div class="ibox-tools">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i title="新增监控" class="fa fa-plus" onclick="addModal();return false;">新增监控</i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <form id="asset_form">
+
+                        <table class="table table-striped table-bordered table-hover " id="editable">
+                            <thead>
+                                <tr>
+                                    <th class="text-center"> 监控项ID </th>
+                                    <th class="text-center"> 名称 </th>
+                                    <th class="text-center"> 数据来源 </th>
+                                    <th class="text-center"> KEY值 </th>
+                                    <th class="text-center"> 状态 </th>
+                                    <th class="text-center"> 触发条件 </th>
+                                    <th class="text-center"> 触发间隔 </th>
+                                    <th class="text-center"> </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for info in items %}
+                                <tr class="gradeX">
+                                    <td class="text-center">{{ info.id }}</td>
+                                    <td class="text-center"> {{ info.name }} </td>
+                                    <td class="text-center">{{ info.ref }}</td>
+                                    <td class="text-center">{{ info.key }}</td>
+                                    {% if info.state == 0 %}
+                                        <td class="text-center">启用告警</td>
+                                    {% else %}
+                                        <td class="text-center">禁用告警</td>
+                                    {% endif %}
+                                    <td class="text-center">{{ info.expr }}</td>
+                                    <td class="text-center">{{ info.interval }}秒</td>
+                                    <td class="text-center">
+                                        <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.ref }}', '{{ info.key }}', '{{ info.state }}', '{{ info.expr }}', '{{ info.interval }}', '{{ info.error }}', '{{ info.recovery }}');return false;">编辑</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div id="modal-form" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="$('#modal-form').modal('hide');">&times;</button>
+                    <h4 class="blue bigger">请填写告警信息:</h4>
+                </div>
+                <form class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-9">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-name">名称：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-name" name="name" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-ref">数据来源：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <select class="chosen-select form-control" name="ref" id="modal-form-ref">
+                                                <option value="graphite" selected>Graphite</option>
+                                                {#<option value="prometheus">Prometheus</option>#}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-key">KEY值：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                                <select style="width:100%" required class="form-control" id="modal-form-key" name="key"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right">触发条件：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <span>
+                                            <select required id="modal-form-expr-logic" name="expr-logic">
+                                                <option></option>
+                                                <option value=">">大于</option>
+                                                <option value=">=">大于等于</option>
+                                                <option value="<">小于</option>
+                                                <option value="<=">小于等于</option>
+                                                <option value="==">等于</option>
+                                                <option value="!=">不等于</option>
+                                            </select>
+                                        </span>
+                                        <span>
+                                            <input required digits="true" type="text" id="modal-form-expr-threshold" name="expr-threshold">
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-interval">触发间隔(秒)：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required digits="true" type="text" id="modal-form-interval" name="interval" class="col-xs-12 col-sm-10" value="60">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-error">告警内容：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-error" name="error" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-recovery">恢复内容：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-recovery" name="recovery" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-state">状态：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <select class="chosen-select form-control" name="state" id="modal-form-state">
+                                                <option value="0" selected>启用告警</option>
+                                                <option value="1">禁用告警</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm btn-primary">
+                            <i class="ace-icon fa fa-check"></i>
+                            提交
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="modal-form-edit" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="$('#modal-form-edit').modal('hide');">&times;</button>
+                    <h4 class="blue bigger">请编辑告警信息:</h4>
+                </div>
+                <form class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-9">
+                                <input style="display:none;" required type="text" title="item-id" id="modal-form-edit-id" name="id" class="col-xs-12 col-sm-10">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-name">名称：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-edit-name" name="name" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-ref">数据来源：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <select class="chosen-select form-control" name="ref" id="modal-form-edit-ref">
+                                                <option value="graphite" selected>Graphite</option>
+{#                                                <option value="prometheus">Prometheus</option>#}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-key">KEY值：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <select style="width:100%" required class="form-control" id="modal-form-edit-key" name="key"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right">触发条件：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <span>
+                                            <select required id="modal-form-edit-expr-logic" name="expr-logic">
+                                                <option></option>
+                                                <option value=">">大于</option>
+                                                <option value=">=">大于等于</option>
+                                                <option value="<">小于</option>
+                                                <option value="<=">小于等于</option>
+                                                <option value="==">等于</option>
+                                                <option value="!=">不等于</option>
+                                            </select>
+                                        </span>
+                                        <span>
+                                            <input required digits="true" type="text" id="modal-form-edit-expr-threshold" name="expr-threshold">
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-interval">触发间隔：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required digits="true" type="text" id="modal-form-edit-interval" name="interval" class="col-xs-12 col-sm-10" value="60"> 秒
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-error">告警内容：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-edit-error" name="error" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-recovery">恢复内容：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-edit-recovery" name="recovery" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-state">状态：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <select class="chosen-select form-control" name="state" id="modal-form-edit-state">
+                                                <option value="0">启用告警</option>
+                                                <option value="1">禁用告警</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm btn-primary">
+                            <i class="ace-icon fa fa-check"></i>
+                            提交
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block self_footer_js %}
+    <script src="/static/alert/bootbox.js"></script>
+    <script src="/static/alert/jquery.validate.min.js"></script>
+    <script src="/static/alert/chosen.jquery.min.js"></script>
+    <script src="/static/alert/select2.min.js"></script>
+    <script type="text/javascript">
+        function addModal(){
+            $('#modal-form').modal('show');
+        }
+        function editModal(item_id, name, ref, key, state, expr, interval, error, recovery){
+            var eee=expr.match(/(<|<=|>|>=|==|!=)\s*(\d+)\s*/);
+            var exprLogic=eee[1], exprThreshold=eee[2];
+            $('#modal-form-edit-expr-threshold').val(exprThreshold);
+            $('#modal-form-edit-expr-logic').find('option[value="'+exprLogic+'"]').prop('selected', true).trigger('chosen:updated');
+
+            $('#modal-form-edit-id').val(item_id);
+            $('#modal-form-edit-name').val(name);
+            $('#modal-form-edit-key').html('<option value="'+key+'" selected>'+key+'</option>').trigger('change');
+            $('#modal-form-edit-ref').find('option[value='+ref+']').prop('selected', true).trigger('chosen:updated');
+            $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
+            $('#modal-form-edit-interval').val(interval);
+            $('#modal-form-edit-error').val(error);
+            $('#modal-form-edit-recovery').val(recovery);
+            $('#modal-form-edit').modal('show');
+        }
+        function addProject(form) {
+            var exprLogic=$('#modal-form-expr-logic').val(), exprThreshold=$('#modal-form-expr-threshold').val();
+            var fd=new FormData(form);
+            fd.append('pid', '{{ pid }}');
+            fd.append('expr', exprLogic+exprThreshold);
+            $.ajax({
+                url: "/alert/items/add/",
+                type: "POST",
+                data: fd,
+                enctype: "multipart/form-data",
+                processData: false,
+                contentType: false
+            }).done(function (result) {
+                bootbox.alert(result.errmsg);
+                if (result.errcode === 0) {window.location.reload();}
+            });
+            return false;
+        }
+        function editProject(form) {
+            var exprLogic=$('#modal-form-edit-expr-logic').val(), exprThreshold=$('#modal-form-edit-expr-threshold').val();
+            var fd=new FormData(form);
+            fd.append('expr', exprLogic+exprThreshold);
+            var item_id=$('#modal-form-edit-id').val();
+            $.ajax({
+                url: "/alert/items/edit/?item_id="+item_id,
+                type: "POST",
+                data: fd,
+                enctype: "multipart/form-data",
+                processData: false,
+                contentType: false
+            }).done(function (result) {
+                bootbox.alert(result.errmsg);
+                if (result.errcode === 0) {window.location.reload();}
+            });
+            return false;
+        }
+
+        jQuery(function($) {
+            $('#modal-form form.form-horizontal').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                focusInvalid: false,
+                ignore: '',
+                highlight: function(e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+                success: function(e) {
+                    $(e).closest('.form-group').removeClass('has-error');
+                    $(e).remove();
+                },
+                errorPlacement: function(error, element) {
+                    if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                        var controls = element.closest('div[class*="col-"]');
+                        if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                        else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                    } else if (element.is('.select2')) {
+                        error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                    } else if (element.is('.chosen-select')) {
+                        error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                    } else {
+                        error.insertAfter(element.parent());
+                    }
+                },
+                submitHandler: function(form) {
+                    addProject(form);
+                },
+                invalidHandler: function(form) {
+                }
+            });
+            $('#modal-form-edit form.form-horizontal').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                focusInvalid: false,
+                ignore: '',
+                highlight: function(e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+                success: function(e) {
+                    $(e).closest('.form-group').removeClass('has-error');
+                    $(e).remove();
+                },
+                errorPlacement: function(error, element) {
+                    if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                        var controls = element.closest('div[class*="col-"]');
+                        if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                        else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                    } else if (element.is('.select2')) {
+                        error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                    } else if (element.is('.chosen-select')) {
+                        error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                    } else {
+                        error.insertAfter(element.parent());
+                    }
+                },
+                submitHandler: function(form) {
+                    editProject(form);
+                },
+                invalidHandler: function(form) {
+                }
+            });
+            $('#modal-form-key, #modal-form-edit-key').select2({
+                placeholder: '请输入字符查找KEY',
+                ajax: {
+                    url: '{% url "search_metrics" %}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {query: params.term, page: params.page}
+                    },
+                    processResults: function(data, params){
+                        params.page = params.page || 1;
+                        return {
+                            results: data.items,
+                            pagination: {more: (params.page * 50) < data.total_count}
+                        }
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (m) {return m},
+                minimumInputLength: 3
+            });
+        })
+    </script>
+{% endblock %}
