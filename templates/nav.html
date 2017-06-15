@@ -75,7 +75,7 @@
                 </ul>
             </li>
             <li>
-                <a><i class="fa fa-inbox"></i> <span class="nav-label">告警</span><span class="fa arrow"></span></a>
+                <a><i class="fa fa-inbox"></i> <span class="nav-label">Alert</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li class="asset"> <a href="{% url 'project_view' %}">告警项目</a></li>
                 </ul>
@@ -107,7 +107,7 @@
                 <ul class="nav nav-second-level">
                     <li class="asset"> <a href="{% url 'memcache' %}">Memcache flush_all</a></li>
                 </ul>
-            </li>        
+            </li>
         {% endif %}
         {% if request.user|has_group:'bi' %}
             <li>
