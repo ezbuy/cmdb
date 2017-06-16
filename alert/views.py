@@ -28,6 +28,25 @@ def search_user(request):
     return HttpResponse(json.dumps(dict(users=users_list)))
 
 
+def check_metrics(query):
+    """Check metric is valid or not.
+
+    :param str query: metric
+    :return: bool
+    """
+    url = '%s/metrics/find/?query=%s' % (graphite_api, query)
+    try:
+        resp = requests.get(url)
+        data = resp.json()
+        for xxx in data:
+            if xxx['leaf'] == 1 and xxx['id'] == query:
+                return True
+    except Exception as e:
+        print e
+
+    return False
+
+
 @login_required
 def find_metrics(request):
     try:
@@ -167,7 +186,12 @@ def item_view(request):
 def item_add(request):
     aac_url = '%s/items' % aac_api
     try:
-        resp = requests.post(aac_url, headers=aac_headers, data=request.POST)
+        keys = ('pid', 'name', 'ref', 'key', 'state', 'expr', 'interval', 'error', 'recovery')
+        data = {k: v for k, v in request.POST.items() if k in keys}
+        if not check_metrics(data['key']):
+            raise Exception('<strong>%s</strong> is NOT FOUND, please check and try again.' % data['key'])
+
+        resp = requests.post(aac_url, headers=aac_headers, data=data)
         data = resp.json()
     except Exception as e:
         print e
@@ -182,7 +206,10 @@ def item_edit(request):
     aac_url = '%s/items/%s' % (aac_api, item_id)
     try:
         keys = ('pid', 'name', 'ref', 'key', 'state', 'expr', 'interval', 'error', 'recovery')
-        data = {k: v for k, v in request.POST if k in keys}
+        data = {k: v for k, v in request.POST.items() if k in keys}
+        if not check_metrics(data['key']):
+            raise Exception('<strong>%s</strong> is NOT FOUND, please check and try again.' % data['key'])
+
         resp = requests.put(aac_url, headers=aac_headers, data=data)
         data = resp.json()
     except Exception as e:

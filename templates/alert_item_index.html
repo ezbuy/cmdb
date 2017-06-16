@@ -100,7 +100,7 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-key">KEY值：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                                <select style="width:100%" required class="form-control" id="modal-form-key" name="key"></select>
+                                            <input style="width:100%" required type="text" id="modal-form-key" name="key">
                                         </div>
                                     </div>
                                 </div>
@@ -221,7 +221,7 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-key">KEY值：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <select style="width:100%" required class="form-control" id="modal-form-edit-key" name="key"></select>
+                                            <input style="width:100%" required type="text" id="modal-form-edit-key" name="key">
                                         </div>
                                     </div>
                                 </div>
@@ -322,7 +322,7 @@
 
             $('#modal-form-edit-id').val(item_id);
             $('#modal-form-edit-name').val(name);
-            $('#modal-form-edit-key').html('<option value="'+key+'" selected>'+key+'</option>').trigger('change');
+            $('#modal-form-edit-key').val(key);
             $('#modal-form-edit-ref').find('option[value='+ref+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-interval').val(interval);
@@ -429,27 +429,6 @@
                 },
                 invalidHandler: function(form) {
                 }
-            });
-            $('#modal-form-key, #modal-form-edit-key').select2({
-                placeholder: '请输入字符查找KEY',
-                ajax: {
-                    url: '{% url "search_metrics" %}',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {query: params.term, page: params.page}
-                    },
-                    processResults: function(data, params){
-                        params.page = params.page || 1;
-                        return {
-                            results: data.items,
-                            pagination: {more: (params.page * 50) < data.total_count}
-                        }
-                    },
-                    cache: true
-                },
-                escapeMarkup: function (m) {return m},
-                minimumInputLength: 3
             });
         })
     </script>
