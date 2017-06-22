@@ -74,12 +74,6 @@
                     <li class="asset"> <a href="{% url 'user_add_html' %}">添加用户</a></li>
                 </ul>
             </li>
-            <li>
-                <a><i class="fa fa-inbox"></i> <span class="nav-label">Alert</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li class="asset"> <a href="{% url 'project_view' %}">告警项目</a></li>
-                </ul>
-            </li>
         {% endif %}
         {% if request.user|has_group:'go' %}
             <li>
@@ -133,6 +127,12 @@
                     <li> <a href="{% url 'workflow_index' %}">工单提交</a></li>
                     <li> <a href="{% url 'get_ticket_tasks' %}">未处理工单</a></li>
                     <li> <a href="{% url 'handled_tasks' %}">已处理工单</a></li>
+                </ul>
+            </li>
+            <li>
+                <a><i class="fa fa-inbox"></i> <span class="nav-label">Alert</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li class="asset"> <a href="{% url 'project_view' %}">告警项目</a></li>
                 </ul>
             </li>
             <li>
