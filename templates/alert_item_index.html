@@ -401,7 +401,7 @@
             }).done(function (result) {
                 bootbox.alert(result.errmsg);
                 if (result.errcode === 0) {window.location.reload();}
-                $('#modal-loading').modal('hide');
+                else $('#modal-loading').modal('hide');
             });
             return false;
         }
@@ -421,7 +421,7 @@
             }).done(function (result) {
                 bootbox.alert(result.errmsg);
                 if (result.errcode === 0) {window.location.reload();}
-                $('#modal-loading').modal('hide');
+                else $('#modal-loading').modal('hide');
             });
             return false;
         }
