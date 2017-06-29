@@ -69,7 +69,7 @@ def submit_tickets(request):
         project = request.POST['project']
         project = project.strip()
         go_command = request.POST['go_command']
-        supervisor_name =  request.POST['supervisor_name']
+        supervisor_name = go_command.replace(" ", "_")
         svn_repo = svn_repo_url + project
         statsd = request.POST['statsd']
         sentry = request.POST['sentry']
