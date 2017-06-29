@@ -1,4 +1,7 @@
 # coding=utf-8
+import signal
+from subprocess import Popen, PIPE
+
 from asset.models import *
 from asset import models
 import os,time,commands,json,requests
@@ -21,6 +24,40 @@ def publish_logs(user,ip,url,result):
     publishLog.objects.create(user=user, remote_ip=ip, publish_url=url, publish_result=result)
 
 
+def get_rev_head(project_name):
+    _svn = svn.objects.filter(project__name=project_name).first()
+    if not _svn:
+        return None
+
+    command = 'svn log -l1 --username=%s --password=%s --non-interactive %s' % (_svn.username, _svn.password, _svn.repo)
+    process = Popen(command, shell=True, preexec_fn=os.setsid, stdout=PIPE, stderr=PIPE)
+    try:
+        stdout, stderr = process.communicate()
+        print stdout, stderr
+        return stdout
+    except Exception as e:
+        os.killpg(process.pid, signal.SIGKILL)
+        print str(e)
+
+    return None
+
+
+def get_rev_latest(project_name):
+    rl = models.GoProjectRevision.objects.filter(name=project_name).first()
+    return rl.last_rev if rl else None
+
+
+def update_rev_latest(project_name, rev):
+    rl = models.GoProjectRevision.objects.filter(name=project_name).first()
+    if not rl:
+        rl = GoProjectRevision()
+
+    rl.name = project_name
+    rl.last_rev = rev
+    rl.last_clock = int(time.time())
+    rl.save()
+
+
 class goPublish:
     def __init__(self,env):
         self.env = env
@@ -34,8 +71,8 @@ class goPublish:
 
     def deployGo(self,name,services,username,ip,tower_url,phone_number,svn_revision='head'):
 
-        self.name = name
-        self.services = services
+        self.name = name          # Go project name
+        self.services = services  # Go service name
         self.username = username
         self.ip = ip
         self.tower_url = tower_url
@@ -90,6 +127,17 @@ class goPublish:
 
         logs(self.username,self.ip,action,result)
         publish_logs(self.username,self.ip,self.tower_url,result)
+
+        if self.svn_revision == 'head':
+            # ROLLBACK to last successful revision if failed
+            msg_restart = restart.values()[0]
+            if msg_restart.find('ERROR') > 0 or msg_restart.find('error') > 0 or msg_restart.find('Skip') > 0:
+                rev_last = get_rev_latest(name)
+                if rev_last:
+                    self.deployGo(name,services,username,ip,tower_url,phone_number,svn_revision=rev_last)
+            else:
+                rev_head = get_rev_head(name)
+                update_rev_latest(name, rev_head)
 
 
         return result
@@ -452,13 +500,13 @@ def deny_resubmit(page_key=''):
                     from django.http import HttpResponseRedirect
                     return HttpResponseRedirect('/')
                 request.session['%s_submit' % page_key] = ''
-                
+
                 user = User.objects.get(username=request.user)
                 try:
-                    phone_number = UserProfile.objects.get(user=user).phone_number  
+                    phone_number = UserProfile.objects.get(user=user).phone_number
                 except Exception, e:
                     print e
-                    phone_number = ''     
+                    phone_number = ''
                 post_dict = request.POST
                 post_dict = post_dict.copy()
                 post_dict.update({'phone_number':phone_number})
@@ -502,14 +550,14 @@ def dingding_robo(hostname='',project='',result='',username='',phone_number='',t
         content = current_time + " " + errmsg + ": " + "revert " + str(project) + " to " + str(hostname) + " by " + str(username)
 
     data ={
-        "msgtype": "text", 
+        "msgtype": "text",
         "text": {
             "content": content
-            }, 
+            },
         "at": {
             "atMobiles": [
             phone_number
-             ], 
+             ],
              }
         }
     print data
