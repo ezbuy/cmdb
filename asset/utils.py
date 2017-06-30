@@ -58,6 +58,27 @@ def update_rev_latest(project_name, rev):
     rl.save()
 
 
+def get_service_status(service_name):
+    # Go Service model instance
+    _srv = goservices.objects.filter(name=service_name).first()
+    if not _srv:
+        return False
+
+    # Supervisord model instance
+    _svd = gostatus.objects.filter(hostname__ip=_srv.saltminion.ip).first()
+    try:
+        s = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (_svd.supervisor_username, _svd.supervisor_password,
+                                                          _svd.supervisor_host, _svd.supervisor_port))
+        info = s.supervisor.getProcessInfo(service_name)
+        if info['statename'] == 'RUNNING':
+            return True
+        else:
+            return False
+    except Exception, e:
+        print e
+        return False
+
+
 class goPublish:
     def __init__(self,env):
         self.env = env
@@ -130,11 +151,10 @@ class goPublish:
 
         if self.svn_revision == 'head':
             # ROLLBACK to last successful revision if failed
-            msg_restart = restart.values()[0]
-            if msg_restart.find('ERROR') > 0 or msg_restart.find('error') > 0 or msg_restart.find('Skip') > 0:
+            if not get_service_status(services):
                 rev_last = get_rev_latest(name)
                 if rev_last:
-                    self.deployGo(name,services,username,ip,tower_url,phone_number,svn_revision=rev_last)
+                    self.deployGo(name, services, username, ip, tower_url, phone_number, svn_revision=rev_last)
             else:
                 rev_head = get_rev_head(name)
                 update_rev_latest(name, rev_head)
