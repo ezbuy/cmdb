@@ -95,7 +95,7 @@
                                     <td class="text-center">{{ info.expr }}</td>
                                     <td class="text-center">{{ info.interval }}秒</td>
                                     <td class="text-center">
-                                        <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.ref }}', '{{ info.key }}', '{{ info.state }}', '{{ info.expr }}', '{{ info.interval }}', '{{ info.error }}', '{{ info.recovery }}');return false;">编辑</button>
+                                        <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.ref }}', '{{ info.key }}', '{{ info.state }}', '{{ info.expr }}', '{{ info.interval }}');return false;">编辑</button>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -178,26 +178,6 @@
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
                                             <input required digits="true" type="text" id="modal-form-interval" name="interval" class="col-xs-12 col-sm-10" value="60">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="space-2"></div>
-
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-error">告警内容：</label>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <input required type="text" id="modal-form-error" name="error" class="col-xs-12 col-sm-10">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="space-2"></div>
-
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-recovery">恢复内容：</label>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <input required type="text" id="modal-form-recovery" name="recovery" class="col-xs-12 col-sm-10">
                                         </div>
                                     </div>
                                 </div>
@@ -305,26 +285,6 @@
                                 <div class="space-2"></div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-error">告警内容：</label>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <input required type="text" id="modal-form-edit-error" name="error" class="col-xs-12 col-sm-10">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="space-2"></div>
-
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-recovery">恢复内容：</label>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <input required type="text" id="modal-form-edit-recovery" name="recovery" class="col-xs-12 col-sm-10">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="space-2"></div>
-
-                                <div class="form-group">
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-state">状态：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
@@ -369,7 +329,7 @@
         function addModal(){
             $('#modal-form').modal('show');
         }
-        function editModal(item_id, name, ref, key, state, expr, interval, error, recovery){
+        function editModal(item_id, name, ref, key, state, expr, interval){
             var eee=expr.match(/(<|<=|>|>=|==|!=)\s*(\d+)\s*/);
             var exprLogic=eee[1], exprThreshold=eee[2];
             $('#modal-form-edit-expr-threshold').val(exprThreshold);
@@ -381,8 +341,6 @@
             $('#modal-form-edit-ref').find('option[value='+ref+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-interval').val(interval);
-            $('#modal-form-edit-error').val(error);
-            $('#modal-form-edit-recovery').val(recovery);
             $('#modal-form-edit').modal('show');
         }
         function addProject(form) {
