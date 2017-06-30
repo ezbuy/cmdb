@@ -42,17 +42,17 @@ def get_rev_head(project_name):
     return None
 
 
-def get_rev_latest(project_name):
-    rl = models.GoProjectRevision.objects.filter(name=project_name).first()
+def get_rev_latest(name):
+    rl = models.GoServiceRevision.objects.filter(name=name).first()
     return rl.last_rev if rl else None
 
 
-def update_rev_latest(project_name, rev):
-    rl = models.GoProjectRevision.objects.filter(name=project_name).first()
+def update_rev_latest(name, rev):
+    rl = models.GoServiceRevision.objects.filter(name=name).first()
     if not rl:
-        rl = GoProjectRevision()
+        rl = GoServiceRevision()
 
-    rl.name = project_name
+    rl.name = name
     rl.last_rev = rev
     rl.last_clock = int(time.time())
     rl.save()
@@ -152,12 +152,12 @@ class goPublish:
         if self.svn_revision == 'head':
             # ROLLBACK to last successful revision if failed
             if not get_service_status(services):
-                rev_last = get_rev_latest(name)
+                rev_last = get_rev_latest(services)
                 if rev_last:
                     self.deployGo(name, services, username, ip, tower_url, phone_number, svn_revision=rev_last)
             else:
                 rev_head = get_rev_head(name)
-                update_rev_latest(name, rev_head)
+                update_rev_latest(services, rev_head)
 
 
         return result

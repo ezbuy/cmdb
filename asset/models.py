@@ -144,8 +144,8 @@ class svn(models.Model):
         return self.repo
 
 
-class GoProjectRevision(models.Model):
-    name = models.CharField(max_length=128, verbose_name=u'Go project name')
+class GoServiceRevision(models.Model):
+    name = models.CharField(max_length=128, verbose_name=u'Go Service name')
     last_rev = models.IntegerField(verbose_name=u"latest successful revision")
     last_clock = models.IntegerField(verbose_name=u"latest successful timestamp")
 
