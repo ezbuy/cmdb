@@ -1,7 +1,8 @@
 <uwsgi>
-  <socket>:8001</socket>
-        <chdir>/home/mico/cmdb</chdir>
-	<module>wsgi</module>
-	<processes>4</processes>
-  <daemonize>uwsgi.log</daemonize>
+    <socket>:8001</socket>
+    <chdir>/home/mico/cmdb</chdir>
+    <module>wsgi</module>
+    <processes>4</processes>
+    <touch-reload>/home/mico/cmdb</touch-reload>
+    <daemonize>uwsgi.log</daemonize>
 </uwsgi>
