@@ -262,9 +262,10 @@ function addProject(form) {
         processData: false,
         contentType: false
     }).done(function (result) {
-        bootbox.alert(result.errmsg);
-        if (result.errcode === 0) {window.location.reload();}
-        $('#modal-loading').modal('hide');
+        bootbox.alert(result.errmsg, function(){
+            if (result.errcode === 0) {window.location.reload();}
+            else $('#modal-loading').modal('hide');
+        });
     });
     return false;
 }
@@ -280,9 +281,10 @@ function editProject(form) {
         processData: false,
         contentType: false
     }).done(function (result) {
-        bootbox.alert(result.errmsg);
-        if (result.errcode === 0) {window.location.reload();}
-        $('#modal-loading').modal('hide');
+        bootbox.alert(result.errmsg, function(){
+            if (result.errcode === 0) {window.location.reload();}
+            else $('#modal-loading').modal('hide');
+        });
     });
     return false;
 }
