@@ -90,6 +90,9 @@
                                     <td class="text-center">
                                         <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.owner }}', '{{ info.state }}', '{{ info.owner_name }}');return false;">编辑</button>
                                         <button onclick="viewItem('{{ info.id }}');return false;">查看监控项</button>
+                                        {% if request.user.is_superuser %}
+                                            <button onclick="removeProject('{{ info.id }}', '{{ info.name }}');return false;">删除</button>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -288,6 +291,22 @@ function editProject(form) {
     });
     return false;
 }
+{% if request.user.is_superuser %}
+function removeProject(pid, name) {
+    bootbox.confirm('是否删除项目: '+name+' ？', function(result){
+      if (result){
+        $.ajax({
+            url: "/alert/projects/remove/?pid="+pid,
+            type: "DELETE"
+        }).done(function (result) {
+            bootbox.alert(result.errmsg, function(){
+                if (result.errcode === 0) {window.location.reload();}
+            });
+        });
+      }
+    });
+}
+{% endif %}
 
 jQuery(function($) {
     $('#modal-form form.form-horizontal').validate({

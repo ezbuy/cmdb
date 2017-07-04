@@ -96,6 +96,9 @@
                                     <td class="text-center">{{ info.interval }}秒</td>
                                     <td class="text-center">
                                         <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.ref }}', '{{ info.key }}', '{{ info.state }}', '{{ info.expr }}', '{{ info.interval }}');return false;">编辑</button>
+                                        {% if request.user.is_superuser %}
+                                            <button onclick="removeProject('{{ info.id }}', '{{ info.name }}');return false;">删除</button>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -385,6 +388,22 @@
             });
             return false;
         }
+        {% if request.user.is_superuser %}
+        function removeProject(item_id, item_name) {
+            bootbox.confirm('是否删除监控项: '+item_name+' ？', function(result){
+              if (result){
+                $.ajax({
+                    url: "/alert/items/remove/?item_id="+item_id,
+                    type: "DELETE"
+                }).done(function (result) {
+                    bootbox.alert(result.errmsg, function(){
+                        if (result.errcode === 0) {window.location.reload();}
+                    });
+                });
+              }
+            });
+        }
+        {% endif %}
 
         jQuery(function($) {
             $('#modal-form form.form-horizontal').validate({

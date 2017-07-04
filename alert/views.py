@@ -137,7 +137,6 @@ def project_view(request):
         print e
         data = dict(errcode=500, errmsg=str(e), projects=[])
 
-    print data
     return render(request, 'alert_project_index.html', data)
 
 
@@ -160,6 +159,24 @@ def project_edit(request):
     aac_url = '%s/projects/%s' % (aac_api, pid)
     try:
         resp = requests.put(aac_url, headers=aac_headers, data=request.POST)
+        data = resp.json()
+    except Exception as e:
+        print e
+        data = dict(errcode=500, errmsg=str(e))
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+@login_required
+def project_remove(request):
+    if not request.user.is_superuser:
+        data = dict(errcode=403, errmsg='Only SUPERUSER be able to delete.')
+        return HttpResponse(json.dumps(data), content_type='application/json')
+
+    pid = request.GET.get('pid')
+
+    aac_url = '%s/projects/%s' % (aac_api, pid)
+    try:
+        resp = requests.delete(aac_url, headers=aac_headers)
         data = resp.json()
     except Exception as e:
         print e
@@ -215,6 +232,24 @@ def item_edit(request):
         data['error'] = 'Metric: %s\nStatus: ERROR\nValue: ' % (data['key'],)
         data['recovery'] = 'Metric: %s\nStatus: OK\nValue: ' % (data['key'],)
         resp = requests.put(aac_url, headers=aac_headers, data=data)
+        data = resp.json()
+    except Exception as e:
+        print e
+        data = dict(errcode=500, errmsg=str(e))
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+@login_required
+def item_remove(request):
+    if not request.user.is_superuser:
+        data = dict(errcode=403, errmsg='Only SUPERUSER be able to delete.')
+        return HttpResponse(json.dumps(data), content_type='application/json')
+
+    item_id = request.GET.get('item_id')
+
+    aac_url = '%s/items/%s' % (aac_api, item_id)
+    try:
+        resp = requests.delete(aac_url, headers=aac_headers)
         data = resp.json()
     except Exception as e:
         print e
