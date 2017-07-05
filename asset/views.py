@@ -179,8 +179,9 @@ def goConfResult(request):
     project = request.POST['project']
     ip = request.META['REMOTE_ADDR']
     username = request.user
+    phone_number = request.POST['phone_number']
     Publish = goPublish(env)
-    mes = Publish.goConf(project,username,ip,request.GET['phone_number'])
+    mes = Publish.goConf(project,username,ip,phone_number)
     return render(request,'getdata.html',{'result':mes})
 
 
