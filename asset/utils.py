@@ -1,6 +1,5 @@
 # coding=utf-8
-import signal
-from subprocess import Popen, PIPE
+import re
 
 from asset.models import *
 from asset import models
@@ -24,34 +23,17 @@ def publish_logs(user,ip,url,result):
     publishLog.objects.create(user=user, remote_ip=ip, publish_url=url, publish_result=result)
 
 
-def get_rev_head(project_name):
-    _svn = svn.objects.filter(project__name=project_name).first()
-    if not _svn:
-        return None
-
-    command = 'svn log -l1 --username=%s --password=%s --non-interactive %s' % (_svn.username, _svn.password, _svn.repo)
-    process = Popen(command, shell=True, preexec_fn=os.setsid, stdout=PIPE, stderr=PIPE)
-    try:
-        stdout, stderr = process.communicate()
-        print stdout, stderr
-        return stdout
-    except Exception as e:
-        os.killpg(process.pid, signal.SIGKILL)
-        print str(e)
-
-    return None
-
-
 def get_rev_latest(name):
-    rl = models.GoServiceRevision.objects.filter(name=name).first()
+    rl = models.GoServiceRevision.objects.filter(name=name).order_by('-id').first()
     return rl.last_rev if rl else None
 
 
 def update_rev_latest(name, rev):
-    rl = models.GoServiceRevision.objects.filter(name=name).first()
-    if not rl:
-        rl = GoServiceRevision()
+    # rl = models.GoServiceRevision.objects.filter(name=name).first()
+    # if not rl:
+    #     rl = GoServiceRevision()
 
+    rl = GoServiceRevision()
     rl.name = name
     rl.last_rev = rev
     rl.last_clock = int(time.time())
@@ -89,6 +71,55 @@ class goPublish:
     def getNowTime(self):
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))
 
+    def test_deployGo(self, name, services, username, ip, tower_url, phone_number, svn_revision='head', rb=True):
+        self.name = name          # Go project name
+        self.services = services  # Go service name
+        self.username = username
+        self.ip = ip
+        self.tower_url = tower_url
+        self.phone_number = phone_number
+        self.svn_revision = svn_revision
+        hostInfo = {}
+        result = []
+
+        rev_head = None
+
+        # assert svn info
+        res_svn = {'vagrant-ubuntu-trusty-64': "Updating '/srv/d2d':\nRestored '/srv/d2d/d2d'\nAt revision 18.\n------------------------------------------------------------------------\nr18 | chenye | 2017-03-08 03:56:55 +0000 (Wed, 08 Mar 2017) | 1 line\n\nupdate d2d\n------------------------------------------------------------------------"}
+        # get head revision from svn
+        if self.svn_revision == 'head':
+            try:
+                for _, v in res_svn.items():
+                    m = re.search('---+\nr(?P<rev>\d+)\s+\|\s+', v)
+                    if m and rev_head is None:
+                        rev_head = m.group('rev')
+                        break
+            except Exception as e:
+                print str(e)
+                result.append({'get head-revision FAILED': str(e)})
+
+        result.append(res_svn)
+
+        print '-------------------svn:', self.svn_revision
+
+        print '----rev_head: ', rev_head
+        print '----svn_rev:  ', svn_revision
+        if self.svn_revision == 'head':
+            # ROLLBACK to last successful revision if failed
+            if rb:
+                rev_last = get_rev_latest(services)
+                print '----rev_last:', rev_last
+                if rev_last:
+                    result += self.deployGo(name, services, username, ip, tower_url, phone_number, svn_revision=rev_last)
+            else:
+                try:
+                    # rev_head = get_rev_head(name)
+                    update_rev_latest(services, rev_head)
+                except Exception as e:
+                    print str(e)
+                    result.append({'save head revision FAILED': str(e)})
+
+        return result
 
     def deployGo(self,name,services,username,ip,tower_url,phone_number,svn_revision='head'):
 
@@ -102,7 +133,7 @@ class goPublish:
         hostInfo = {}
         result = []
 
-
+        rev_head = None
 
         minionHost = commands.getstatusoutput('salt-key -l accepted')[1].split()[2:]
 
@@ -129,6 +160,19 @@ class goPublish:
                     self.saltCmd.cmd('%s' % host, 'cmd.run',['mv %s %s/%s_%s' % (p.executefile, p.movepath,self.name, currentTime)])
                     svn = self.saltCmd.cmd('%s' % host, 'cmd.run', ['svn update -r%s --username=%s --password=%s --non-interactive %s && svn log -l 1 --username=%s --password=%s --non-interactive %s'
                         % (self.svn_revision,p.username, p.password, p.localpath, p.username, p.password, p.localpath)])
+
+                    # get head revision from svn
+                    if self.svn_revision == 'head':
+                        try:
+                            for _, v in svn.items():
+                                m = re.search('---+\nr(?P<rev>\d+)\s+\|\s+', v)
+                                if m and rev_head is None:
+                                    rev_head = m.group('rev')
+                                    break
+                        except Exception as e:
+                            print str(e)
+                            result.append({'get head-revision FAILED': str(e)})
+
                     result.append(svn)
 
 
@@ -154,11 +198,14 @@ class goPublish:
             if not get_service_status(services):
                 rev_last = get_rev_latest(services)
                 if rev_last:
-                    self.deployGo(name, services, username, ip, tower_url, phone_number, svn_revision=rev_last)
+                    result += self.deployGo(name, services, username, ip, tower_url, phone_number, svn_revision=rev_last)
             else:
-                rev_head = get_rev_head(name)
-                update_rev_latest(services, rev_head)
-
+                try:
+                    # rev_head = get_rev_head(name)
+                    update_rev_latest(services, rev_head)
+                except Exception as e:
+                    print str(e)
+                    result.append({'save head revision FAILED': str(e)})
 
         return result
 
