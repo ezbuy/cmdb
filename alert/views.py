@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.shortcuts import render, HttpResponse
 
 from mico.settings import graphite_api, aac_api, aac_headers
+from logs.models import goLog as GoLog
 
 
 # Create your views here.
@@ -182,6 +183,12 @@ def project_remove(request):
     except Exception as e:
         print e
         data = dict(errcode=500, errmsg=str(e))
+
+    # Tracking user action
+    ip = request.META['REMOTE_ADDR']
+    action = 'delete project %s' % pid
+    GoLog.objects.create(user=request.user, remote_ip=ip, goAction=action, result=data)
+
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
@@ -255,6 +262,12 @@ def item_remove(request):
     except Exception as e:
         print e
         data = dict(errcode=500, errmsg=str(e))
+
+    # Tracking user action
+    ip = request.META['REMOTE_ADDR']
+    action = 'delete item %s' % item_id
+    GoLog.objects.create(user=request.user, remote_ip=ip, goAction=action, result=data)
+
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
