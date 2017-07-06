@@ -77,6 +77,7 @@
                                     <th class="text-center"> 状态 </th>
                                     <th class="text-center"> 触发条件 </th>
                                     <th class="text-center"> 触发间隔 </th>
+                                    <th class="text-center"> 触发函数 </th>
                                     <th class="text-center"> </th>
                                 </tr>
                             </thead>
@@ -95,7 +96,24 @@
                                     <td class="text-center">{{ info.expr }}</td>
                                     <td class="text-center">{{ info.interval }}秒</td>
                                     <td class="text-center">
-                                        <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.ref }}', '{{ info.key }}', '{{ info.state }}', '{{ info.expr }}', '{{ info.interval }}');return false;">编辑</button>
+                                        {% if info.func == 'avg' %}
+                                            平均值
+                                        {% elif info.func == 'max' %}
+                                            最大值
+                                        {% elif info.func == 'min' %}
+                                            最小值
+                                        {% elif info.func == 'sum' %}
+                                            总和
+                                        {% else %}
+                                            实时值
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <button onclick="histModal('{{ info.id }}', '{{ info.name }}');return false;">历史数据</button>
+                                        <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.ref }}', '{{ info.key }}', '{{ info.state }}', '{{ info.expr }}', '{{ info.interval }}', '{{ info.func }}');return false;">编辑</button>
+                                        {% if request.user.is_superuser %}
+                                            <button onclick="removeProject('{{ info.id }}', '{{ info.name }}');return false;">删除</button>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -123,7 +141,7 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-name">名称：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required type="text" id="modal-form-name" name="name" class="col-xs-12 col-sm-10">
+                                            <input required type="text" id="modal-form-name" name="name" style="width:100%">
                                         </div>
                                     </div>
                                 </div>
@@ -177,7 +195,23 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-interval">触发间隔(秒)：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required digits="true" type="text" id="modal-form-interval" name="interval" class="col-xs-12 col-sm-10" value="60">
+                                            <input required digits="true" type="text" id="modal-form-interval" name="interval" value="60">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-func">触发函数：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <select required class="chosen-select form-control" name="func" id="modal-form-func">
+                                                <option value="avg" selected>平均值</option>
+                                                <option value="last">实时值</option>
+                                                <option value="max">最大值</option>
+                                                <option value="min">最小值</option>
+                                                <option value="sum">总和</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -224,7 +258,7 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-name">名称：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required type="text" id="modal-form-edit-name" name="name" class="col-xs-12 col-sm-10">
+                                            <input required type="text" id="modal-form-edit-name" name="name" style="width:100%">
                                         </div>
                                     </div>
                                 </div>
@@ -278,7 +312,23 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-interval">触发间隔：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required digits="true" type="text" id="modal-form-edit-interval" name="interval" class="col-xs-12 col-sm-10" value="60"> 秒
+                                            <input required digits="true" type="text" id="modal-form-edit-interval" name="interval" value="60"> 秒
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-func">触发函数：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <select required class="chosen-select form-control" name="func" id="modal-form-func">
+                                                <option value="avg">平均值</option>
+                                                <option value="last">实时值</option>
+                                                <option value="max">最大值</option>
+                                                <option value="min">最小值</option>
+                                                <option value="sum">总和</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -310,6 +360,23 @@
         </div>
     </div>
 
+    <div id="modal-item-hist" class="modal fade"><div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><div class="table-header">
+            <button type="button" class="close" onclick="$('#modal-item-hist').modal('hide');">&times;</button>
+            <h4 class="blue bigger" id="modal-item-hist-title"></h4>
+        </div></div>
+        <div class="modal-body no-padding">
+            <table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+                <thead><tr>
+                    <th>TimeStamp</th>
+                    <th>Value</th>
+                    <th>State</th>
+                </tr></thead>
+                <tbody id="modal-item-hist-body"></tbody>
+            </table>
+        </div>
+    </div></div></div>
+
     <div id="modal-loading" class="modal" tabindex="-1">
         <div class="spinner">
             <div class="rect1"></div>
@@ -326,10 +393,20 @@
     <script src="/static/alert/chosen.jquery.min.js"></script>
     <script src="/static/alert/select2.min.js"></script>
     <script type="text/javascript">
+        function histModal(item_id, name){
+          $.ajax({
+            url: "/alert/items/history/?item_id="+item_id,
+            type: "GET"
+          }).done(function(result){
+              $('#modal-item-hist-title').html(name);
+              $('#modal-item-hist-body').html(result.body);
+              $('#modal-item-hist').modal('show');
+          })
+        }
         function addModal(){
             $('#modal-form').modal('show');
         }
-        function editModal(item_id, name, ref, key, state, expr, interval){
+        function editModal(item_id, name, ref, key, state, expr, interval, func){
             var eee=expr.match(/(<|<=|>|>=|==|!=)\s*(\d+)\s*/);
             var exprLogic=eee[1], exprThreshold=eee[2];
             $('#modal-form-edit-expr-threshold').val(exprThreshold);
@@ -341,6 +418,7 @@
             $('#modal-form-edit-ref').find('option[value='+ref+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-interval').val(interval);
+            $('#modal-form-edit-func').find('option[value='+func+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit').modal('show');
         }
         function addProject(form) {
@@ -385,6 +463,22 @@
             });
             return false;
         }
+        {% if request.user.is_superuser %}
+        function removeProject(item_id, item_name) {
+            bootbox.confirm('是否删除监控项: '+item_name+' ？', function(result){
+              if (result){
+                $.ajax({
+                    url: "/alert/items/remove/?item_id="+item_id,
+                    type: "DELETE"
+                }).done(function (result) {
+                    bootbox.alert(result.errmsg, function(){
+                        if (result.errcode === 0) {window.location.reload();}
+                    });
+                });
+              }
+            });
+        }
+        {% endif %}
 
         jQuery(function($) {
             $('#modal-form form.form-horizontal').validate({
