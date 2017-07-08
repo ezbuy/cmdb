@@ -1,5 +1,6 @@
 import json
 import time
+from datetime import datetime
 from functools import wraps
 
 import requests
@@ -9,6 +10,7 @@ from django.db.models import Q
 from django.shortcuts import render, HttpResponse
 
 from mico.settings import graphite_api, aac_api, aac_headers
+from logs.models import goLog as GoLog
 
 
 # Create your views here.
@@ -137,7 +139,6 @@ def project_view(request):
         print e
         data = dict(errcode=500, errmsg=str(e), projects=[])
 
-    print data
     return render(request, 'alert_project_index.html', data)
 
 
@@ -168,6 +169,30 @@ def project_edit(request):
 
 
 @login_required
+def project_remove(request):
+    if not request.user.is_superuser:
+        data = dict(errcode=403, errmsg='Only SUPERUSER be able to delete.')
+        return HttpResponse(json.dumps(data), content_type='application/json')
+
+    pid = request.GET.get('pid')
+
+    aac_url = '%s/projects/%s' % (aac_api, pid)
+    try:
+        resp = requests.delete(aac_url, headers=aac_headers)
+        data = resp.json()
+    except Exception as e:
+        print e
+        data = dict(errcode=500, errmsg=str(e))
+
+    # Tracking user action
+    ip = request.META['REMOTE_ADDR']
+    action = 'delete project %s' % pid
+    GoLog.objects.create(user=request.user, remote_ip=ip, goAction=action, result=data)
+
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+@login_required
 def item_view(request):
     pid = request.GET.get('pid')
 
@@ -186,7 +211,7 @@ def item_view(request):
 def item_add(request):
     aac_url = '%s/items' % aac_api
     try:
-        keys = ('pid', 'name', 'ref', 'key', 'state', 'expr', 'interval', 'error', 'recovery')
+        keys = ('pid', 'name', 'ref', 'key', 'state', 'expr', 'interval', 'error', 'recovery', 'func')
         data = {k: v for k, v in request.POST.items() if k in keys}
         if not check_metrics(data['key']):
             raise Exception('<strong>%s</strong> is NOT FOUND, please check and try again.' % data['key'])
@@ -207,7 +232,7 @@ def item_edit(request):
 
     aac_url = '%s/items/%s' % (aac_api, item_id)
     try:
-        keys = ('pid', 'name', 'ref', 'key', 'state', 'expr', 'interval', 'error', 'recovery')
+        keys = ('pid', 'name', 'ref', 'key', 'state', 'expr', 'interval', 'error', 'recovery', 'func')
         data = {k: v for k, v in request.POST.items() if k in keys}
         if not check_metrics(data['key']):
             raise Exception('<strong>%s</strong> is NOT FOUND, please check and try again.' % data['key'])
@@ -219,4 +244,51 @@ def item_edit(request):
     except Exception as e:
         print e
         data = dict(errcode=500, errmsg=str(e))
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+@login_required
+def item_remove(request):
+    if not request.user.is_superuser:
+        data = dict(errcode=403, errmsg='Only SUPERUSER be able to delete.')
+        return HttpResponse(json.dumps(data), content_type='application/json')
+
+    item_id = request.GET.get('item_id')
+
+    aac_url = '%s/items/%s' % (aac_api, item_id)
+    try:
+        resp = requests.delete(aac_url, headers=aac_headers)
+        data = resp.json()
+    except Exception as e:
+        print e
+        data = dict(errcode=500, errmsg=str(e))
+
+    # Tracking user action
+    ip = request.META['REMOTE_ADDR']
+    action = 'delete item %s' % item_id
+    GoLog.objects.create(user=request.user, remote_ip=ip, goAction=action, result=data)
+
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+@login_required
+def item_history(request):
+    item_id = request.GET.get('item_id')
+
+    aac_url = '%s/items/%s/history' % (aac_api, item_id)
+    try:
+        resp = requests.get(aac_url, headers=aac_headers)
+        data = resp.json()
+
+        body = ''
+        for dx in data['data']:
+            dt = datetime.fromtimestamp(int(dx['clock']))
+            body += '<tr><td>%s</td><td>%s</td><td>%s</td></tr>' % (dt.strftime('%Y-%m-%d %H:%M:%S'),
+                                                                    dx['value'],
+                                                                    'OK' if dx['status'] == 0 else 'ERROR')
+        data = dict(body=body)
+    except Exception as e:
+        print e
+        # data = dict(errcode=500, errmsg=str(e))
+        data = dict(body='')
     return HttpResponse(json.dumps(data), content_type='application/json')

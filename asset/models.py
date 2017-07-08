@@ -144,6 +144,15 @@ class svn(models.Model):
         return self.repo
 
 
+class GoServiceRevision(models.Model):
+    name = models.CharField(max_length=128, verbose_name=u'Go Service name')
+    last_rev = models.IntegerField(verbose_name=u"latest successful revision")
+    last_clock = models.IntegerField(verbose_name=u"latest successful timestamp")
+
+    def __unicode__(self):
+        return self.name
+
+
 
 class goconf(models.Model):
     username = models.CharField(max_length=32)

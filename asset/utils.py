@@ -1,4 +1,6 @@
 # coding=utf-8
+import re
+
 from asset.models import *
 from asset import models
 import os,time,commands,json,requests
@@ -21,6 +23,44 @@ def publish_logs(user,ip,url,result):
     publishLog.objects.create(user=user, remote_ip=ip, publish_url=url, publish_result=result)
 
 
+def get_rev_latest(name):
+    rl = models.GoServiceRevision.objects.filter(name=name).order_by('-id').first()
+    return rl.last_rev if rl else None
+
+
+def update_rev_latest(name, rev):
+    # rl = models.GoServiceRevision.objects.filter(name=name).first()
+    # if not rl:
+    #     rl = GoServiceRevision()
+
+    rl = GoServiceRevision()
+    rl.name = name
+    rl.last_rev = rev
+    rl.last_clock = int(time.time())
+    rl.save()
+
+
+def get_service_status(service_name):
+    # Go Service model instance
+    _srv = goservices.objects.filter(name=service_name).first()
+    if not _srv:
+        return False
+
+    # Supervisord model instance
+    _svd = gostatus.objects.filter(hostname__ip=_srv.saltminion.ip).first()
+    try:
+        s = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (_svd.supervisor_username, _svd.supervisor_password,
+                                                          _svd.supervisor_host, _svd.supervisor_port))
+        info = s.supervisor.getProcessInfo(service_name)
+        if info['statename'] == 'RUNNING':
+            return True
+        else:
+            return False
+    except Exception, e:
+        print e
+        return False
+
+
 class goPublish:
     def __init__(self,env):
         self.env = env
@@ -31,11 +71,9 @@ class goPublish:
     def getNowTime(self):
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))
 
-
-    def deployGo(self,name,services,username,ip,tower_url,phone_number,svn_revision='head'):
-
-        self.name = name
-        self.services = services
+    def test_deployGo(self, name, services, username, ip, tower_url, phone_number, svn_revision='head', rb=True):
+        self.name = name          # Go project name
+        self.services = services  # Go service name
         self.username = username
         self.ip = ip
         self.tower_url = tower_url
@@ -44,7 +82,58 @@ class goPublish:
         hostInfo = {}
         result = []
 
+        rev_head = None
 
+        # assert svn info
+        res_svn = {'vagrant-ubuntu-trusty-64': "Updating '/srv/d2d':\nRestored '/srv/d2d/d2d'\nAt revision 18.\n------------------------------------------------------------------------\nr18 | chenye | 2017-03-08 03:56:55 +0000 (Wed, 08 Mar 2017) | 1 line\n\nupdate d2d\n------------------------------------------------------------------------"}
+        # get head revision from svn
+        if self.svn_revision == 'head':
+            try:
+                for _, v in res_svn.items():
+                    m = re.search('---+\nr(?P<rev>\d+)\s+\|\s+', v)
+                    if m and rev_head is None:
+                        rev_head = m.group('rev')
+                        break
+            except Exception as e:
+                print str(e)
+                result.append({'get head-revision FAILED': str(e)})
+
+        result.append(res_svn)
+
+        print '-------------------svn:', self.svn_revision
+
+        print '----rev_head: ', rev_head
+        print '----svn_rev:  ', svn_revision
+        if self.svn_revision == 'head':
+            # ROLLBACK to last successful revision if failed
+            if rb:
+                rev_last = get_rev_latest(services)
+                print '----rev_last:', rev_last
+                if rev_last:
+                    result += self.deployGo(name, services, username, ip, tower_url, phone_number, svn_revision=rev_last)
+            else:
+                try:
+                    # rev_head = get_rev_head(name)
+                    update_rev_latest(services, rev_head)
+                except Exception as e:
+                    print str(e)
+                    result.append({'save head revision FAILED': str(e)})
+
+        return result
+
+    def deployGo(self,name,services,username,ip,tower_url,phone_number,svn_revision='head'):
+
+        self.name = name          # Go project name
+        self.services = services  # Go service name
+        self.username = username
+        self.ip = ip
+        self.tower_url = tower_url
+        self.phone_number = phone_number
+        self.svn_revision = svn_revision
+        hostInfo = {}
+        result = []
+
+        rev_head = None
 
         minionHost = commands.getstatusoutput('salt-key -l accepted')[1].split()[2:]
 
@@ -71,12 +160,26 @@ class goPublish:
                     self.saltCmd.cmd('%s' % host, 'cmd.run',['mv %s %s/%s_%s' % (p.executefile, p.movepath,self.name, currentTime)])
                     svn = self.saltCmd.cmd('%s' % host, 'cmd.run', ['svn update -r%s --username=%s --password=%s --non-interactive %s && svn log -l 1 --username=%s --password=%s --non-interactive %s'
                         % (self.svn_revision,p.username, p.password, p.localpath, p.username, p.password, p.localpath)])
+
+                    # get head revision from svn
+                    if self.svn_revision == 'head':
+                        try:
+                            for _, v in svn.items():
+                                m = re.search('---+\nr(?P<rev>\d+)\s+\|\s+', v)
+                                if m and rev_head is None:
+                                    rev_head = m.group('rev')
+                                    break
+                        except Exception as e:
+                            print str(e)
+                            result.append({'get head-revision FAILED': str(e)})
+
                     result.append(svn)
 
 
             allServices = " ".join(goname)
             restart = self.saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%allServices])
             result.append(restart)
+
 
             info = self.name + "(" + tower_url + ")"
             if self.svn_revision == 'head':
@@ -91,6 +194,19 @@ class goPublish:
         logs(self.username,self.ip,action,result)
         publish_logs(self.username,self.ip,self.tower_url,result)
 
+        if self.svn_revision == 'head':
+            # ROLLBACK to last successful revision if failed
+            if not get_service_status(services):
+                rev_last = get_rev_latest(services)
+                if rev_last:
+                    result += self.deployGo(self.name, self.services, self.username, self.ip, self.tower_url, self.phone_number, svn_revision=rev_last)
+            else:
+                try:
+                    # rev_head = get_rev_head(name)
+                    update_rev_latest(services, rev_head)
+                except Exception as e:
+                    print str(e)
+                    result.append({'save head revision FAILED': str(e)})
 
         return result
 
@@ -452,13 +568,13 @@ def deny_resubmit(page_key=''):
                     from django.http import HttpResponseRedirect
                     return HttpResponseRedirect('/')
                 request.session['%s_submit' % page_key] = ''
-                
+
                 user = User.objects.get(username=request.user)
                 try:
-                    phone_number = UserProfile.objects.get(user=user).phone_number  
+                    phone_number = UserProfile.objects.get(user=user).phone_number
                 except Exception, e:
                     print e
-                    phone_number = ''     
+                    phone_number = ''
                 post_dict = request.POST
                 post_dict = post_dict.copy()
                 post_dict.update({'phone_number':phone_number})
@@ -502,14 +618,14 @@ def dingding_robo(hostname='',project='',result='',username='',phone_number='',t
         content = current_time + " " + errmsg + ": " + "revert " + str(project) + " to " + str(hostname) + " by " + str(username)
 
     data ={
-        "msgtype": "text", 
+        "msgtype": "text",
         "text": {
             "content": content
-            }, 
+            },
         "at": {
             "atMobiles": [
             phone_number
-             ], 
+             ],
              }
         }
     print data

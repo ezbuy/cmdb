@@ -80,7 +80,7 @@
                             {% for info in projects %}
                                 <tr class="gradeX">
                                     <td class="text-center">{{ info.id }}</td>
-                                    <td class="text-center"> {{ info.name }} </td>
+                                    <td class="text-center"><a href="/alert/items/?pid={{ info.id }}" title="查看监控项">{{ info.name }}</a></td>
                                     <td class="text-center">{{ info.owner_name }}</td>
                                     {% if info.state == 0 %}
                                         <td class="text-center">启用告警</td>
@@ -89,7 +89,9 @@
                                     {% endif %}
                                     <td class="text-center">
                                         <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.owner }}', '{{ info.state }}', '{{ info.owner_name }}');return false;">编辑</button>
-                                        <button onclick="viewItem('{{ info.id }}');return false;">查看监控项</button>
+                                        {% if request.user.is_superuser %}
+                                            <button onclick="removeProject('{{ info.id }}', '{{ info.name }}');return false;">删除</button>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -248,9 +250,6 @@ function editModal(pid, name, owner, state, owner_name){
     $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
     $('#modal-form-edit').modal('show');
 }
-function viewItem(pid){
-    window.location.href='/alert/items/?pid='+pid;
-}
 function addProject(form) {
     $('#modal-loading').modal('show');
     var fd=new FormData(form);
@@ -288,6 +287,22 @@ function editProject(form) {
     });
     return false;
 }
+{% if request.user.is_superuser %}
+function removeProject(pid, name) {
+    bootbox.confirm('是否删除项目: '+name+' ？', function(result){
+      if (result){
+        $.ajax({
+            url: "/alert/projects/remove/?pid="+pid,
+            type: "DELETE"
+        }).done(function (result) {
+            bootbox.alert(result.errmsg, function(){
+                if (result.errcode === 0) {window.location.reload();}
+            });
+        });
+      }
+    });
+}
+{% endif %}
 
 jQuery(function($) {
     $('#modal-form form.form-horizontal').validate({
