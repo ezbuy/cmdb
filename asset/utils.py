@@ -180,6 +180,7 @@ class goPublish:
             restart = self.saltCmd.cmd('%s'%host,'cmd.run',['supervisorctl restart %s'%allServices])
             result.append(restart)
 
+
             info = self.name + "(" + tower_url + ")"
             if self.svn_revision == 'head':
                 action = 'deploy ' + info
@@ -198,7 +199,7 @@ class goPublish:
             if not get_service_status(services):
                 rev_last = get_rev_latest(services)
                 if rev_last:
-                    result += self.deployGo(name, services, username, ip, tower_url, phone_number, svn_revision=rev_last)
+                    result += self.deployGo(self.name, self.services, self.username, self.ip, self.tower_url, self.phone_number, svn_revision=rev_last)
             else:
                 try:
                     # rev_head = get_rev_head(name)
