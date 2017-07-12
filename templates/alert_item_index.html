@@ -192,10 +192,10 @@
                                 <div class="space-2"></div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-interval">触发间隔(秒)：</label>
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-interval">触发间隔：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input required digits="true" type="text" id="modal-form-interval" name="interval" value="60">
+                                            <input required digits="true" type="text" id="modal-form-interval" name="interval" value="60"> 秒
                                         </div>
                                     </div>
                                 </div>
@@ -319,10 +319,11 @@
                                 <div class="space-2"></div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-func">触发函数：</label>
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-func">触发函数：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <select required class="chosen-select form-control" name="func" id="modal-form-func">
+                                            <select required class="chosen-select form-control" name="func" id="modal-form-edit-func">
+                                                <option></option>
                                                 <option value="avg">平均值</option>
                                                 <!--option value="last">实时值</option-->
                                                 <option value="max">最大值</option>
@@ -418,7 +419,7 @@
             $('#modal-form-edit-ref').find('option[value='+ref+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-interval').val(interval);
-            $('#modal-form-edit-func').find('option[value='+func+']').prop('selected', true).trigger('chosen:updated');
+            $('#modal-form-edit-func').find('option[value="'+func+'"]').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit').modal('show');
         }
         function addProject(form) {
