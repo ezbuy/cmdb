@@ -3,6 +3,11 @@
     <link href="/static/alert/chosen.min.css" rel="stylesheet">
     <link href="/static/alert/select2.min.css" rel="stylesheet">
 <style type="text/css">
+.text-center {
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 .spinner {
   margin: 100px auto;
   width: 50px;
@@ -85,9 +90,9 @@
                             {% for info in items %}
                                 <tr class="gradeX">
                                     <td class="text-center">{{ info.id }}</td>
-                                    <td class="text-center"> {{ info.name }} </td>
+                                    <td class="text-center"><span title="{{ info.name }}">{% if info.name|length > 35 %}{{ info.name|truncatechars:35 }}{% else %}{{ info.name }}{% endif %}</span></td>
                                     <td class="text-center">{{ info.ref }}</td>
-                                    <td class="text-center">{{ info.key }}</td>
+                                    <td class="text-center"><span title="{{ info.key }}">{% if info.key|length > 35 %}{{ info.key|truncatechars:35 }}{% else %}{{ info.key }}{% endif %}</span></td>
                                     {% if info.state == 0 %}
                                         <td class="text-center">启用告警</td>
                                     {% else %}
