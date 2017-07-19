@@ -8,6 +8,7 @@ from asset.models import gogroup,goservices,minion,svn,goconf,GOTemplate
 from django.contrib import auth
 import functools
 from django.db import connection
+from django.contrib.auth.models import User
 
 
 app = Flask(__name__)
@@ -290,6 +291,21 @@ def add_gotemplate():   ###added an info for gotemplate table
     else:
         return jsonify({'result': 'argv is error!!!'})
 
+
+@app.route('/api/goserviceInfo',methods=['POST'])
+@login_author
+def goservice_info():
+    try:
+        service_name = request.json.get('service_name')
+        service = goservices.objects.filter(name=service_name)[0].owner
+        phone_number = User.objects.get(username=service).userprofile.phone_number
+        print '------',phone_number
+        connection.close()
+    except Exception, e:
+        connection.close()
+        print e
+        return jsonify({'result': ''})
+    return jsonify({'result':phone_number })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=5001)
