@@ -9,6 +9,9 @@ from django.contrib import auth
 import functools
 from django.db import connection
 from django.contrib.auth.models import User
+from mico.settings import hsg_consul,aws_consul
+import requests
+
 
 
 app = Flask(__name__)
@@ -306,6 +309,27 @@ def goservice_info():
         print e
         return jsonify({'result': ''})
     return jsonify({'result':phone_number })
+
+
+@app.route('/api/getConsulKV',methods=['POST'])
+@login_author
+def get_consul_kv():
+    try:
+        location = request.json.get('location')
+        key = request.json.get('key')
+        if location == 'hsg' and key:
+            url = hsg_consul + key
+        elif location == 'aws' and key:
+            url = aws_consul + key
+        else:
+            return jsonify({'result': 'wrong location or key name!!'})
+        headers = {'Accept': 'application/json'}
+        result = requests.get('%s?raw=True' % url, headers=headers).content
+        return jsonify({'result': result})
+    except Exception,e:
+        print e
+        return jsonify({'result': 'Intranet error!!'})
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=5001)
