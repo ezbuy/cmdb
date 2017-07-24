@@ -209,3 +209,7 @@ jenkins_password = 'abc'
 graphite_api = 'http://192.168.199.61:8080'
 aac_api = 'http://192.168.199.178:9090/api/v1.0'
 aac_headers = {'X-AUTH-TOKEN': 'd14b7042a2af18a9ffe15a0da343497f'}
+
+##consul
+hsg_consul = 'http://192.168.199.64:8500/v1/kv/'
+aws_consul = 'http://192.168.199.64:8500/v1/kv/'
