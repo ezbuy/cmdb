@@ -33,7 +33,7 @@
                         {% for res in svc_res %}
                             <div class="feed-element">
                                 <div class="media-body">
-                                    <strong>{{ res.res.name }}</strong><br>
+                                    <strong><a href="{% url 'resource_list' %}?res_name={{ res.res.name }}">{{ res.res.name }}</a></strong><br>
                                     <small class="text-muted">{{ res.res.comment }} - {{ res.res.category }}/{{ res.res.type.name }}</small>
                                 </div>
                             </div>

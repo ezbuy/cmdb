@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 from asset.models import gogroup
 from asset.utils import goServicesni
-from config_center.models import SVCResources
+from config_center.models import SVCResources, Resources
 
 
 # Create your views here.
@@ -28,3 +28,15 @@ def service_list(request):
 
     return render(request, 'service_list.html',
                   dict(project=contacts, groupName=group_name, project_name=project_name, svc_res=q))
+
+
+@login_required
+def resource_list(request):
+    res_name = request.GET.get('res_name')
+    res_obj = Resources.objects.filter(name=res_name).first()
+    res_list = Resources.objects.all()
+
+    q = SVCResources.objects.filter(res__name=res_name).all()
+
+    return render(request, 'resource_list.html',
+                  dict(res_list=res_list, res_obj=res_obj, svc_res=q))

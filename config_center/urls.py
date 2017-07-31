@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from config_center.views import service_list
+from config_center.views import service_list, resource_list
 
 urlpatterns = [
     url(r'^index/$', service_list),
     url(r'^services/$', service_list, name='service_list'),
+    url(r'^resources/$', resource_list, name='resource_list'),
 ]

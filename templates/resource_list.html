@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action="{% url 'resource_list' %}" method="get">
+    <div class="btn-group" role="group">
+        {% for res in res_list %}
+            <button type="submit" class="btn btn-default" name="res_name" value="{{ res.name }}">{{ res.name }}</button>
+        {% endfor %}
+    </div>
+</form>
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5> 资源信息 </h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="feed-activity-list">
+                        {% if res_obj %}
+                            <div class="feed-element">
+                                <div class="media-body">
+                                    <strong>{{ res_obj.name }}</strong><br>
+                                    <small class="text-muted">{{ res_obj.comment }} - {{ res_obj.category }}/{{ res_obj.type.name }}</small>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins" id="all">
+                <div class="ibox-title">
+                    <h5> Services 信息</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="feed-activity-list">
+                        {% for svc in svc_res %}
+                            <div class="feed-element">
+                                <div class="media-body">
+                                    <strong><a href="{% url 'service_list' %}?projectName={{ svc.svc.name }}">{{ svc.svc.name }}</a></strong><br>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
