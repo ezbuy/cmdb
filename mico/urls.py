@@ -36,4 +36,5 @@ urlpatterns = [
     url(r'^workflow/', include('workflow.urls')),
     url(r'^alert/', include('alert.urls')),
     url(r'^users/', include('users.urls')),
+    url(r'^configcenter/', include('config_center.urls')),
 ]

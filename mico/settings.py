@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'workflow',
     'alert',
     'users',
+    'config_center',
 ]
 
 MIDDLEWARE_CLASSES = [
