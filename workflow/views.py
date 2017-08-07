@@ -8,7 +8,7 @@ from django.db.models import Q
 from salt_api.api import SaltApi
 from asset.models import gogroup,svn,minion,GOTemplate,goservices,gostatus,UserProfile
 from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo
-from mico.settings import svn_gotemplate_local_path,webpage_host,svn_host,svn_repo_url
+from mico.settings import svn_gotemplate_local_path,webpage_host,svn_host,svn_repo_url,m_webpage_host
 from asset.utils import dingding_robo
 import json
 import uuid
@@ -274,12 +274,20 @@ def handle_tickets(request):
                 result = [{'HandleTasks':'The task_id handle to failed!'}]
     elif content['ticket_type'] == 'webpage':
         try:
-            data = {
-                'client':'local',
-                'tgt': webpage_host,
-                'fun':'cmd.script',
-                'arg':['salt://scripts/webpage.py','"%s"' % str(content['site_name'])] 
-            }
+            if content['site_name'] in ['ezbuy_sg','ezbuy_my','ezbuy_co_id','ezbuy_co_th']:
+                data = {
+                    'client':'local',
+                    'tgt': webpage_host,
+                    'fun':'cmd.script',
+                    'arg':['salt://scripts/webpage.py','"%s"' % str(content['site_name'])]
+                }
+            else:
+                data = {
+                    'client': 'local',
+                    'tgt': m_webpage_host,
+                    'fun': 'cmd.script',
+                    'arg': ['salt://scripts/webpage.py', '"%s"' % str(content['site_name'])]
+                }
             salt_api.salt_cmd(data)
         except Exception, e:
             print e

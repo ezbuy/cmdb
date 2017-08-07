@@ -187,6 +187,7 @@ svn_repo_url = 'http://svn.abc.com/svn/'
 
 ##webpage
 webpage_host = 't-slq-web-1'
+m_webpage_host = 't-slq-web-1'
 
 ##gitlab
 gitlab_url = 'http://abc.com'
