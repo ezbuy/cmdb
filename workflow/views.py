@@ -274,21 +274,31 @@ def handle_tickets(request):
                 result = [{'HandleTasks':'The task_id handle to failed!'}]
     elif content['ticket_type'] == 'webpage':
         try:
-            if content['site_name'] in ['ezbuy_sg','ezbuy_my','ezbuy_co_id','ezbuy_co_th']:
+            hsg_site = []
+            aws_site = []
+            for site in content['site_name']:
+                if site in ['ezbuy_sg','ezbuy_my','ezbuy_co_id','ezbuy_co_th']:
+                    hsg_site.append(site)
+                else:
+                    aws_site.append(site)
+            if hsg_site:
                 data = {
                     'client':'local',
                     'tgt': webpage_host,
                     'fun':'cmd.script',
-                    'arg':['salt://scripts/webpage.py','"%s"' % str(content['site_name'])]
+                    'arg': ['salt://scripts/webpage.py', '"%s"' % str(hsg_site)]
                 }
-            else:
+                salt_api.salt_cmd(data)
+
+            if aws_site:
                 data = {
                     'client': 'local',
                     'tgt': m_webpage_host,
                     'fun': 'cmd.script',
-                    'arg': ['salt://scripts/webpage.py', '"%s"' % str(content['site_name'])]
+                    'arg': ['salt://scripts/webpage.py', '"%s"' % str(aws_site)]
                 }
-            salt_api.salt_cmd(data)
+                salt_api.salt_cmd(data)
+
         except Exception, e:
             print e
             handle_result = 1
