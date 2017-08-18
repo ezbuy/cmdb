@@ -195,13 +195,13 @@ gitlab_private_token = 'sdadasdadwwe'
 
 ##jenkins
 jenkins_url = {
-    'uat':'http://abc.com/job/uat/',
-    'uat_aws':'http://abc.com/job/uat_aws/',
+    'uat':['http://abc.com/job/uat/','http://abc.com/job/uat2/'],
+    'uat_aws':['http://abc.com/job/uat_aws/'],
     'deploy': 'http://abc.com/job/deploy/'
 }
 jenkins_webhook_url = {
-    'uat':'http://abc.com/project/uat',
-    'uat_aws':'http://abc.com/project/uat_aws',
+    'uat':['http://abc.com/project/uat','http://abc.com/project/uat2'],
+    'uat_aws':['http://abc.com/project/uat_aws'],
     'deploy':'http://abc.com/project/deploy'
 }
 jenkins_username = 'abc'
