@@ -79,7 +79,8 @@ def existGitlabProject(project_name,uat_env):
 def jenkins_create_job(project,uat_env):
     try:
         if uat_env in ['uat','uat_aws']:
-            for url in [jenkins_url[uat_env],jenkins_url['deploy']]:
+            jenkins_url[uat_env].append(jenkins_url['deploy'])
+            for url in jenkins_url[uat_env]:
                 j = Jenkins(url, username=jenkins_username, password=jenkins_password)
                 if not j.has_job(project):
                     job = j.copy_job('compile_template', project)
