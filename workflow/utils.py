@@ -32,7 +32,8 @@ def existGitlabProject(project_name,uat_env):
                     print '----------hooks_list',hooks_list
                     try:
                         if uat_env in ['uat', 'uat_aws']:
-                            for hook in [jenkins_webhook_url[uat_env],jenkins_webhook_url['deploy']]:
+                            jenkins_webhook_url[uat_env].append(jenkins_webhook_url['deploy'])
+                            for hook in jenkins_webhook_url[uat_env]:
                                 hook = hook + '/' + project_name
                                 webhook_num = 0
                                 print hook
