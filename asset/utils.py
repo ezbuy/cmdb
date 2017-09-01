@@ -42,23 +42,24 @@ def update_rev_latest(name, rev):
 
 def get_service_status(service_name):
     # Go Service model instance
-    _srv = goservices.objects.filter(name=service_name).first()
+    _srv = goservices.objects.filter(name=service_name)
     if not _srv:
         return False
 
     # Supervisord model instance
-    _svd = gostatus.objects.filter(hostname__ip=_srv.saltminion.ip).first()
-    try:
-        s = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (_svd.supervisor_username, _svd.supervisor_password,
-                                                          _svd.supervisor_host, _svd.supervisor_port))
-        info = s.supervisor.getProcessInfo(service_name)
-        if info['statename'] == 'RUNNING':
-            return True
-        else:
+    for i in _srv:
+        _svd = gostatus.objects.filter(hostname=i.saltminion.id).first()
+        try:
+            s = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (_svd.supervisor_username, _svd.supervisor_password,
+                                                              _svd.supervisor_host, _svd.supervisor_port))
+            info = s.supervisor.getProcessInfo(service_name)
+            if info['statename'] == 'RUNNING':
+                return True
+            else:
+                return False
+        except Exception, e:
+            print e
             return False
-    except Exception, e:
-        print e
-        return False
 
 
 class goPublish:
@@ -197,13 +198,13 @@ class goPublish:
         if self.svn_revision == 'head':
             # ROLLBACK to last successful revision if failed
             if not get_service_status(services):
-                rev_last = get_rev_latest(services)
+                rev_last = get_rev_latest(self.name)
                 if rev_last:
                     result += self.deployGo(self.name, self.services, self.username, self.ip, self.tower_url, self.phone_number, svn_revision=rev_last)
             else:
                 try:
                     # rev_head = get_rev_head(name)
-                    update_rev_latest(services, rev_head)
+                    update_rev_latest(self.name, rev_head)
                 except Exception as e:
                     print str(e)
                     result.append({'save head revision FAILED': str(e)})
