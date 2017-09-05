@@ -23,22 +23,30 @@ def publish_logs(user,ip,url,result):
     publishLog.objects.create(user=user, remote_ip=ip, publish_url=url, publish_result=result)
 
 
-def get_rev_latest(name):
-    rl = models.GoServiceRevision.objects.filter(name=name).order_by('-id').first()
+def get_rev_latest(name, type):
+    if type == 'GoService':
+        rl = models.GoServiceRevision.objects.filter(name=name).order_by('-id').first()
+    elif type == 'GoTemplate':
+        rl = models.GoTemplateRevision.objects.filter(name=name).order_by('-id').first()
     return rl.last_rev if rl else None
 
 
-def update_rev_latest(name, rev):
+def update_rev_latest(name, rev, type):
     # rl = models.GoServiceRevision.objects.filter(name=name).first()
     # if not rl:
     #     rl = GoServiceRevision()
-
-    rl = GoServiceRevision()
-    rl.name = name
-    rl.last_rev = rev
-    rl.last_clock = int(time.time())
-    rl.save()
-
+    if rev and type == 'GoService':
+        rl = GoServiceRevision()
+        rl.name = name
+        rl.last_rev = rev
+        rl.last_clock = int(time.time())
+        rl.save()
+    elif rev and type == 'GoTemplate':
+        rl = GoTemplateRevision()
+        rl.name = name
+        rl.last_rev = rev
+        rl.last_clock = int(time.time())
+        rl.save()
 
 def get_service_status(service_name):
     # Go Service model instance
@@ -62,6 +70,18 @@ def get_service_status(service_name):
             return False
 
 
+def get_svn_revision(svn_log):
+    try:
+        for _, v in svn_log.items():
+            m = re.search('---+\nr(?P<rev>\d+)\s+\|\s+', v)
+            if m:
+                rev_head = m.group('rev')
+                return rev_head
+    except Exception as e:
+        print str(e)
+        return False
+
+
 class goPublish:
     def __init__(self,env):
         self.env = env
@@ -72,7 +92,7 @@ class goPublish:
     def getNowTime(self):
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(time.time()))
 
-    def deployGo(self,name,services,username,ip,tower_url,phone_number,svn_revision='head'):
+    def deployGo(self,name,services,username,ip,tower_url,phone_number,svn_revision='head',gotemplate_svn_revision='head'):
 
         self.name = name          # Go project name
         self.services = services  # Go service name
@@ -81,6 +101,7 @@ class goPublish:
         self.tower_url = tower_url
         self.phone_number = phone_number
         self.svn_revision = svn_revision
+        self.gotemplate_svn_revision = gotemplate_svn_revision
         hostInfo = {}
         result = []
 
@@ -90,39 +111,26 @@ class goPublish:
 
         services_info = goservices.objects.filter(env=self.env).filter(name=self.services)
         for s in services_info:
-            if self.svn_revision == 'head':
-                go_template = GOTemplate.objects.filter(project=s.group).filter(hostname=s.saltminion).first()
-                ####update conf file#########
-                svn_gotemplate = self.saltCmd.cmd('%s' % s.saltminion.saltname, 'cmd.run',
-                    ['svn update --username=%s --password=%s --non-interactive %s'
-                    % (go_template.username, go_template.password, go_template.localpath)])
-                result.append(svn_gotemplate)
+            go_template = GOTemplate.objects.filter(project=s.group).filter(hostname=s.saltminion).first()
+
+            # update conf file
+            svn_gotemplate = self.saltCmd.cmd('%s' % s.saltminion.saltname, 'cmd.run',
+                ['svn update -r%s --username=%s --password=%s --non-interactive %s && svn log -l 1 --username=%s --password=%s --non-interactive %s'
+                % (self.gotemplate_svn_revision, go_template.username, go_template.password, go_template.localpath, go_template.username, go_template.password, go_template.localpath)])
+            result.append(svn_gotemplate)
             for p in self.svnInfo:
                 if p.project.name == self.name:
                     deploy_pillar = "pillar=\"{'project':'" + self.name + "'}\""
                     os.system("salt '%s' state.sls logs.gologs %s" % (s.saltminion.saltname, deploy_pillar))
                     currentTime = self.getNowTime()
 
-                    ####move go binary###########
+                    # move go binary
                     self.saltCmd.cmd('%s' % s.saltminion.saltname, 'cmd.run',['mv %s %s/%s_%s' % (p.executefile, p.movepath,self.name, currentTime)])
-                    ####deploy go project########
+                    # deploy go project
                     svn = self.saltCmd.cmd('%s' % s.saltminion.saltname, 'cmd.run',
                         ['svn update -r%s --username=%s --password=%s --non-interactive %s && svn log -l 1 --username=%s --password=%s --non-interactive %s'
                         % (self.svn_revision,p.username, p.password, p.localpath, p.username, p.password, p.localpath)])
-
-                    # get head revision from svn
-                    if self.svn_revision == 'head':
-                        try:
-                            for _, v in svn.items():
-                                m = re.search('---+\nr(?P<rev>\d+)\s+\|\s+', v)
-                                if m and rev_head is None:
-                                    rev_head = m.group('rev')
-                                    break
-                        except Exception as e:
-                            print str(e)
-                            result.append({'get head-revision FAILED': str(e)})
                     result.append(svn)
-
             restart = self.saltCmd.cmd('%s' % s.saltminion.saltname,'cmd.run',['supervisorctl restart %s' % self.services])
             result.append(restart)
 
@@ -142,15 +150,19 @@ class goPublish:
         if self.svn_revision == 'head':
             # ROLLBACK to last successful revision if failed
             if not get_service_status(services):
-                rev_last = get_rev_latest(self.name)
-                if rev_last:
+                goservice_rev_last = get_rev_latest(self.name, 'GoService')
+                gotemplate_rev_last = get_rev_latest(self.name, 'GoTemplate')
+                if goservice_rev_last and gotemplate_rev_last:
                     revert_info = {'Warning':'#####################Roll back to the previous version######################'}
                     result.append(revert_info)
-                    result += self.deployGo(self.name, self.services, self.username, self.ip, self.tower_url, self.phone_number, svn_revision=rev_last)
+                    result += self.deployGo(self.name, self.services, self.username, self.ip, self.tower_url, self.phone_number, svn_revision=goservice_rev_last, gotemplate_svn_revision=gotemplate_rev_last)
             else:
                 try:
-                    # rev_head = get_rev_head(name)
-                    update_rev_latest(self.name, rev_head)
+                    # get head revision from svn
+                    rev_head = get_svn_revision(svn)
+                    update_rev_latest(self.name, rev_head, 'GoService')
+                    gotemplate_rev_head = get_svn_revision(svn_gotemplate)
+                    update_rev_latest(self.name, gotemplate_rev_head, 'GoTemplate')
                 except Exception as e:
                     print str(e)
                     result.append({'save head revision FAILED': str(e)})

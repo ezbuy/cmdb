@@ -152,6 +152,13 @@ class GoServiceRevision(models.Model):
     def __unicode__(self):
         return self.name
 
+class GoTemplateRevision(models.Model):
+    name = models.CharField(max_length=128, verbose_name=u'Go Project')
+    last_rev = models.IntegerField(verbose_name=u"latest successful revision")
+    last_clock = models.IntegerField(verbose_name=u"latest successful timestamp")
+
+    def __unicode__(self):
+        return self.name
 
 
 class goconf(models.Model):
