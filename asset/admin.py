@@ -34,7 +34,9 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user','phone_number')
 
 class GoServiceRevisionAdmin(admin.ModelAdmin):
-    list_display = ('name','last_rev','last_clock')
+    list_display = ('name','last_rev','last_clock', 'gotemplate_last_rev')
+
+
 
 admin.site.register(IDC)
 admin.site.register(Asset,assetAdmin)
