@@ -34,10 +34,9 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user','phone_number')
 
 class GoServiceRevisionAdmin(admin.ModelAdmin):
-    list_display = ('name','last_rev','last_clock')
+    list_display = ('name','last_rev','last_clock', 'gotemplate_last_rev')
 
-class GoTemplateRevisionAdmin(admin.ModelAdmin):
-    list_display = ('name','last_rev','last_clock')
+
 
 admin.site.register(IDC)
 admin.site.register(Asset,assetAdmin)
@@ -54,4 +53,3 @@ admin.site.register(crontab_svn,crontabSVNAdmin)
 admin.site.register(GOTemplate,gotemplateAdmin)
 admin.site.register(UserProfile,UserProfileAdmin)
 admin.site.register(GoServiceRevision,GoServiceRevisionAdmin)
-admin.site.register(GoTemplateRevision,GoTemplateRevisionAdmin)

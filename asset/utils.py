@@ -23,30 +23,31 @@ def publish_logs(user,ip,url,result):
     publishLog.objects.create(user=user, remote_ip=ip, publish_url=url, publish_result=result)
 
 
-def get_rev_latest(name, type):
-    if type == 'GoService':
-        rl = models.GoServiceRevision.objects.filter(name=name).order_by('-id').first()
-    elif type == 'GoTemplate':
-        rl = models.GoTemplateRevision.objects.filter(name=name).order_by('-id').first()
-    return rl.last_rev if rl else None
+def get_rev_latest(name):
+
+    rl = models.GoServiceRevision.objects.filter(name=name).order_by('-id').first()
+
+    if rl:
+        result = []
+        result.append(rl.last_rev)
+        result.append(rl.gotemplate_last_rev)
+        return result
+    else:
+        return False
 
 
-def update_rev_latest(name, rev, type):
+def update_rev_latest(name, goproject_rev, gotemplate_rev):
     # rl = models.GoServiceRevision.objects.filter(name=name).first()
     # if not rl:
     #     rl = GoServiceRevision()
-    if rev and type == 'GoService':
-        rl = GoServiceRevision()
-        rl.name = name
-        rl.last_rev = rev
-        rl.last_clock = int(time.time())
-        rl.save()
-    elif rev and type == 'GoTemplate':
-        rl = GoTemplateRevision()
-        rl.name = name
-        rl.last_rev = rev
-        rl.last_clock = int(time.time())
-        rl.save()
+
+    rl = GoServiceRevision()
+    rl.name = name
+    rl.last_rev = goproject_rev
+    rl.gotemplate_last_rev = gotemplate_rev
+    rl.last_clock = int(time.time())
+    rl.save()
+
 
 def get_service_status(service_name):
     # Go Service model instance
@@ -150,19 +151,18 @@ class goPublish:
         if self.svn_revision == 'head':
             # ROLLBACK to last successful revision if failed
             if not get_service_status(services):
-                goservice_rev_last = get_rev_latest(self.name, 'GoService')
-                gotemplate_rev_last = get_rev_latest(self.name, 'GoTemplate')
-                if goservice_rev_last and gotemplate_rev_last:
+                goservice_rev_last = get_rev_latest(self.name)
+                print '#####goservice_rev_last.gotemplate_last_rev',goservice_rev_last
+                if goservice_rev_last:
                     revert_info = {'Warning':'#####################Roll back to the previous version######################'}
                     result.append(revert_info)
-                    result += self.deployGo(self.name, self.services, self.username, self.ip, self.tower_url, self.phone_number, svn_revision=goservice_rev_last, gotemplate_svn_revision=gotemplate_rev_last)
+                    result += self.deployGo(self.name, self.services, self.username, self.ip, self.tower_url, self.phone_number, svn_revision=goservice_rev_last[0], gotemplate_svn_revision=goservice_rev_last[1])
             else:
                 try:
                     # get head revision from svn
                     rev_head = get_svn_revision(svn)
-                    update_rev_latest(self.name, rev_head, 'GoService')
                     gotemplate_rev_head = get_svn_revision(svn_gotemplate)
-                    update_rev_latest(self.name, gotemplate_rev_head, 'GoTemplate')
+                    update_rev_latest(self.name, rev_head, gotemplate_rev_head)
                 except Exception as e:
                     print str(e)
                     result.append({'save head revision FAILED': str(e)})
