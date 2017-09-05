@@ -243,8 +243,8 @@ def handle_tickets(request):
                         obj = GOTemplate(
                             username=svn_username,
                             password=svn_password,
-                            repo=svn_gotemplate_repo,
-                            localpath=svn_gotemplate_local_path,
+                            repo=svn_gotemplate_repo + content['project'],
+                            localpath=svn_gotemplate_local_path + content['project'],
                             env=1,
                             hostname=minion_host,
                             project=project)
