@@ -113,11 +113,13 @@ class goPublish:
         services_info = goservices.objects.filter(env=self.env).filter(name=self.services)
         for s in services_info:
             go_template = GOTemplate.objects.filter(project=s.group).filter(hostname=s.saltminion).first()
-
             # update conf file
-            svn_gotemplate = self.saltCmd.cmd('%s' % s.saltminion.saltname, 'cmd.run',
-                ['svn update -r%s --username=%s --password=%s --non-interactive %s && svn log -l 1 --username=%s --password=%s --non-interactive %s'
-                % (self.gotemplate_svn_revision, go_template.username, go_template.password, go_template.localpath, go_template.username, go_template.password, go_template.localpath)])
+            if go_template:
+                svn_gotemplate = self.saltCmd.cmd('%s' % s.saltminion.saltname, 'cmd.run',
+                    ['svn update -r%s --username=%s --password=%s --non-interactive %s && svn log -l 1 --username=%s --password=%s --non-interactive %s'
+                    % (self.gotemplate_svn_revision, go_template.username, go_template.password, go_template.localpath, go_template.username, go_template.password, go_template.localpath)])
+            else:
+                svn_gotemplate = {'Warning':'#####################Not gotemplate file######################'}
             result.append(svn_gotemplate)
             for p in self.svnInfo:
                 if p.project.name == self.name:
