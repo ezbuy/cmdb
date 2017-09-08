@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+{% load cmdbtags %}
 
 
  <div class="wrapper wrapper-content animated fadeInRight">
@@ -24,39 +24,29 @@
                 </div>
 
                 <div class="ibox-content">
-                    <form action="{% url 'revert' %}" method="get">
+                    <form action="{% url 'revert' %}" method="post">
 
                         <table class="table table-striped table-bordered table-hover " id="editable" name="editable">
                             <thead>
                                 <tr>
-                                    <th class="text-center">
-                                        <input id="checkall" type="radio" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('asset_form')">
-                                    </th>
+                                    <th class="text-center"></th>
                                     <th class="text-center"> 实例名称 </th>
-                                    <th class="text-center"> 运行环境 </th>
-                                    <th class="text-center"> salt minion </th>
+                                    <th class="text-center"> 版本号 </th>
+                                    <th class="text-center"> 发布时间 </th>
 
                                 </tr>
                             </thead>
                             <tbody>
-                            {% for env,f in fileName.items %}
-                                {% for salt,version in f.items %}
-                                    {% for instance in version %}
-                                <tr class="gradeX">
-                                    <td class="text-center"  data-editable='false'>
-                                        <input name="id" value="{{ env }},{{ instance }},{{ salt }}" type="radio" class="i-checks">
-                                    </td>
-                                        <td class="text-center">{{ instance }}</a></td>
-                                        {% if env == '2' %}
-                                            <td class="text-center">测试环境</a></td>
-                                        {% elif env == '1' %}
-                                            <td class="text-center">生产环境</a></td>
-                                        {% endif %}
-                                        <td class="text-center">{{ salt }}</a></td>
-                                    {% endfor %}
+                                {% for i in info %}
+                                    <tr class="gradeX">
+                                        <td class="text-center"  data-editable='false'>
+                                            <input name="info" value="{{ i.name }},{{ i.last_rev }},{{ i.gotemplate_last_rev }},{{ services }},{{ env }}" type="radio" class="i-checks">
+                                        </td>
+                                        <td class="text-center">{{ i.name }}</a></td>
+                                        <td class="text-center">{{ i.last_rev }}</a></td>
+                                        <td class="text-center">{{ i.last_clock | print_timestamp}}</a></td>
                                 {% endfor %}
-                                </tr>
-                            {% endfor %}
+                                    </tr>
                             </tbody>
                         </table>
                         <div class="row">

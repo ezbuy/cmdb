@@ -4,7 +4,7 @@
 
 
 <div class="text-center" xmlns="http://www.w3.org/1999/html">
-<form class="col-lg-12" action="{% url 'revert' %}" method="POST" id="submitform">
+<form class="col-lg-12" action="{% url 'get_go_revert_list' %}" method="POST" id="submitform">
     <fieldset class="form-group">
     <label for="formGroupExampleInput">项目名称</label>
     <select id="project" class="selectpicker form-control" data-live-search="true" name="project">
@@ -28,7 +28,7 @@
         <select id="services" class="selectpicker form-control" data-live-search="true" name="services"></select>
     </fieldset>
 
-    <fieldset class="form-group">
+    <!--fieldset class="form-group">
         <label for="formGroupExampleInput">请输入SVN回滚版本号</label>
         <input type="text" class="form-control" id="svnRevision" placeholder="请输入你需要回滚的版本号(如果回滚到上一个COMMIT,请输入1)" name="svnRevision" required="" >
     </fieldset>
@@ -36,10 +36,10 @@
     <fieldset class="form-group">
         <label for="formGroupExampleInput2">再次输入SVN回滚版本号</label>
         <input type="text" class="form-control" id="svnRevisionAgain" placeholder="请再次确认你需要回滚的版本号" name="svnRevisionAgain" required="" >
-    </fieldset>
+    </fieldset-->
 
     <br/>
-    <input class="btn btn-danger" id="sub" type="submit" value="deploy"  disabled="disabled">
+    <input class="btn btn-danger" id="sub" type="submit" value="Next"  disabled="disabled">
 </form>
 </div>
 
@@ -75,22 +75,22 @@
     }
 
 
-    $("#submitform").on("submit",function(e){
-        var svnRevision = document.getElementById("svnRevision").value;
-        var svnRevisionAgain = document.getElementById("svnRevisionAgain").value;
-
-
-        if (!isNaN(svnRevision)) {
-            if (svnRevision != svnRevisionAgain) {
-                alert('Please enter the correct revision,try again....')
-                return false
-            }
-        }
-        else{
-            alert('Please input a number.')
-            return false
-        }
-    })
+{#    $("#submitform").on("submit",function(e){#}
+{#        var svnRevision = document.getElementById("svnRevision").value;#}
+{#        var svnRevisionAgain = document.getElementById("svnRevisionAgain").value;#}
+{##}
+{##}
+{#        if (!isNaN(svnRevision)) {#}
+{#            if (svnRevision != svnRevisionAgain) {#}
+{#                alert('Please enter the correct revision,try again....')#}
+{#                return false#}
+{#            }#}
+{#        }#}
+{#        else{#}
+{#            alert('Please input a number.')#}
+{#            return false#}
+{#        }#}
+{#    })#}
 </script>
 
 {% endblock %}

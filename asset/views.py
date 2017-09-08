@@ -110,57 +110,36 @@ def goRevertResult(request):
     result = Publish.go_revert(data)
     return HttpResponse(result)
 
+
 @login_required
-def goRevertResulttwo(request):
-    data = request.GET['goProject']
-    env = request.GET['env']
-    revertFile = {}
-    result = {}
-    hostname = []
-    value = 0
-
-
-    for obj in goservices.objects.filter(env=env):
-        if obj.group.name == data:
-            hostname.append(str(obj.saltminion.saltname))
-
-    hostname = list(set(hostname))
-    for h in hostname:
-        fileName = commands.getstatusoutput('salt %s cmd.run "ls -t /tmp/%s | head -n 10"' % (h,data))[1].split()[1:]
-        if 'no' in fileName or 'No' in fileName or 'not' in fileName or 'Not' in fileName:   #minion is offline
-            pass
-        else:
-            value=1
-            revertFile[h]=fileName
-
-    if value == 1:
-        result[env] = revertFile
-    else:
-        result = {}
-
-    return render(request,'gorevert2.html',{'fileName':result})
-
-
+def get_go_revert_list(request):
+    env = request.POST['env']
+    project = request.POST['project']
+    services = request.POST['services']
+    info = GoServiceRevision.objects.filter(name=project).order_by('-id')[0:10]
+    return render(request,'get_go_revert_list.html',{'info':info, 'env':env, 'services': services})
 
 @login_required
 @deny_resubmit(page_key='revert_go')
 def revert(request):
-    if not request.POST.keys():
-        mes = 'argv is error,not revert version!!'
-        return render(request,'goRevertResult.html', {'mes': mes})
+    if not request.POST.getlist('info'):
+        mes = [{'Error':'Not rollback version number!!'}]
+        return render(request,'getdata.html', {'result': mes})
 
-    svn_revision = request.POST['svnRevision']
-    env = request.POST['env']
-    project = request.POST['project']
-    services = request.POST['services']
+    info = request.POST['info']
+    print info
+
+    info = info.split(',')
+    project = info[0]
+    go_reversion = info[1]
+    gotemplate_revision = info[2]
+    service = info[3]
+    env = info[4]
     ip = request.META['REMOTE_ADDR']
     tower_url = 'http://tower.im'
 
-    if int(svn_revision) == 1:
-        svn_revision = 'PREV'
-
     Publish = goPublish(env)
-    mes = Publish.deployGo(project,services,request.user,ip,tower_url,request.POST['phone_number'],svn_revision)
+    mes = Publish.deployGo(project,service,request.user,ip,tower_url,request.POST['phone_number'],go_reversion,gotemplate_revision)
     return render(request, 'getdata.html', {'result': mes})
 
 
