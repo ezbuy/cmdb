@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+{% load cmdbtags %}
 
 
  <div class="wrapper wrapper-content animated fadeInRight">
@@ -44,7 +44,7 @@
                                         </td>
                                         <td class="text-center">{{ i.name }}</a></td>
                                         <td class="text-center">{{ i.last_rev }}</a></td>
-                                        <td class="text-center">{{ i.last_clock }}</a></td>
+                                        <td class="text-center">{{ i.last_clock | print_timestamp}}</a></td>
                                 {% endfor %}
                                     </tr>
                             </tbody>

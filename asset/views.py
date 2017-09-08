@@ -117,16 +117,13 @@ def get_go_revert_list(request):
     project = request.POST['project']
     services = request.POST['services']
     info = GoServiceRevision.objects.filter(name=project).order_by('-id')[0:10]
-    print project,env,services
-    print '###info###',info
     return render(request,'get_go_revert_list.html',{'info':info, 'env':env, 'services': services})
 
 @login_required
 @deny_resubmit(page_key='revert_go')
 def revert(request):
-    print '########',request.POST.getlist
     if not request.POST.getlist('info'):
-        mes = [{'Error':'Not revert version!!'}]
+        mes = [{'Error':'Not rollback version number!!'}]
         return render(request,'getdata.html', {'result': mes})
 
     info = request.POST['info']

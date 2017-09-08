@@ -2,7 +2,7 @@
 
 from django.contrib.auth.models import Group
 from django import template
-
+import datetime
 register = template.Library()
 
 
@@ -16,3 +16,10 @@ def has_group(user, group_name):
         print e
         return False
 
+@register.filter(name='print_timestamp')
+def print_timestamp(timestamp):
+    try:
+        ts = float(timestamp)
+    except ValueError:
+        return None
+    return datetime.datetime.fromtimestamp(ts)
