@@ -9,7 +9,7 @@ from django.contrib import auth
 import functools
 from django.db import connection
 from django.contrib.auth.models import User
-from mico.settings import hsg_consul,aws_consul
+from mico.settings import consul_api
 import requests
 
 
@@ -315,13 +315,13 @@ def goservice_info():
 @login_author
 def get_consul_kv():
     try:
+        url = None
         location = request.json.get('location')
         key = request.json.get('key')
-        if location == 'hsg' and key:
-            url = hsg_consul + key
-        elif location == 'aws' and key:
-            url = aws_consul + key
-        else:
+        for l,k in consul_api.items():
+            if location == l and key:
+                url = k + key
+        if not url:
             return jsonify({'result': 'wrong location or key name!!'})
         headers = {'Accept': 'application/json'}
         result = requests.get('%s?raw=True' % url, headers=headers).content

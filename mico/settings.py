@@ -213,5 +213,5 @@ aac_api = 'http://192.168.199.178:9090/api/v1.0'
 aac_headers = {'X-AUTH-TOKEN': 'd14b7042a2af18a9ffe15a0da343497f'}
 
 ##consul
-hsg_consul = 'http://192.168.199.64:8500/v1/kv/'
-aws_consul = 'http://192.168.199.64:8500/v1/kv/'
+consul_api = {'hsg':'http://192.168.199.64:8500/v1/kv/',
+    'aws':'http://192.168.199.64:8500/v1/kv/'}
