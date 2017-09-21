@@ -62,13 +62,13 @@ def get_service_status(service_name):
             s = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (_svd.supervisor_username, _svd.supervisor_password,
                                                               _svd.supervisor_host, _svd.supervisor_port))
             info = s.supervisor.getProcessInfo(service_name)
-            if info['statename'] == 'RUNNING':
-                return True
-            else:
+            if info['state'] in [30,100,200,1000]:
                 return False
+            else:
+                return True
         except Exception, e:
             print e
-            return False
+            return True
 
 
 def get_svn_revision(svn_log):
