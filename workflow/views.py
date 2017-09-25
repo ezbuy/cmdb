@@ -284,6 +284,7 @@ def handle_tickets(request):
             if hsg_site:
                 data = {
                     'client':'local',
+                    'expr_form':'list',
                     'tgt': webpage_host,
                     'fun':'cmd.script',
                     'arg': ['salt://scripts/webpage.py', '"%s"' % str(hsg_site)]
@@ -293,6 +294,7 @@ def handle_tickets(request):
             if aws_site:
                 data = {
                     'client': 'local',
+                    'expr_form': 'list',
                     'tgt': m_webpage_host,
                     'fun': 'cmd.script',
                     'arg': ['salt://scripts/webpage.py', '"%s"' % str(aws_site)]
