@@ -5,6 +5,7 @@ from asset.models import *
 
 class goServicesAdmin(admin.ModelAdmin):
     list_display = ('ip','name','env','group','saltminion','owner','has_statsd','has_sentry','comment')
+    search_fields = ['name','owner']
 
 class svnAdmin(admin.ModelAdmin):
     list_display = ('username','password','repo','localpath','movepath','revertpath','executefile','project')
@@ -26,15 +27,18 @@ class crontabSVNAdmin(admin.ModelAdmin):
 
 class minionAdmin(admin.ModelAdmin):
     list_display = ('saltname','ip')
+    search_fields = ['saltname']
 
 class gotemplateAdmin(admin.ModelAdmin):
     list_display = ('username','password','repo','localpath','env','project','hostname')
+    search_fields = ['repo']
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user','phone_number')
 
 class GoServiceRevisionAdmin(admin.ModelAdmin):
     list_display = ('name','last_rev','last_clock', 'gotemplate_last_rev')
+    search_fields = ['name']
 
 
 
