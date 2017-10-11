@@ -12,7 +12,7 @@ from salt_api.api import SaltApi
 from mico.settings import dingding_api,crontab_api,dingding_robo_url
 from functools import wraps
 from django.contrib.auth.models import User
-
+from ipaddress import IPv4Address, IPv4Network
 salt_api = SaltApi()
 
 
@@ -342,13 +342,19 @@ def syncAsset():
     if result != 0:
         result = result['return']
 
-    print result
+    #print result
 
     try:
+        subnet = IPv4Network(u'172.16.0.0/12')
         for r in result:
             for host,info in r.items():
+                if '127.0.0.1' in info['ipv4']:
+                    info['ipv4'].remove('127.0.0.1')
+                for h in info['ipv4'][:]:
+                    ips = IPv4Address(u'%s' % h)
+                    if ips in subnet:
+                        info['ipv4'].remove(h)
                 ip = info['ipv4']
-
                 hostname_id = host
                 cpu = info['cpu_model']
                 memory = info['mem_total']
