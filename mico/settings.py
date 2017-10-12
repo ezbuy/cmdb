@@ -215,3 +215,6 @@ aac_headers = {'X-AUTH-TOKEN': 'd14b7042a2af18a9ffe15a0da343497f'}
 ##consul
 consul_api = {'hsg':'http://192.168.199.64:8500/v1/kv/',
     'aws':'http://192.168.199.64:8500/v1/kv/'}
+
+##nginx api
+nginx_api = ['http://192.168.199.63:8081']
