@@ -3,6 +3,8 @@ from salt.client import LocalClient
 from www.models import *
 from celery.task import task
 from asset.utils import logs,dingding_robo
+from mico.settings import nginx_api
+import requests
 
 
 
@@ -22,29 +24,45 @@ class wwwFun:
 
 
 
-    def __nginx_backup(self,proxy_server,web_server,nginx_module,deploy_pillar):
-        self.proxy_server = proxy_server
-        self.web_server = web_server
-        self.nginx_module = nginx_module
-        self.deploy_pillar = deploy_pillar
+    def __nginx_backup(self,hosts,block_ip,block_server,nginx_upstream,is_block):
+        self.hosts = hosts
+        self.block_ip =block_ip
+        self.block_server = block_server
+        self.nginx_upstream = nginx_upstream
+        upstream_host = ''
 
-        try:  ##########nginx backup#######
+        try:
+            for ip in self.hosts:
+                if is_block == 1:
+                    upstream_host += 'server %s; ' % ip;
+                else:
+                    if len(self.hosts) == 1:
+                        upstream_host += 'server %s; ' % ip;
+                    elif ip != self.block_ip:
+                        upstream_host += 'server %s; ' % ip;
+            if not upstream_host:
+                print 'not upstream_host!!!!'
+                exit()
 
-            s, backup = commands.getstatusoutput("salt " + self.proxy_server + " state.sls queue=True " + self.nginx_module + " " + self.deploy_pillar)
-            self.f.write(backup)
-            self.f.flush()
-            self.result.append(backup)
+            for lb in nginx_api:
+                url = "%s/upstream/%s" % (lb, self.nginx_upstream)
+                r=requests.post(url,data=upstream_host)
+                self.f.write('curl ' + url)
+                self.f.write('\n\n\n\n\n')
+                self.f.flush()
+                if r.text != 'success':
+                    exit()
+                r = requests.get(url)
+                self.f.write(r.text)
+                self.f.flush()
 
-            if backup.find('Failed:     0') < 0:
-                print "!!!!!!!!!!!!!!!!!! [backup server] ERROR !!!!!!!!!!!!!!!!!!!"
-                return 1
             self.f.write('\n\n\n\n\n')
             return 0
-        except Exception, e:
+        except Exception,e:
             print e
             self.f.write('error')
             self.f.close()
-            dingding_robo(self.web_server, self.site, 'error', self.username, self.phone_number)
+            dingding_robo(self.block_server, self.site, 'is error', self.username, self.phone_number)
             logs(self.username, self.ip, self.site, 'Failed')
             return 1
 
@@ -148,42 +166,40 @@ class wwwFun:
         self.site = site
         self.action = action
         self.revision = revision
-        obj = webSite.objects.filter(env=self.env).filter(webSite=self.site)
+        info = webSite.objects.filter(env=self.env).get(webSite=self.site)
+        ip = []
+        for i in info.checkUrl.values(): ip.append(i['ip'])
 
 
+        for host in info.checkUrl.values():
 
-        for info in obj:
-            for host in info.checkUrl.values():
-                print host['host']
-                for m in info.state_module.values():
-                    deploy_pillar = "pillar=\"{'deployserver':'" + host['host'] + "', 'deployhost':'" + info.salt_pillar_host + "'}\""
-                    nginx_backup = self.__nginx_backup(info.lb_server,host['host'],m['state_module'],deploy_pillar)
-                    if nginx_backup == 1:
-                        self.f.write('error')
-                        exit()
-                if self.action in ['svn','revert']:
-                    svn_up = self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password,self.revision)
-                    if svn_up == 1:
-                        self.f.write('error')
-                        exit()
-                elif self.action == 'recycle':
-                    pass
-
-                recycle = self.__iis_recycle(host['host'],info.recycle_cmd,host['url'],self.action)
-                if recycle == 1:
+            print host['host']
+            for m in info.state_module.values():
+                nginx_backup = self.__nginx_backup(ip,host['ip'],host['host'],m['state_module'],0)
+                if nginx_backup == 1:
                     self.f.write('error')
                     exit()
-
-
-            for m in info.state_module.values():    ######nginx all online########
-                print m['state_module']
-                deploy_pillar = "pillar=\"{'deployserver':'none', 'deployhost':'none'}\""
-                status = self.__nginx_backup(info.lb_server,host['host'],m['state_module'],deploy_pillar)
-
-                if status == 1:
-                    logs(self.username, self.ip, self.site, 'Failed')
+            if self.action in ['svn','revert']:
+                svn_up = self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password,self.revision)
+                if svn_up == 1:
                     self.f.write('error')
                     exit()
+            elif self.action == 'recycle':
+                pass
+
+            recycle = self.__iis_recycle(host['host'],info.recycle_cmd,host['url'],self.action)
+            if recycle == 1:
+                self.f.write('error')
+                exit()
+
+
+        for m in info.state_module.values():    ######nginx all online########
+            status = self.__nginx_backup(ip,host['ip'],host['host'],m['state_module'],1)
+
+            if status == 1:
+                logs(self.username, self.ip, self.site, 'Failed')
+                self.f.write('error')
+                exit()
 
 
         self.f.write('done')

@@ -12,6 +12,7 @@ class salt_module(models.Model):
 class webUrl(models.Model):
     host = models.CharField(max_length=64)
     url = models.CharField(max_length=64)
+    ip = models.GenericIPAddressField()
     def __unicode__(self):
         return self.url
 
