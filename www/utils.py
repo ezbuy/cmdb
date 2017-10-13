@@ -4,6 +4,7 @@ from www.models import *
 from celery.task import task
 from asset.utils import logs,dingding_robo
 from mico.settings import nginx_api
+import requests
 
 
 
@@ -28,9 +29,8 @@ class wwwFun:
         self.block_ip =block_ip
         self.block_server = block_server
         self.nginx_upstream = nginx_upstream
-        self.is_block = is_block
         upstream_host = ''
-        
+
         try:
             for ip in self.hosts:
                 if is_block == 1:
@@ -45,19 +45,24 @@ class wwwFun:
                 exit()
 
             for lb in nginx_api:
-                s, r = commands.getstatusoutput('curl -d "%s" %s/upstream/%s' % (upstream_host,lb, self.nginx_upstream))
-                self.f.write(r)
+                url = "%s/upstream/%s" % (lb, self.nginx_upstream)
+                r=requests.post(url,data=upstream_host)
+                self.f.write('curl ' + url)
+                self.f.write('\n\n\n\n\n')
                 self.f.flush()
-                self.result.append(r)
-                if r != 'success':
+                if r.text != 'success':
                     exit()
+                r = requests.get(url)
+                self.f.write(r.text)
+                self.f.flush()
+
             self.f.write('\n\n\n\n\n')
             return 0
         except Exception,e:
             print e
             self.f.write('error')
             self.f.close()
-            dingding_robo(self.block_server, self.site, 'error', self.username, self.phone_number)
+            dingding_robo(self.block_server, self.site, 'is error', self.username, self.phone_number)
             logs(self.username, self.ip, self.site, 'Failed')
             return 1
 
@@ -189,7 +194,6 @@ class wwwFun:
 
 
         for m in info.state_module.values():    ######nginx all online########
-            print m['state_module']
             status = self.__nginx_backup(ip,host['ip'],host['host'],m['state_module'],1)
 
             if status == 1:
