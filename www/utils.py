@@ -47,16 +47,11 @@ class wwwFun:
             for lb in nginx_api:
                 url = "%s/upstream/%s" % (lb, self.nginx_upstream)
                 r=requests.post(url,data=upstream_host)
-                self.f.write('curl ' + url)
-                self.f.write('\n\n\n\n\n')
-                self.f.flush()
+
                 if r.text != 'success':
                     exit()
                 r = requests.get(url)
-                self.f.write(r.text)
-                self.f.flush()
-
-            self.f.write('\n\n\n\n\n')
+                print r.text
             return 0
         except Exception,e:
             print e
@@ -177,13 +172,18 @@ class wwwFun:
             for m in info.state_module.values():
                 nginx_backup = self.__nginx_backup(ip,host['ip'],host['host'],m['state_module'],0)
                 if nginx_backup == 1:
-                    self.f.write('error')
+                    self.f.write('Step 1: blocking nginx traffic is failed.\n')
                     exit()
+            self.f.write('Step 1: blocking nginx traffic is sucessful.\n')
+            self.f.flush()
             if self.action in ['svn','revert']:
                 svn_up = self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password,self.revision)
                 if svn_up == 1:
                     self.f.write('error')
                     exit()
+                else:
+                    self.f.write('Step 2: svn update is sucessful.\n')
+                    self.f.flush()
             elif self.action == 'recycle':
                 pass
 
@@ -191,6 +191,9 @@ class wwwFun:
             if recycle == 1:
                 self.f.write('error')
                 exit()
+            else:
+                self.f.write('Step 3: iis recycle is sucessful.\n')
+                self.f.flush()
 
 
         for m in info.state_module.values():    ######nginx all online########
@@ -200,6 +203,8 @@ class wwwFun:
                 logs(self.username, self.ip, self.site, 'Failed')
                 self.f.write('error')
                 exit()
+        self.f.write('Last step: open nginx traffic is sucessful.\n')
+        self.f.flush()
 
 
         self.f.write('done')
