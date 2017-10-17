@@ -74,7 +74,7 @@ class wwwFun:
 
 
         try:  #####svn update########
-            update_cmd = '\'svn update -r %s %s --username=%s --password=%s \'' % (self.svn_revision,self.svn_path, self.svn_username, self.svn_password)
+            update_cmd = 'svn update -r %s %s --username=%s --password=%s' % (self.svn_revision,self.svn_path, self.svn_username, self.svn_password)
 
             print '-----svn----',update_cmd
             data = {
@@ -121,7 +121,7 @@ class wwwFun:
                 print "!!!!!!!!!!!!!!!!!! [recycle iis] ERROR !!!!!!!!!!!!!!!!!!"
                 return 1
 
-            r = requests.get(self.web_url, headers={'Host': self.site}, timeout=10)
+            r = requests.get(self.web_url, headers={'Host': self.site}, timeout=180)
             if r.status_code != 200:
                 print "!!!!!!!!!!!!!!!!!! [recycle iis] TIMEOUT !!!!!!!!!!!!!!!!!!"
                 self.f.write('error')
