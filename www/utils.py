@@ -121,12 +121,11 @@ class wwwFun:
                 print "!!!!!!!!!!!!!!!!!! [recycle iis] ERROR !!!!!!!!!!!!!!!!!!"
                 return 1
 
-            r = requests.get(self.web_url, headers={'Host': self.site}, timeout=180)
-            if r.status_code != 200:
-                print "!!!!!!!!!!!!!!!!!! [recycle iis] TIMEOUT !!!!!!!!!!!!!!!!!!"
-                self.f.write('error')
-                self.f.close()
-                return 1
+            c = 5
+            while c > 1:
+                print c
+                r = requests.get(self.web_url, headers={'Host': self.site}, timeout=60)
+                c -= 1
 
             if self.action == 'recycle':
                 dingding_robo(self.web_server, 'recycle ' + self.site, 'success', self.username, self.phone_number)
