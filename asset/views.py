@@ -116,7 +116,7 @@ def get_go_revert_list(request):
     env = request.POST['env']
     project = request.POST['project']
     services = request.POST['services']
-    info = GoServiceRevision.objects.filter(name=project).order_by('-id')[0:10]
+    info = GoServiceRevision.objects.filter(name=project).order_by('-id')[0:20]
     return render(request,'get_go_revert_list.html',{'info':info, 'env':env, 'services': services})
 
 @login_required
