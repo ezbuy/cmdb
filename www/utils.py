@@ -122,7 +122,7 @@ class wwwFun:
                 return 1
 
             r = requests.get(self.web_url, headers={'Host': self.site}, timeout=10)
-            if r.status_code != 500:
+            if r.status_code != 200:
                 print "!!!!!!!!!!!!!!!!!! [recycle iis] TIMEOUT !!!!!!!!!!!!!!!!!!"
                 self.f.write('error')
                 self.f.close()
