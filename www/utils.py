@@ -5,12 +5,13 @@ from celery.task import task
 from asset.utils import logs,dingding_robo
 from mico.settings import nginx_api
 import requests
+from salt_api.api import SaltApi
 
 
 
 
 
-
+salt_api = SaltApi()
 class wwwFun:
     def __init__(self,env,username,ip,fileName,phone_number):
         self.env = env
@@ -74,16 +75,19 @@ class wwwFun:
 
         try:  #####svn update########
             update_cmd = '\'svn update -r %s %s --username=%s --password=%s \'' % (self.svn_revision,self.svn_path, self.svn_username, self.svn_password)
-            s, update = commands.getstatusoutput("salt " + self.web_server + " cmd.run " + update_cmd)
-            self.f.write(update)
-            self.f.flush()
-            self.result.append(update)
 
-            if update.find('Error') > 0 or update.find('error') > 0:
+            print '-----svn----',update_cmd
+            data = {
+                'client': 'local',
+                'tgt': self.web_server,
+                'fun': 'cmd.run',
+                'arg': update_cmd
+            }
+            update = salt_api.salt_cmd(data)
+            print update
+            if update['return'][0][self.web_server].find('Error') > 0 or update['return'][0][self.web_server].find('error') > 0:
                 print "!!!!!!!!!!!!!!!!!! [update svn] ERROR !!!!!!!!!!!!!!!!!!!"
                 return 1
-            self.f.write('\n\n\n\n\n')
-            return 0
         except Exception, e:
             print e
             self.f.write('error')
@@ -103,34 +107,27 @@ class wwwFun:
 
 
         try:  ####recycle iis#######
-            s, recycle = commands.getstatusoutput("salt " + self.web_server + " cmd.run '" + self.recycle_cmd + "'")
-            self.f.write(recycle)
-            self.f.flush()
-            self.result.append(recycle)
+            data = {
+                'client': 'local',
+                'tgt': self.web_server,
+                'fun': 'cmd.run',
+                'arg': self.recycle_cmd
+            }
 
-            if recycle.find('Fail') > 0 or recycle.find('fail') > 0:
+            print '----------',self.web_server,self.recycle_cmd
+            recycle = salt_api.salt_cmd(data)
+            print recycle
+            if recycle['return'][0][self.web_server].find('successfully') < 0:
                 print "!!!!!!!!!!!!!!!!!! [recycle iis] ERROR !!!!!!!!!!!!!!!!!!"
                 return 1
-            self.f.write('\n\n\n\n\n')
 
-
-
-            i = 0
-            while i < 5:
-                start_time = time.time()
-                s, testUrl = commands.getstatusoutput("curl -H \"Host:" + self.site + "\" -I " + self.web_url)
-                self.f.write(testUrl)
-                self.f.flush()
-                self.f.write('\n\n\n\n\n')
-                print time.time() - start_time
-                if time.time() - start_time < 2:
-                    break
-                i = i + 1
-            if i == 5:
+            r = requests.get(self.web_url, headers={'Host': self.site}, timeout=10)
+            if r.status_code != 500:
                 print "!!!!!!!!!!!!!!!!!! [recycle iis] TIMEOUT !!!!!!!!!!!!!!!!!!"
                 self.f.write('error')
                 self.f.close()
                 return 1
+
             if self.action == 'recycle':
                 dingding_robo(self.web_server, 'recycle ' + self.site, 'success', self.username, self.phone_number)
             elif self.action == 'revert':
@@ -191,6 +188,9 @@ class wwwFun:
             if recycle == 1:
                 self.f.write('error')
                 exit()
+            elif action == 'recycle':
+                self.f.write('Step 2: iis recycle is sucessful.\n')
+                self.f.flush()
             else:
                 self.f.write('Step 3: iis recycle is sucessful.\n')
                 self.f.flush()
