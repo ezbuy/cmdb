@@ -2,8 +2,8 @@ from django.shortcuts import render,render_to_response,HttpResponse
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
-from www.utils import deployWww,deployWwwRecycle,deployWwwRevert
-from www.models import webSite
+from www.utils import deployWww,deployWwwRecycle,deployWwwRevert,deployWwwGroup
+from www.models import webSite,groupName
 from asset.utils import getNowTime,deny_resubmit
 import json
 
@@ -91,7 +91,25 @@ def deployRevertIis(request):
      else:
         return HttpResponse('celery error!')
 
+@login_required
+@deny_resubmit(page_key='deploy_group')
+def getGroup(request):
+    group = groupName.objects.all()
+    return  render(request,'wwwGroup.html', {'group': group})
 
 
-
+@login_required
+@deny_resubmit(page_key='deploy_group')
+def deployGroup(request):
+     env = '2'
+     group = request.POST['group_name']
+     print '----group----',group
+     username = request.user
+     ip = request.META['REMOTE_ADDR']
+     fileName = '/tmp/deployGroup_' + getNowTime()
+     deploy = deployWwwGroup.delay(env,group,username,ip,fileName,request.POST['phone_number'])
+     if deploy.id:
+        return render(request,'getText.html',{'fileName':fileName})
+     else:
+        return HttpResponse('celery error!')
 
