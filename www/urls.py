@@ -11,5 +11,6 @@ urlpatterns = patterns('',
     url(r'^deployRecycle$', deployRecycle, name='deployRecycle'),
     url(r'^wwwRevertList$', wwwRevertList, name='wwwRevertList'),
     url(r'^deployRevertIis$', deployRevertIis, name='deployRevertIis'),
-
+    url(r'^getGroup$', getGroup, name='getGroup'),
+    url(r'^deployGroup$', deployGroup, name='deployGroup'),
 )
