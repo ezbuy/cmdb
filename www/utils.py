@@ -165,11 +165,11 @@ class wwwFun:
             info = webSite.objects.filter(env=self.env).get(webSite=self.site)
             ip = []
             for i in info.checkUrl.values(): ip.append(i['ip'])
-            for host in info.checkUrl.values():
-                print host['host'],info.webSite
-                self.f.write('-----------------------%s---------------------\n' % info.webSite)
-                self.f.flush()
 
+            print '--------site--------------',info.webSite
+            self.f.write('-----------------------%s---------------------\n' % info.webSite)
+            self.f.flush()
+            for host in info.checkUrl.values():
                 for m in info.state_module.values():
                     nginx_backup = self.__nginx_backup(ip,host['ip'],host['host'],m['state_module'],0)
                     if nginx_backup == 1:
