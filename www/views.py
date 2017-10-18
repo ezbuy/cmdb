@@ -101,7 +101,7 @@ def getGroup(request):
 @login_required
 @deny_resubmit(page_key='deploy_group')
 def deployGroup(request):
-     env = '2'
+     env = '1'
      group = request.POST['group_name']
      print '----group----',group
      username = request.user
