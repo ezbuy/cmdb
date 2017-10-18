@@ -152,66 +152,67 @@ class wwwFun:
 
 
 
-    def deploy(self,site,action='svn',revision='HEAD'):
-
-        self.site = site
+    def deploy(self,site,action='svn',revision='HEAD',group=None):
         self.action = action
         self.revision = revision
-        info = webSite.objects.filter(env=self.env).get(webSite=self.site)
-        ip = []
-        for i in info.checkUrl.values(): ip.append(i['ip'])
+        if group:
+            obj = groupName.objects.get(group_name=group).member.values()
+        else:
+            obj = []
+            obj.append({'webSite':site})
+        for s in obj:
+            self.site = s['webSite']
+            info = webSite.objects.filter(env=self.env).get(webSite=self.site)
+            ip = []
+            for i in info.checkUrl.values(): ip.append(i['ip'])
 
-
-        for host in info.checkUrl.values():
-
-            print host['host']
-            for m in info.state_module.values():
-                nginx_backup = self.__nginx_backup(ip,host['ip'],host['host'],m['state_module'],0)
-                if nginx_backup == 1:
-                    self.f.write('Step 1: blocking nginx traffic is failed.\n')
-                    exit()
-            self.f.write('Step 1: blocking nginx traffic is sucessful.\n')
+            print '--------site--------------',info.webSite
+            self.f.write('-----------------------%s---------------------\n' % info.webSite)
             self.f.flush()
-            if self.action in ['svn','revert']:
-                svn_up = self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password,self.revision)
-                if svn_up == 1:
+            for host in info.checkUrl.values():
+                for m in info.state_module.values():
+                    nginx_backup = self.__nginx_backup(ip,host['ip'],host['host'],m['state_module'],0)
+                    if nginx_backup == 1:
+                        self.f.write('Step 1: blocking nginx traffic is failed.\n')
+                        exit()
+                self.f.write('Step 1: blocking nginx traffic is sucessful.\n')
+                self.f.flush()
+                if self.action in ['svn','revert']:
+                    svn_up = self.__svn_update(host['host'],info.svn_path,info.svn_username,info.svn_password,self.revision)
+                    if svn_up == 1:
+                        self.f.write('error')
+                        exit()
+                    else:
+                        self.f.write('Step 2: svn update is sucessful.\n')
+                        self.f.flush()
+                elif self.action == 'recycle':
+                    pass
+
+                recycle = self.__iis_recycle(host['host'],info.recycle_cmd,host['url'],self.action)
+                if recycle == 1:
                     self.f.write('error')
                     exit()
-                else:
-                    self.f.write('Step 2: svn update is sucessful.\n')
+                elif action == 'recycle':
+                    self.f.write('Step 2: iis recycle is sucessful.\n')
                     self.f.flush()
-            elif self.action == 'recycle':
-                pass
-
-            recycle = self.__iis_recycle(host['host'],info.recycle_cmd,host['url'],self.action)
-            if recycle == 1:
-                self.f.write('error')
-                exit()
-            elif action == 'recycle':
-                self.f.write('Step 2: iis recycle is sucessful.\n')
-                self.f.flush()
-            else:
-                self.f.write('Step 3: iis recycle is sucessful.\n')
-                self.f.flush()
+                else:
+                    self.f.write('Step 3: iis recycle is sucessful.\n')
+                    self.f.flush()
 
 
-        for m in info.state_module.values():    ######nginx all online########
-            status = self.__nginx_backup(ip,host['ip'],host['host'],m['state_module'],1)
+            for m in info.state_module.values():    ######nginx all online########
+                status = self.__nginx_backup(ip,host['ip'],host['host'],m['state_module'],1)
 
-            if status == 1:
-                logs(self.username, self.ip, self.site, 'Failed')
-                self.f.write('error')
-                exit()
-        self.f.write('Last step: open nginx traffic is sucessful.\n')
-        self.f.flush()
-
-
+                if status == 1:
+                    logs(self.username, self.ip, self.site, 'Failed')
+                    self.f.write('error')
+                    exit()
+            self.f.write('Last step: open nginx traffic is sucessful.\n')
+            self.f.flush()
+            logs(self.username, self.ip, self.site, 'Successful')
         self.f.write('done')
         self.f.flush()
         self.f.close()
-        logs(self.username, self.ip, self.site, 'Successful')
-
-
         return self.result
 
 
@@ -237,3 +238,10 @@ def deployWwwRecycle(env,site,username,ip,fileName,phone_number):
 def deployWwwRevert(env,site,username,ip,fileName,reversion,phone_number):
     obj = wwwFun(env,username,ip,fileName,phone_number)
     obj.deploy(site,'revert',reversion)
+
+
+@task
+def deployWwwGroup(env,group_name,username,ip,fileName,phone_number):
+    obj = wwwFun(env, username, ip, fileName, phone_number)
+    obj.deploy(site=None, action='svn',revision='HEAD',group=group_name)
+

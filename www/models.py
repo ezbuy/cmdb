@@ -32,3 +32,10 @@ class webSite(models.Model):
 
     def __unicode__(self):
         return self.webSite
+
+class groupName(models.Model):
+    group_name = models.CharField(max_length=64)
+    member = models.ManyToManyField(webSite)
+
+    def __unicode__(self):
+        return self.group_name

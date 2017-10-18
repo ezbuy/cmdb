@@ -11,3 +11,4 @@ class webSiteAdmin(admin.ModelAdmin):
 admin.site.register(webSite,webSiteAdmin)
 admin.site.register(salt_module)
 admin.site.register(webUrl)
+admin.site.register(groupName)
