@@ -121,10 +121,10 @@ class wwwFun:
                 print "!!!!!!!!!!!!!!!!!! [recycle iis] ERROR !!!!!!!!!!!!!!!!!!"
                 return 1
 
-            c = 5
+            c = 6
             while c > 1:
                 print c
-                r = requests.get(self.web_url, headers={'Host': self.site}, timeout=60)
+                r = requests.get(self.web_url, headers={'Host': self.site}, timeout=60, allow_redirects=False)
                 c -= 1
 
             if self.action == 'recycle':
@@ -139,11 +139,11 @@ class wwwFun:
             self.f.write('error')
             self.f.close()
             if self.action == 'recycle':
-                dingding_robo(self.web_server,self.site, 'error', self.username,self.phone_number)
+                dingding_robo(self.web_server,self.site, 'is error', self.username,self.phone_number)
             elif self.action == 'revert':
-                dingding_robo(self.web_server,self.site, 'error', self.username,self.phone_number)
+                dingding_robo(self.web_server,self.site, 'is error', self.username,self.phone_number)
             else:
-                dingding_robo(self.web_server,self.site, 'error', self.username,self.phone_number)
+                dingding_robo(self.web_server,self.site, 'is error', self.username,self.phone_number)
             logs(self.username, self.ip, self.site, 'Failed')
             return 1
 
