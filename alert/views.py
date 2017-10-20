@@ -216,8 +216,8 @@ def item_add(request):
         if not check_metrics(data['key']):
             raise Exception('<strong>%s</strong> is NOT FOUND, please check and try again.' % data['key'])
 
-        data['error'] = 'Metric: %s\nStatus: ERROR\nValue: ' % (data['key'],)
-        data['recovery'] = 'Metric: %s\nStatus: OK\nValue: ' % (data['key'],)
+        data['error'] = 'Status: ERROR\nMetric: %s\nValue: ' % (data['key'],)
+        data['recovery'] = 'Status: OK\nMetric: %s\nValue: ' % (data['key'],)
         resp = requests.post(aac_url, headers=aac_headers, data=data)
         data = resp.json()
     except Exception as e:
@@ -237,8 +237,8 @@ def item_edit(request):
         if not check_metrics(data['key']):
             raise Exception('<strong>%s</strong> is NOT FOUND, please check and try again.' % data['key'])
 
-        data['error'] = 'Metric: %s\nStatus: ERROR\nValue: ' % (data['key'],)
-        data['recovery'] = 'Metric: %s\nStatus: OK\nValue: ' % (data['key'],)
+        data['error'] = 'Status: ERROR\nMetric: %s\nValue: ' % (data['key'],)
+        data['recovery'] = 'Status: OK\nMetric: %s\nValue: ' % (data['key'],)
         resp = requests.put(aac_url, headers=aac_headers, data=data)
         data = resp.json()
     except Exception as e:
