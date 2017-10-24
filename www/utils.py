@@ -164,8 +164,6 @@ class wwwFun:
             self.site = s['webSite']
             info = webSite.objects.filter(env=self.env).get(webSite=self.site)
             ip = []
-            for i in info.checkUrl.values(): ip.append(i['ip'])
-
             zbx = ZabbixMonitor(zabbix_url,zabbix_user,zabbix_password,zabbix_userId)
 
             ## if the server is not normal.
@@ -177,6 +175,8 @@ class wwwFun:
                     self.f.write('error')
                     self.f.flush()
                     exit()
+
+                ip.append(h['ip'])
 
             print '--------site--------------',info.webSite
             self.f.write('-----------------------%s---------------------\n' % info.webSite)
