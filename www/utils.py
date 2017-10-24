@@ -6,7 +6,7 @@ from asset.utils import logs,dingding_robo
 from mico.settings import nginx_api
 import requests
 from salt_api.api import SaltApi
-
+from mico.settings import zabbix_url,zabbix_user,zabbix_password,zabbix_userId
 
 
 
@@ -166,6 +166,18 @@ class wwwFun:
             ip = []
             for i in info.checkUrl.values(): ip.append(i['ip'])
 
+            zbx = ZabbixMonitor(zabbix_url,zabbix_user,zabbix_password,zabbix_userId)
+
+            ## if the server is not normal.
+            for h in info.checkUrl.values():
+                cpu = zbx.cpu_percent_usage(h['host'])
+                print "host:%s------cpu:%s" % (h['host'],cpu)
+                if float(cpu) > 95:
+                    self.f.write('The %s server has a problem. Please contact the devops...\n' % h['host'])
+                    self.f.write('error')
+                    self.f.flush()
+                    exit()
+
             print '--------site--------------',info.webSite
             self.f.write('-----------------------%s---------------------\n' % info.webSite)
             self.f.flush()
@@ -217,7 +229,73 @@ class wwwFun:
 
 
 
+class ZabbixMonitor(object):
+    def __init__(self,url,user,password,userID):
+        self.url = url
+        self.user = user
+        self.password = password
+        self.userID = userID
+        self.__token = self.login()
 
+    def login(self):
+        headers = {"Content-Type": "application/json-rpc"}
+        data = json.dumps({
+                "jsonrpc": "2.0",
+                "method": "user.login",
+                "params": {
+                "user": self.user,
+                "password": self.password
+                },
+                "id": self.userID,
+        })
+        obj = requests.post(url=self.url,data=data,headers=headers)
+        return json.loads(obj.content)
+
+    def get_host_info(self):
+        data = json.dumps({
+                "jsonrpc": "2.0",
+                "method": "host.get",
+                "params": {
+                "output": [
+                    "hostid",
+                    "host"
+                ],
+                "selectInterfaces": [
+                    "interfaceid",
+                    "ip"
+                ]
+                },
+                "id": self.__token['id'],
+                "auth": self.__token['result']
+        })
+        headers = {"Content-Type": "application/json-rpc"}
+        obj = requests.post(url=self.url,data=data,headers=headers)
+        return json.loads(obj.content)['result']
+
+    def cpu_percent_usage(self,host):
+        self.host = host
+        data = json.dumps({
+                "jsonrpc": "2.0",
+                "method": "item.get",
+                "params": {
+                "output":"extend",
+                "host":self.host,
+                "search": {
+                    "key_": "perf_counter",
+                    "name":"CPU Percent Usage"
+                },
+                "sortfield": "name"
+                },
+                "id": self.__token['id'],
+                "auth": self.__token['result']
+        })
+        headers = {"Content-Type": "application/json-rpc"}
+        try:
+            obj = requests.post(url=self.url,data=data,headers=headers)
+            return json.loads(obj.content)['result'][0]["lastvalue"]
+        except Exception,e:
+            print '--------------',e
+            return 0
 
 
 
