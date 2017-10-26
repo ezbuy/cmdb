@@ -31,15 +31,6 @@
                 </ul>
             </li>
             <li>
-                <a href="#"><i class="fa fa-paperclip"></i> <span class="nav-label">Web IIS</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li><a href="{% url 'wwwList' %}">站点发布</a></li>
-                    <li><a href="{% url 'getGroup' %}">站点组发布</a></li>
-                    <li><a href="{% url 'recycleList' %}">recycle<span class="label pull-right"></span></a></li>
-                    <li><a href="{% url 'wwwRevertList' %}">版本回滚<span class="label pull-right"></span></a></li>
-                </ul>
-            </li>
-            <li>
                 <a><i class="fa fa-play-circle-o"></i> <span class="nav-label">Cache</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
 
@@ -92,12 +83,6 @@
         {% endif %}
         {% if request.user|has_group:'qa' %}
             <li>
-                <a href="#"><i class="fa fa-paperclip"></i> <span class="nav-label">Web IIS</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li><a href="{% url 'recycleList' %}">recycle<span class="label pull-right"></span></a></li>
-                </ul>
-            </li>
-            <li>
                 <a><i class="fa fa-play-circle-o"></i> <span class="nav-label">Cache</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li class="asset"> <a href="{% url 'memcache' %}">Memcache flush_all</a></li>
@@ -120,6 +105,7 @@
                     <li><a href="{% url 'winServicesList' %}">重启服务<span class="label pull-right"></span></a></li>
                 </ul>
             </li>
+        {% endif %}
             <li>
                 <a href="#"><i class="fa fa-paperclip"></i> <span class="nav-label">Web IIS</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -129,7 +115,6 @@
                     <li><a href="{% url 'wwwRevertList' %}">版本回滚<span class="label pull-right"></span></a></li>
                 </ul>
             </li>
-        {% endif %}
             <li>
                 <a><i class="fa fa-inbox"></i> <span class="nav-label">WorkFlow</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
