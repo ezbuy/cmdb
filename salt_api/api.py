@@ -1,11 +1,16 @@
 import requests
 import json
 import yaml
-from mico.settings import salt_api_url,salt_user,salt_password
+from mico.settings import salt_api_url,salt_user,salt_password,salt_api_url2,salt_location
 
 class SaltApi(object):
-    def __init__(self):
-        self.__loginUrl = salt_api_url + '/login'
+    def __init__(self,location='local'):
+        print '------location:',location
+        if location == salt_location:
+            self.__loginUrl = salt_api_url2 + '/login'
+        else:
+            self.__loginUrl = salt_api_url + '/login'
+
         self.__url = salt_api_url
         self.__username = salt_user
         self.__password = salt_password

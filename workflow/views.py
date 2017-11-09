@@ -9,11 +9,13 @@ from salt_api.api import SaltApi
 from asset.models import gogroup,svn,minion,GOTemplate,goservices,gostatus,UserProfile
 from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo
 from mico.settings import svn_gotemplate_local_path,webpage_host,svn_host,svn_repo_url,m_webpage_host
+from mico.settings import salt_location
 from asset.utils import dingding_robo
 import json
 import uuid
 import xmlrpclib
 from utils import existGitlabProject
+import time
 
 salt_api = SaltApi()
 
@@ -183,14 +185,38 @@ def handle_tickets(request):
     if content['ticket_type'] == 'go':
         #'----------------------------ticket_type--------------------'
         for host in content['hosts']:
-            data = {
-                'client':'local',
-                'tgt':host,
-                'fun':'state.sls',
-                'arg':['goservices.supervisor_submodule','pillar={"goprograme":"%s","svnrepo":"%s","supProgrameName":"%s","goRunCommand":"%s"}' % (content['project'],content['svn_repo'],content['supervisor_name'],content['go_command'])]
-            }
-            result = salt_api.salt_cmd(data)
             try:
+                if host.find(salt_location) > 0:
+                    print '-----salt_location:',salt_location
+                    salt_run = SaltApi(salt_location)
+                else:
+                    salt_run = SaltApi()
+                data = {
+                    'client':'local_async',
+                    'tgt':host,
+                    'fun':'state.sls',
+                    'arg':['goservices.supervisor_submodule','pillar={"goprograme":"%s","svnrepo":"%s","supProgrameName":"%s","goRunCommand":"%s"}' % (content['project'],content['svn_repo'],content['supervisor_name'],content['go_command'])]
+                }
+                result = salt_run.salt_cmd(data)
+                jid = result['return'][0]['jid']
+                print '------jid------:',jid
+
+                jid_data = {
+                    'client':'runner',
+                    'fun':'jobs.exit_success',
+                    'jid': jid
+                }
+                tag = True
+                while tag:
+                    jid_result = salt_run.salt_cmd(jid_data)
+                    print '----jid_result----',jid_result['return'][0][host]
+                    if jid_result['return'][0][host]:
+                        tag = False
+                    else:
+                        time.sleep(10)
+
+                print '---jid_result-----',jid_result
+
                 minion_host = minion.objects.get(saltname=host)    
                 supervisor_info = gostatus.objects.get(hostname=minion_host)
                 supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (

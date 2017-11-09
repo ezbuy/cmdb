@@ -154,8 +154,10 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR,"static"),)
 
 #salt api info
 salt_api_url = 'https://192.168.199.61:18080/'
+salt_api_url2 = 'https://192.168.199.61:18080/'
 salt_user = 'saltapis'
 salt_password = 'saltapis'
+salt_location = 'slq'
 
 
 ##dingding notification
