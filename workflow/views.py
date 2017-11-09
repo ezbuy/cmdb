@@ -14,6 +14,7 @@ import json
 import uuid
 import xmlrpclib
 from utils import existGitlabProject
+import time
 
 salt_api = SaltApi()
 
@@ -183,14 +184,33 @@ def handle_tickets(request):
     if content['ticket_type'] == 'go':
         #'----------------------------ticket_type--------------------'
         for host in content['hosts']:
-            data = {
-                'client':'local',
-                'tgt':host,
-                'fun':'state.sls',
-                'arg':['goservices.supervisor_submodule','pillar={"goprograme":"%s","svnrepo":"%s","supProgrameName":"%s","goRunCommand":"%s"}' % (content['project'],content['svn_repo'],content['supervisor_name'],content['go_command'])]
-            }
-            result = salt_api.salt_cmd(data)
             try:
+                data = {
+                    'client':'local_async',
+                    'tgt':host,
+                    'fun':'state.sls',
+                    'arg':['goservices.supervisor_submodule','pillar={"goprograme":"%s","svnrepo":"%s","supProgrameName":"%s","goRunCommand":"%s"}' % (content['project'],content['svn_repo'],content['supervisor_name'],content['go_command'])]
+                }
+                result = salt_api.salt_cmd(data)
+                jid = result['return'][0]['jid']
+                print '------jid------:',jid
+
+                jid_data = {
+                    'client':'runner',
+                    'fun':'jobs.exit_success',
+                    'jid': jid
+                }
+                tag = True
+                while tag:
+                    jid_result = salt_api.salt_cmd(jid_data)
+                    print '----jid_result----',jid_result['return'][0][host]
+                    if jid_result['return'][0][host]:
+                        tag = False
+                    else:
+                        time.sleep(10)
+
+                print '---jid_result-----',jid_result
+
                 minion_host = minion.objects.get(saltname=host)    
                 supervisor_info = gostatus.objects.get(hostname=minion_host)
                 supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (
