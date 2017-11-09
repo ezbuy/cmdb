@@ -8,10 +8,10 @@ class SaltApi(object):
         print '------location:',location
         if location == salt_location:
             self.__loginUrl = salt_api_url2 + '/login'
+            self.__url = salt_api_url2
         else:
             self.__loginUrl = salt_api_url + '/login'
-
-        self.__url = salt_api_url
+            self.__url = salt_api_url
         self.__username = salt_user
         self.__password = salt_password
 
