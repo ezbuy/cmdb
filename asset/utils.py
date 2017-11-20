@@ -320,14 +320,10 @@ class goServicesni:
 
     def getServiceName(self):
         services = []
-        groupname = gogroup.objects.all()
-        for group in groupname:
-            if self.projectName == group.name:
-                for obj in goservices.objects.filter(group=group.id):
-                    services.append(obj)
-
+        if self.projectName:
+            groupname = gogroup.objects.get(name=self.projectName)
+            services = goservices.objects.filter(group=groupname).order_by('name')
         return services
-
 
 
 
