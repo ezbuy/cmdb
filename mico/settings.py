@@ -226,3 +226,8 @@ zabbix_url = "http://192.168.199.96/api_jsonrpc.php"
 zabbix_user = "public"
 zabbix_password = "public"
 zabbix_userId = 1
+
+##cloudapi
+qcloud_region = 'ap-shanghai'
+qcloud_secretId = '123456'
+qcloud_secretKey = '123456'

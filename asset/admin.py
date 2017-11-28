@@ -14,7 +14,7 @@ class goconfAdmin(admin.ModelAdmin):
     list_display = ('username','password','repo','localpath','env','project','hostname')
 
 class assetAdmin(admin.ModelAdmin):
-    list_display = ('hostname','ip','system_type','asset_type','cpu','memory')
+    list_display = ('hostname','ip','system_type','asset_type','cpu','memory','wan_ip')
 
 class gobuildAdmin(admin.ModelAdmin):
     list_display = ('env','hostname')
