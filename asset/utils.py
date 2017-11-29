@@ -13,6 +13,8 @@ from mico.settings import dingding_api,crontab_api,dingding_robo_url
 from functools import wraps
 from django.contrib.auth.models import User
 from ipaddress import IPv4Address, IPv4Network
+from QcloudApi.qcloudapi import QcloudApi
+from mico.settings import qcloud_region,qcloud_secretId,qcloud_secretKey
 salt_api = SaltApi()
 
 
@@ -344,6 +346,7 @@ def syncAsset():
         subnet = IPv4Network(u'172.16.0.0/12')
         for r in result:
             for host,info in r.items():
+                if not info:continue
                 if '127.0.0.1' in info['ipv4']:
                     info['ipv4'].remove('127.0.0.1')
                 for h in info['ipv4'][:]:
@@ -367,13 +370,38 @@ def syncAsset():
                 try:
                     if not Asset.objects.filter(hostname=hostname_id):
                         Asset.objects.create(ip=ip,hostname=hostname_id,system_type=os,cpu=cpu,memory=memory,asset_type=asset_type)
+
                 except Exception,e:
                     print e
     except Exception,e:
-        print e
+       print e
 
-
-
+def syncQcloud():
+    try:
+        module = 'cvm'
+        action = 'DescribeInstances'
+        config = {'Region': qcloud_region, 'secretId': qcloud_secretId, 'secretKey': qcloud_secretKey}
+        params = {'limit': 100}
+        service = QcloudApi(module, config)
+        host_list = eval(service.call(action, params))
+        for info in host_list['instanceSet']:
+            print info['instanceName'], info['lanIp'], info['os'], info['cpu'], info['mem'],info['wanIpSet'][0];
+            if not Asset.objects.filter(hostname=info['instanceName']):
+                if info['wanIpSet']:
+                    wan_ip = info['wanIpSet'][0]
+                else:
+                    wan_ip = 'none'
+                Asset.objects.create(
+                    hostname = info['instanceName'],
+                    ip = info['lanIp'],
+                    system_type = info['os'],
+                    cpu = str(info['cpu']) + ' cores',
+                    memory = str(info['mem']) + 'G',
+                    asset_type = 'CVM',
+                    wan_ip = wan_ip
+                )
+    except Exception,e:
+       print e
 
 class go_monitor_status(object):
     def get_hosts(self):

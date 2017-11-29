@@ -163,9 +163,14 @@ def goConfResult(request):
     mes = Publish.goConf(project,username,ip,phone_number)
     return render(request,'getdata.html',{'result':mes})
 
-
+@login_required
 def test(request):
     syncAsset()
+    return HttpResponseRedirect('/asset/list')
+
+@login_required
+def qcloud(request):
+    syncQcloud()
     return HttpResponseRedirect('/asset/list')
 
 @login_required
