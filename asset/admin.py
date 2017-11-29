@@ -15,6 +15,7 @@ class goconfAdmin(admin.ModelAdmin):
 
 class assetAdmin(admin.ModelAdmin):
     list_display = ('hostname','ip','system_type','asset_type','cpu','memory','wan_ip')
+    search_fields = ['hostname','ip','asset_type','wan_ip']
 
 class gobuildAdmin(admin.ModelAdmin):
     list_display = ('env','hostname')
