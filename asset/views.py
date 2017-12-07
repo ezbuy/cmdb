@@ -14,7 +14,7 @@ from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 
 @login_required
 def asset_list(request):
-    asset_list = Asset.objects.all()
+    asset_list = Asset.objects.all().order_by('hostname')
     return render(request,'asset/asset_list.html',{'asset_list':asset_list})
 
 

@@ -353,7 +353,10 @@ def syncAsset():
                     ips = IPv4Address(u'%s' % h)
                     if ips in subnet:
                         info['ipv4'].remove(h)
-                ip = info['ipv4']
+                if len(info['ipv4']) == 1:
+                    ip = info['ipv4'][0]
+                else:
+                    ip = info['ipv4']
                 hostname_id = host
                 cpu = info['cpu_model']
                 memory = info['mem_total']
@@ -369,7 +372,7 @@ def syncAsset():
 
                 try:
                     if not Asset.objects.filter(hostname=hostname_id):
-                        Asset.objects.create(ip=ip,hostname=hostname_id,system_type=os,cpu=cpu,memory=memory,asset_type=asset_type)
+                        Asset.objects.create(ip=ip,hostname=hostname_id,system_type=os,cpu=cpu,memory=str(memory) + 'M',asset_type=asset_type)
 
                 except Exception,e:
                     print e
