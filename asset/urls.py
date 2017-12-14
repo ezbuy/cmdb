@@ -28,4 +28,5 @@ urlpatterns = patterns('',
     url(r'^go_template_result/$', go_template_result, name='go_template_result'),
     url(r'^get_go_revert_list/$', get_go_revert_list, name='get_go_revert_list'),
     url(r'^qcloud/$', qcloud, name='qcloud'),
+    url(r'^qingcloud/$', qingcloud, name='qingcloud'),
 )

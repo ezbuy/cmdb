@@ -231,3 +231,6 @@ zabbix_userId = 1
 qcloud_region = 'ap-shanghai'
 qcloud_secretId = '123456'
 qcloud_secretKey = '123456'
+
+qingcloud_secretId = '123456'
+qingcloud_secretKey = '123456'
