@@ -174,6 +174,11 @@ def qcloud(request):
     return HttpResponseRedirect('/asset/list')
 
 @login_required
+def qingcloud(request):
+    syncQingcloud()
+    return HttpResponseRedirect('/asset/list')
+
+@login_required
 @deny_resubmit(page_key='deploy_go')
 def getProjectList(request):
     project = request.GET['project']
