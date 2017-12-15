@@ -413,26 +413,25 @@ def syncQingcloud():
         zone = ['pek2','pek3a','pek3b','sh1a','gd1','gd2a','ap1']
         for area in zone:
             conn = qingcloud.iaas.connect_to_zone(area,qingcloud_secretId,qingcloud_secretKey)
-            info = conn.describe_instances()
+            info = conn.describe_instances(status=['running'],limit=50)
             for h in info['instance_set']:
-                if h['status'] != 'ceased':
-                    print h['instance_name'],\
-                        h['vxnets'][0]['private_ip'],\
-                        h['image']['image_name'],\
-                        h['vcpus_current'], \
-                        h['memory_current'], \
-                        h['instance_type'], \
-                        h['eip']['eip_addr']
+                print h['instance_name'],\
+                    h['vxnets'][0]['private_ip'],\
+                    h['image']['image_name'],\
+                    h['vcpus_current'], \
+                    h['memory_current'], \
+                    h['instance_type'], \
+                    h['eip']['eip_addr']
 
-                    Asset.objects.create(
-                        hostname = h['instance_name'],
-                        ip = h['vxnets'][0]['private_ip'],
-                        system_type = h['image']['os_family'],
-                        cpu = str(h['vcpus_current']) + ' cores',
-                        memory = str(h['memory_current']) + 'M',
-                        asset_type = h['instance_type'],
-                        wan_ip = h['eip']['eip_addr']
-                    )
+                Asset.objects.create(
+                    hostname = h['instance_name'],
+                    ip = h['vxnets'][0]['private_ip'],
+                    system_type = h['image']['os_family'],
+                    cpu = str(h['vcpus_current']) + ' cores',
+                    memory = str(h['memory_current']) + 'M',
+                    asset_type = h['instance_type'],
+                    wan_ip = h['eip']['eip_addr']
+                )
     except Exception,e:
        print e
 
