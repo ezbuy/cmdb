@@ -33,7 +33,7 @@ def command_req(request):
     #: validate cmd
     svc_name = cmd.split()[0]
     go_group = gogroup.objects.filter(name=svc_name)
-    if ';' in cmd or '&&' in cmd or '||' in cmd or len(go_group) == 0:
+    if ';' in cmd or '&&' in cmd or '||' in cmd or '>' in cmd or len(go_group) == 0:
         result = [{'Command Job': 'Error - invalid command!'}]
     else:
         s_a_l_t = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16))
