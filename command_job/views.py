@@ -8,7 +8,7 @@ import os
 from celery.task import task
 from salt_api.api import SaltApi
 from mico.settings import cmd_host_aws, cmd_host_qcd, svn_username, svn_password
-from asset.utils import logs, dingding_robo
+from asset.utils import logs, dingding_robo, deny_resubmit
 from asset.models import gogroup
 
 
@@ -21,6 +21,7 @@ def command_index(request):
 
 
 @login_required
+@deny_resubmit(page_key='command_req')
 def command_req(request):
     username = request.user
     phone = request.user.userprofile.phone_number
