@@ -71,28 +71,28 @@ def command_exec(username, phone, ip, svc_name, cmd, zone, output):
     if result != 0:
         result = result['return']
 
-    # if not os.path.exists(os.path.dirname(output)):
-    #     try:
-    #         os.makedirs(os.path.dirname(output))
-    #     except Exception as e:
-    #         print(e)
-    #         logs(username, ip, cmd, e)
-    #         dingding_robo(cmd_host, 'command job', ' error ', username, phone)
-    #         return str(e)
-    #
-    # with open(output, 'w') as f:
-    #     if isinstance(result, list):
-    #         for r in result:
-    #             if isinstance(r, dict):
-    #                 for k, v in r.items():
-    #                     f.write('--> ')
-    #                     f.write(k)
-    #                     f.write('\n')
-    #                     f.write(v)
-    #             else:
-    #                 f.write(str(r))
-    #     else:
-    #         f.write(str(result))
+    if not os.path.exists(os.path.dirname(output)):
+        try:
+            os.makedirs(os.path.dirname(output))
+        except Exception as e:
+            print(e)
+            logs(username, ip, cmd, e)
+            dingding_robo(cmd_host, 'command job', ' error ', username, phone)
+            return str(e)
+
+    with open(output, 'w') as f:
+        if isinstance(result, list):
+            for r in result:
+                if isinstance(r, dict):
+                    for k, v in r.items():
+                        f.write('--> ')
+                        f.write(k)
+                        f.write('\n')
+                        f.write(v)
+                else:
+                    f.write(str(r))
+        else:
+            f.write(str(result))
 
     logs(username, ip, cmd, 'running')
     dingding_robo(cmd_host, 'command job', result, username, phone)
