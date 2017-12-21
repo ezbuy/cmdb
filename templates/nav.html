@@ -138,13 +138,13 @@
                 </ul>
             </li>
             <li>
-                <a href="{% url 'logs' %}" ><i class="fa fa-files-o"></i> <span class="nav-label">Logs</span><span class="label label-info pull-right"></span></a>
-            </li>
-            <li>
                 <a><i class="fa fa-inbox"></i> <span class="nav-label">Command</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li class="asset"> <a href="{% url 'command_index' %}">执行命令</a></li>
                 </ul>
+            </li>
+            <li>
+                <a href="{% url 'logs' %}" ><i class="fa fa-files-o"></i> <span class="nav-label">Logs</span><span class="label label-info pull-right"></span></a>
             </li>
         {% if request.user|has_group:'admin' %}
             <li id="setting">
