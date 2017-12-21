@@ -55,6 +55,7 @@ def command_exec(username, phone, ip, svc_name, cmd, zone, output):
            'svn co http://svn.65dg.me/svn/{svc_name} /srv/{svc_name} ' \
            ' --non-interactive --username={username} --password={password} && ' \
            'mkdir -p {log_path} && ' \
+           'cd /srv/{svc_name} && ' \
            '/srv/{svc_name}/{cmd} -c /srv/gotemplate/{svc_name}/conf.ctmpl >> {output} 2>&1' \
            ''.format(username=svn_username, password=svn_password,
                      svc_name=svc_name, cmd=cmd, output=output, log_path=os.path.dirname(output))
