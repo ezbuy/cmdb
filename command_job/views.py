@@ -16,6 +16,7 @@ from asset.models import gogroup
 
 
 @login_required
+@deny_resubmit(page_key='command_req')
 def command_index(request):
     return render(request, 'commandIndex.html')
 
