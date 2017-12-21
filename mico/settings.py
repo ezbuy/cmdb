@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'alert',
     'users',
     'config_center',
+    'command',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -234,3 +235,7 @@ qcloud_secretKey = '123456'
 
 qingcloud_secretId = '123456'
 qingcloud_secretKey = '123456'
+
+## command
+cmd_host_aws = '127.0.0.1'
+cmd_host_qcd = '127.0.0.1'

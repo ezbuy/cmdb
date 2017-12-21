@@ -7,8 +7,10 @@ certifi==2017.4.17
 chardet==3.0.4
 Django==1.9
 django-celery==3.1.17
+future==0.16.0
 futures==3.1.1
 idna==2.5
+ipaddress==1.0.18
 jenkinsapi==0.3.4
 Jinja2==2.9.6
 kombu==3.0.37
@@ -20,6 +22,8 @@ python-gitlab==0.21.2
 pytz==2017.2
 PyYAML==3.12
 pyzmq==16.0.2
+qcloudapi-sdk-python==2.0.10
+qingcloud-sdk==1.2
 redis==2.10.5
 requests==2.18.1
 salt==2016.11.6

@@ -37,4 +37,5 @@ urlpatterns = [
     url(r'^alert/', include('alert.urls')),
     url(r'^users/', include('users.urls')),
     url(r'^configcenter/', include('config_center.urls')),
+    url(r'^command/', include('command.urls')),
 ]
