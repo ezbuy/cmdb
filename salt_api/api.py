@@ -31,8 +31,8 @@ class SaltApi(object):
     def salt_cmd(self,data):
         self.data = data
         self.__token_id = self.salt_login()
-        headers = {'Accept': ' application/x-yaml',
-                   'X-Auth-Token': ' %s' % self.__token_id
+        headers = {'Accept': 'application/x-yaml',
+                   'X-Auth-Token': '%s' % self.__token_id
                    }
         obj = requests.post(self.__url,headers=headers,data=self.data,verify=False)
         print obj
