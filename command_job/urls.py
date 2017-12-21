@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import url
-from command.views import command_index, command_req
+from command_job.views import command_index, command_req
 
 urlpatterns = [
     url(r'^command_index/$', command_index, name='command_index'),

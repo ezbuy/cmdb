@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'alert',
     'users',
     'config_center',
-    'command',
+    'command_job',
 ]
 
 MIDDLEWARE_CLASSES = [
