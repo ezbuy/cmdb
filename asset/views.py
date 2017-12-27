@@ -43,6 +43,11 @@ def getData(request):
         rst = Publish.deployGo(data, svc, request.user, ip, tower_url, request.POST['phone_number'])
         result.extend(rst)
 
+        # break once deploy failed
+        if not get_service_status(svc):
+            print("deploy %s failed" % svc)
+            break
+
     return render(request,'getdata.html',{'result':result})
 
 
