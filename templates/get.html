@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 {% include 'link_css.html' %}
+{% block self_head_css_js %}
+    <link href="/static/alert/chosen.min.css" rel="stylesheet">
+{% endblock %}
+{% block self_footer_js %}
+    <script src="/static/alert/chosen.jquery.min.js"></script>
+{% endblock %}
 {% block content %}
 
 
@@ -31,7 +37,7 @@
     <span class="input-group-btn">
       <button class="btn btn-default active" type="button">重启服务</button>
     </span>
-    <select id="services" class="selectpicker form-control" data-live-search="true" name="services"></select>
+    <select id="services" multiple class="selectpicker form-control" data-live-search="true" name="services"></select>
     <input id="url" name="url" type="hidden">
   </div>
 
@@ -41,6 +47,10 @@
 
 
 <script>
+$(document).ready(function () {
+    $("#services").chosen({width: "100%", max_selected_options: 5, allow_single_deselect: true});
+});
+
     function getoption(val) {
 
         var project = document.getElementById("project").value;
@@ -49,6 +59,7 @@
 
 
         select.options.length = 0;   // del options
+        $('#services').trigger('chosen:updated');
         if (env != "none") {
             $.getJSON("/asset/getProjectList",{"project":project,"env":env},function (result) {
                 //console.log(result)
@@ -65,6 +76,7 @@
                     $("#sub").attr("disabled", true)
                 }
                 console.log(result.length)
+                $('#services').trigger('chosen:updated');
             })
         }
         else{
@@ -73,6 +85,10 @@
     }
 
     function display_prompt() {
+        if (!$('#services').val()) {
+            alert('goservice is missing ...');
+            return false;
+        }
         var url = document.getElementById("url");
         var url_address = prompt("Please enter your tower url: ","")
 

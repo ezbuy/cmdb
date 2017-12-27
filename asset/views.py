@@ -33,12 +33,15 @@ def getData(request):
         return HttpResponseRedirect('/')
     data = request.POST['goProject']
     env = request.POST['env']
-    services = request.POST['services']
+    services = request.POST.getlist('services', [])
     tower_url = request.POST['url']
     ip = request.META['REMOTE_ADDR']
     Publish = goPublish(env)
-    result = Publish.deployGo(data,services,request.user,ip,tower_url,request.POST['phone_number'])
 
+    result = []
+    for svc in services:
+        rst = Publish.deployGo(data, svc, request.user, ip, tower_url, request.POST['phone_number'])
+        result.extend(rst)
 
     return render(request,'getdata.html',{'result':result})
 
