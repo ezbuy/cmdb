@@ -9,7 +9,7 @@ from logs.models import goLog,publishLog
 from celery.task import task
 import xmlrpclib
 from salt_api.api import SaltApi
-from mico.settings import dingding_api,crontab_api,dingding_robo_url
+from mico.settings import dingding_api,crontab_api,dingding_robo_url,wechat_robo_url
 from functools import wraps
 from django.contrib.auth.models import User
 from ipaddress import IPv4Address, IPv4Network
@@ -611,6 +611,7 @@ def deny_resubmit(page_key=''):
 
 def dingding_robo(hostname='',project='',result='',username='',phone_number='',types=1,info=''):
     url = dingding_robo_url
+    url2 = wechat_robo_url
     headers = {'Content-Type': 'application/json'}
     hs = str(hostname) + " by " + str(username)
 
@@ -656,5 +657,6 @@ def dingding_robo(hostname='',project='',result='',username='',phone_number='',t
     print data
     try:
         requests.post(url,headers=headers,data=json.dumps(data),timeout=3)
+        requests.post(url2,headers=headers,data=json.dumps(data),timeout=3)
     except Exception,e:
         print e
