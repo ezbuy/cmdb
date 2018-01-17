@@ -38,10 +38,11 @@ def command_req(request):
     else:
         s_a_l_t = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16))
         output = '%s-%s-%s-%s.log' % (zone, time.strftime('%Y%m%d.%H%M%S', time.localtime()), username, s_a_l_t)
+        out2user = os.path.join('/'+zone+'_cmd', svc_name, output)
         output = os.path.join('/var/log', svc_name, output)
         command_exec.delay(username, phone, ip, svc_name, cmd, zone, output)
         cmd_host = cmd_host_qcd if zone == 'qcd' else cmd_host_aws
-        result = [{'Command Job': 'The command is running, please check log file(%s:%s)!' % (cmd_host, output,)}]
+        result = [{'Command Job': 'The command is starting, please wait 5 minutes and check log file(%s) at Server of logs!' % (out2user,)}]
 
     return render(request, 'getdata.html', {'result': result})
 
