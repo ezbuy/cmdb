@@ -2,7 +2,7 @@
 from django.shortcuts import render,HttpResponse
 from django.contrib.auth.decorators import login_required
 from asset.utils import deny_resubmit,logs
-from models import TicketType,TicketTasks,TicketOperating
+from models import TicketType,TicketTasks,TicketOperating,WebInfo
 from django.contrib.auth.models import User
 from django.db.models import Q
 from salt_api.api import SaltApi
@@ -25,7 +25,8 @@ salt_api = SaltApi()
 @deny_resubmit(page_key='submit_tickets')
 def index(request):
     ticket_type = TicketType.objects.all()
-    return render(request,'workflow_index.html',{'ticket_type':ticket_type})
+    webInfo = WebInfo.objects.all().order_by('site_name')
+    return render(request,'workflow_index.html',{'ticket_type':ticket_type,'webInfo':webInfo})
 
 
 @login_required
@@ -303,7 +304,8 @@ def handle_tickets(request):
             hsg_site = []
             aws_site = []
             for site in content['site_name']:
-                if site in ['ezbuy_sg','ezbuy_my','ezbuy_co_id','ezbuy_co_th']:
+                #if site in ['ezbuy_sg','ezbuy_my','ezbuy_co_id','ezbuy_co_th']:
+                if WebInfo.objects.get(site_value=site).type == 1:
                     hsg_site.append(site)
                 else:
                     aws_site.append(site)
@@ -333,7 +335,7 @@ def handle_tickets(request):
             TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
             TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='3',submitter=content['owner'])
             logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='failed')
-            info = 'The "%s" order is failed,please check in %s host.' % (content['title'],host)
+            info = 'The "%s" order is failed.' % (content['title'])
             dingding_robo(phone_number=phone_number,types=2,info=info)
             result = [{'HandleTasks':'The task_id handle to failed!'}]
     elif content['ticket_type'] == 'uat_jenkins':
@@ -384,6 +386,5 @@ def handled_tasks(request):
         Q(handler=request.user) | Q(submitter=request.user)
     ).order_by('-modify_time')
     return render(request,'handled_tasks.html',{'tasks':tasks})
-    
 
 

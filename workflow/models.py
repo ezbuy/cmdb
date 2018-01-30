@@ -21,6 +21,11 @@ TICKET_RESULT = (
     (3, U'进行中')
 )
 
+WEB_INFO = (
+    (1, U'WEB站'),
+    (2, U'M站'),
+)
+
 class TicketType(models.Model):
     type_name = models.CharField(max_length=128, verbose_name=u"工单类型")
     handler = models.ManyToManyField(User, verbose_name=u"工单处理人")
@@ -59,7 +64,13 @@ class TicketOperating(models.Model):
     #def __unicode__(self):
     #    return self.operating_id
 
+class WebInfo(models.Model):
+    site_name = models.CharField(max_length=128, verbose_name=u"站点名")
+    site_value = models.CharField(max_length=128, verbose_name=u"站点值")
+    type = models.IntegerField(choices=WEB_INFO, blank=True, null=True, verbose_name=u"站点类型")
 
+    def __unicode__(self):
+        return self.site_name
 
 
 
