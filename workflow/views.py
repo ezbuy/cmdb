@@ -304,7 +304,6 @@ def handle_tickets(request):
             hsg_site = []
             aws_site = []
             for site in content['site_name']:
-                #if site in ['ezbuy_sg','ezbuy_my','ezbuy_co_id','ezbuy_co_th']:
                 if WebInfo.objects.get(site_value=site).type == 1:
                     hsg_site.append(site)
                 else:
