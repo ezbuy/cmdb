@@ -30,6 +30,8 @@ def command_req(request):
     cmd = request.POST['command'].strip()
     zone = request.POST['zone']
 
+    print(cmd)
+
     #: validate cmd
     svc_name = cmd.split()[0]
     go_group = gogroup.objects.filter(name=svc_name)
