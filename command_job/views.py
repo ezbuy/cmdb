@@ -27,7 +27,7 @@ def command_req(request):
     username = request.user
     phone = request.user.userprofile.phone_number
     ip = request.META['REMOTE_ADDR']
-    cmd = request.POST['command']
+    cmd = request.POST['command'].strip()
     zone = request.POST['zone']
 
     #: validate cmd
