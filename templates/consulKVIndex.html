@@ -93,7 +93,7 @@
                     if (method==='GET'){
                         if (result.hasOwnProperty('exists') && result.exists===false) {
                             $('#consul-notify').text("请求的 consul key 不存在！");
-                            $('#consul-val').text("");
+                            toggleValue(false, true, '');
                             $('#consul-submit').show();$('#consul-loading').hide();
                         } else {
                             $('#consul-notify').text("请求成功。");
