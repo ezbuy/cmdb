@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'users',
     'config_center',
     'command_job',
+    'consul_kv',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -240,3 +241,10 @@ qingcloud_secretKey = '123456'
 ## command
 cmd_host_aws = '127.0.0.1'
 cmd_host_qcd = '127.0.0.1'
+
+# consul_kv
+CONSUL_AGENT = {
+    'hsg': '127.0.0.1',
+    'aws': '127.0.0.1',
+    'qcd': '127.0.0.1',
+}

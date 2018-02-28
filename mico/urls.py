@@ -38,4 +38,5 @@ urlpatterns = [
     url(r'^users/', include('users.urls')),
     url(r'^configcenter/', include('config_center.urls')),
     url(r'^command/', include('command_job.urls')),
+    url(r'^consul_kv/', include('consul_kv.urls')),
 ]

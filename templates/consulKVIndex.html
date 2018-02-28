@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% include 'link_css.html' %}
+{% block content %}
+    <div class="alert alert-danger" id="consul-notify" style="display:none"></div>
+    <div class="row">
+    <div class="col-lg-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h2>Consul KV</h2>
+            </div>
+            <div class="ibox-content">
+                <div class="form-horizontal" id="consul-form">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Method</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" value="GET" name="method" checked onclick="toggleValue(false, true, '');">查询
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" value="SET" name="method" onclick="toggleValue(true, false, '');">添加或更新
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Zone</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" value="hsg" name="zone" checked>hsg
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" value="aws" name="zone">aws
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" value="qcd" name="zone">qcd
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Key</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="key" id="consul-key" style="width: 100%;">
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group" id="consul-val-div" style="display: none;">
+                        <label class="col-sm-2 control-label">Value</label>
+                        <div class="col-sm-10">
+                            <textarea name="val" id="consul-val" style="width: 100%;height: auto;"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-4 col-sm-offset-2">
+                            <button class="btn btn-primary" id="consul-submit" onclick="submit();return false;">Submit</button>
+                            <button class="btn btn-warning" id="consul-loading" disabled style="display: none;">Loading...</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+    function toggleValue(shown, disabled, value){
+        if(shown){$('#consul-val-div').show();}else{$('#consul-val-div').hide();}
+        $('#consul-val').attr('disabled', disabled).text(value);
+    }
+    function submit(){
+        $('#consul-submit').hide();$('#consul-loading').show();
+        $('#consul-notify').text("请求处理中，请稍等......").show();
+
+        var method=$('[name="method"]:checked').val();
+        var data={
+            method: method,
+            zone: $('[name="zone"]:checked').val(),
+            key: $('#consul-key').val(),
+            val: $('#consul-val').val()
+        };
+        $.ajax({
+            url: '/consul_kv/req/',
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/x-www-form-urlencoded',
+            data: data,
+            success: function(result){
+                if (result.hasOwnProperty('errcode') && result.errcode===400) {
+                    $('#consul-notify').text("错误的请求，请检查表单内容！");
+                    $('#consul-submit').show();$('#consul-loading').hide();
+                } else if (result.hasOwnProperty('errcode') && result.errcode===403) {
+                    $('#consul-notify').text("权限不足！");
+                    $('#consul-submit').show();$('#consul-loading').hide();
+                } else if (result.hasOwnProperty('errcode') && result.errcode===200) {
+                    if (method==='GET'){
+                        if (result.hasOwnProperty('exists') && result.exists===false) {
+                            $('#consul-notify').text("请求的 consul key 不存在！");
+                            $('#consul-submit').show();$('#consul-loading').hide();
+                        } else {
+                            $('#consul-notify').text("请求成功。");
+                            toggleValue(true, true, result.value);
+                            $('#consul-submit').show();$('#consul-loading').hide();
+                        }
+                    } else {
+                        $('#consul-notify').text("请求完成。");
+                        $('#consul-submit').show();$('#consul-loading').hide();
+                    }
+                }
+            },
+            error: function(){
+                $('#consul-notify').text("服务器出现问题，请联系运维同事！");
+                $('#consul-submit').show();$('#consul-loading').hide();
+            }
+        })
+    }
+    </script>
+{% endblock %}
