@@ -21,6 +21,8 @@ from django.conf.urls import url
 from disque import views
 
 urlpatterns = [
-     url(r'^index/$', views.index),
-# url(r'^projects/$', project_view, name='project_view'),
+    url(r'^ackjob/$', views.ackjob_index, name="ackjob"),
+    url(r'^addjob/$', views.addjob_index, name="addjob"),
+    url(r'^api/addjob/$', views.add_job),
+    url(r'^api/ackjob/$', views.ack_job)
 ]

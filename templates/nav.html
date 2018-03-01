@@ -80,6 +80,14 @@
                     <li class="user"><a href="{% url 'cronjob_list' %}">cron job列表<span class="label pull-right"></span></a></li>
                 </ul>
             </li>
+
+            <li>
+                <a href="#"><i class="fa fa-inbox"></i> <span class="nav-label">Disque</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li class="group"><a href="{% url 'ackjob' %}">ack job</a></li>
+                    <li class="group"><a href="{% url 'addjob' %}">add job</a></li>
+                </ul>
+            </li>
         {% endif %}
         {% if request.user|has_group:'qa' %}
             <li>

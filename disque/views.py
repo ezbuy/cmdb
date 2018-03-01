@@ -3,12 +3,12 @@
 
 from __future__ import unicode_literals
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from asset.utils import deny_resubmit
 from pydisque.client import Client
 from mico.settings import disque_aws, disque_qcd
 import json
+from django.shortcuts import render
 # Create your views here.
 
 
@@ -25,43 +25,46 @@ clientEnvMap = {
 }
 
 
-def index(request):
-    return HttpResponse("hello django")
+def ackjob_index(request):
+    return render(request, 'disque_ack_job.html')
+
+
+def addjob_index(request):
+    return render(request, 'disque_add_job.html')
+
+
+default_content_type = 'application/json'
 
 
 @login_required
-@deny_resubmit(page_key='ack_job')
 def ack_job(request):
-    if not request.Post.keys():
-        return HttpResponseRedirect('/')
-    env = request.Post['env']
-    jobIds = request.Post.getlist('jobIds')
-    if len(jobIds) == 0:
-        return HttpResponse('empty jobIds')
+    env = request.POST['env']
     if not (env in clientEnvMap.keys()):
-        return HttpResponse('unknow disque env')
+        return HttpResponse(json.dumps({'errcode': 400, 'msg': 'unknown disque zone:%s' % env}), content_type=default_content_type)
+    jobIds = request.POST.getlist('jobIds[]', [])
+    if len(jobIds) == 0:
+        return HttpResponse(json.dumps({'errcode': 400, 'msg': 'empty jobIds'}), content_type=default_content_type)
+    jobIds = map(lambda x: x.encode('utf-8'), jobIds)
+    print env, jobIds
     try:
         client = clientEnvMap[env]
-        client.ack_job(jobIds)
+        client.ack_job(*jobIds)
     except Exception as e:
         print e
-        return HttpResponse(e)
-    return HttpResponse("ok")
+        return HttpResponse(json.dumps({'errcode': 400, 'msg': str(e)}), content_type=default_content_type)
+    return HttpResponse(json.dumps({'errcode': 200}), content_type=default_content_type)
 
 
 @login_required
-@deny_resubmit(page_key='add_job')
 def add_job(request):
-    if not request.Post.keys():
-        return HttpResponseRedirect('/')
-    env = request.Post['env']
-    queue = request.Post['queue']
-    jobs = request.Post.getlist['jobs']
-    ms_timeout = request.Post['timeout']
-    replicate = request.Post['replicate']
-    retry_sec = request.Post['retry']
-    delay_sec = request.Post['delay']
-    ttl_sec = request.Post['ttl']
+    env = request.POST['env']
+    queue = request.POST['queue']
+    jobs = request.POST.getlist['jobs']
+    ms_timeout = request.POST['timeout']
+    replicate = request.POST['replicate']
+    retry_sec = request.POST['retry']
+    delay_sec = request.POST['delay']
+    ttl_sec = request.POST['ttl']
     if not (env and queue):
         return HttpResponse('env or queue is empty')
     if len(jobs) == 0:
