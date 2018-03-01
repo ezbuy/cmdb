@@ -299,9 +299,15 @@ def add_gotemplate():   ###added an info for gotemplate table
 @login_author
 def goservice_info():
     try:
+        phone_number = []
         service_name = request.json.get('service_name')
         service = goservices.objects.filter(name=service_name)[0].owner
-        phone_number = User.objects.get(username=service).userprofile.phone_number
+        phones = service.split(',')
+        for p in phones:
+            try:
+                phone_number.append(User.objects.get(username=p).userprofile.phone_number)
+            except Exception, e:
+                print e
         print '------',phone_number
         connection.close()
     except Exception, e:
