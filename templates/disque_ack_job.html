@@ -79,6 +79,7 @@
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
             data: data,
+            traditional:true,
             success: function(result){
                 if (result.hasOwnProperty('errcode') && result.errcode===400) {
                     $('#disque-notify').text(result.msg).show();
