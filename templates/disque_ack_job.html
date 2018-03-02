@@ -48,10 +48,6 @@
     </div>
 
     <script>
-    function toggleValue(shown, disabled, value){
-        if(shown){$('#jobId-val-div').show();}else{$('#jobId-val-div').hide();}
-        $('#jobId-val').attr('disabled', disabled).text(value);
-    }
     function submit(){
         $('#disque-notify').text("").hide();
         zone = $('[name="zone"]:checked').val()
