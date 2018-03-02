@@ -39,6 +39,9 @@ def addjob_index(request):
 
 @login_required
 def ack_job(request):
+    user = request.user
+    if not user.groups.filter(name__in=['admin', 'dba', 'disque']).exists():
+        return HttpResponse(json.dumps({'errcode': 403}), content_type=default_content_type)
     env = request.POST['env']
     if not (env in clientEnvMap.keys()):
         return HttpResponse(json.dumps({'errcode': 400, 'msg': 'unknown disque zone:%s' % env}), content_type=default_content_type)
@@ -46,7 +49,7 @@ def ack_job(request):
     if len(jobIds) == 0:
         return HttpResponse(json.dumps({'errcode': 400, 'msg': 'empty jobIds'}), content_type=default_content_type)
     jobIds = map(lambda x: x.encode('utf-8'), jobIds)
-    print request.user, env, jobIds
+    print user, env, jobIds
     try:
         client = clientEnvMap[env]
         client.ack_job(*jobIds)
@@ -58,6 +61,10 @@ def ack_job(request):
 
 @login_required
 def add_job(request):
+
+    user = request.user
+    if not user.groups.filter(name__in=['admin', 'dba', 'disque']).exists():
+        return HttpResponse(json.dumps({'errcode': 403}), content_type=default_content_type)
     env = request.POST['env']
     queue = request.POST['queue_name']
     timeout_ms = request.POST['timeout_ms']
@@ -66,7 +73,7 @@ def add_job(request):
     delay_sec = request.POST['delay_sec']
     ttl_sec = request.POST['ttl_sec']
     jobs = request.POST.getlist('jobs', [])
-    print request.user, env, queue, timeout_ms, replicate, retry_sec, delay_sec, ttl_sec
+    print user, env, queue, timeout_ms, replicate, retry_sec, delay_sec, ttl_sec
     print jobs
 
     if not (env in clientEnvMap.keys()):
