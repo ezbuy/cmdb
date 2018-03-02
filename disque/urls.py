@@ -23,6 +23,6 @@ from disque import views
 urlpatterns = [
     url(r'^ackjob/$', views.ackjob_index, name="ackjob"),
     url(r'^addjob/$', views.addjob_index, name="addjob"),
-    url(r'^api/addjob/$', views.add_job),
-    url(r'^api/ackjob/$', views.ack_job)
+    url(r'^api/addjob/$', views.add_job, name='disque_ack_job'),
+    url(r'^api/ackjob/$', views.ack_job, name='disque_add_job')
 ]

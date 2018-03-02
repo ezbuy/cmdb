@@ -9,7 +9,7 @@ from pydisque.client import Client
 from mico.settings import disque_aws, disque_qcd
 import json
 from django.shortcuts import render
-from asset.utils import logs
+from asset.utils import logs, deny_resubmit
 # Create your views here.
 
 
@@ -29,11 +29,13 @@ default_content_type = 'application/json'
 
 
 @login_required
+@deny_resubmit(page_key='disque_ack_job')
 def ackjob_index(request):
     return render(request, 'disque_ack_job.html')
 
 
 @login_required
+@deny_resubmit(page_key='disque_add_job')
 def addjob_index(request):
     return render(request, 'disque_add_job.html')
 
