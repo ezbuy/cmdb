@@ -41,7 +41,6 @@ def addjob_index(request):
 
 
 @login_required
-@deny_resubmit(page_key='disque_ack_job')
 def ack_job(request):
     user = request.user
     ip = request.META['REMOTE_ADDR']
@@ -73,7 +72,6 @@ def ack_job(request):
 
 
 @login_required
-@deny_resubmit(page_key='disque_add_job')
 def add_job(request):
     user = request.user
     ip = request.META['REMOTE_ADDR']
