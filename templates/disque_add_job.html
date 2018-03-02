@@ -34,7 +34,7 @@
                                 <!-- <input type="text" name="key" id="job-ids" style="width: 100%;"> -->
                             </div>
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                             <label class="col-sm-2 control-label">timeout(ms)</label>
                             <div class="col-sm-10">
                                 <input type="text" name="timeout_ms" id="timeout_ms" style="width: 50%;">
@@ -63,7 +63,7 @@
                             <div class="col-sm-10">
                                 <input type="text" name="ttl_sec" id="ttl_sec" style="width: 50%;">
                             </div>
-                    </div>
+                    </div> -->
                     <div class="hr-line-dashed"></div>
                     <div class="form-group" id="add-val-div" style="display: none;">
                         <label class="col-sm-2 control-label">Value</label>
@@ -89,11 +89,11 @@
 
         zone = $('[name="zone"]:checked').val()
         queueName = $('#queue_name').val()
-        timeout_ms = $('#timeout_ms').val()
-        replicate = $('#replicate').val()
-        retry_sec = $('#retry_sec').val()
-        delay_sec = $('#delay_sec').val()
-        ttl_sec = $('#ttl_sec').val()
+        // timeout_ms = $('#timeout_ms').val()
+        // replicate = $('#replicate').val()
+        // retry_sec = $('#retry_sec').val()
+        // delay_sec = $('#delay_sec').val()
+        // ttl_sec = $('#ttl_sec').val()
         jobs = $('#jobs').val()
 
         if (!zone){
@@ -114,11 +114,11 @@
         var data={
             env: $('[name="zone"]:checked').val(),
             queue_name: queueName,
-            timeout_ms:timeout_ms,
-            replicate:replicate,
-            retry_sec:retry_sec,
-            delay_sec:delay_sec,
-            ttl_sec:ttl_sec,
+            // timeout_ms:timeout_ms,
+            // replicate:replicate,
+            // retry_sec:retry_sec,
+            // delay_sec:delay_sec,
+            // ttl_sec:ttl_sec,
             jobs:jobs.split('\n')
         };
 

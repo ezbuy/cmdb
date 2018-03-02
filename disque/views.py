@@ -76,13 +76,14 @@ def add_job(request):
     ip = request.META['REMOTE_ADDR']
     env = request.POST['env']
     queue = request.POST['queue_name']
-    timeout_ms = request.POST['timeout_ms']
-    replicate = request.POST['replicate']
-    retry_sec = request.POST['retry_sec']
-    delay_sec = request.POST['delay_sec']
-    ttl_sec = request.POST['ttl_sec']
+    # timeout_ms = request.POST['timeout_ms']
+    # replicate = request.POST['replicate']
+    # retry_sec = request.POST['retry_sec']
+    # delay_sec = request.POST['delay_sec']
+    # ttl_sec = request.POST['ttl_sec']
     jobs = request.POST.getlist('jobs', [])
-    print user, env, queue, timeout_ms, replicate, retry_sec, delay_sec, ttl_sec
+    # print user, env, queue, timeout_ms, replicate, retry_sec, delay_sec, ttl_sec
+    print user, env, queue
     print jobs
 
     if not user.groups.filter(name__in=['admin', 'dba', 'disque']).exists():
@@ -105,7 +106,8 @@ def add_job(request):
     for job in jobs:
         try:
             print job
-            jobId = client.add_job(queue, job, timeout=timeout_ms, replicate=replicate, delay=delay_sec, retry=retry_sec, ttl=ttl_sec)
+            jobId = client.add_job(queue, job)
+            # jobId = client.add_job(queue, job, timeout=timeout_ms, replicate=replicate, delay=delay_sec, retry=retry_sec, ttl=ttl_sec)
             jobIds.append(jobId)
         except Exception as e:
             print e
