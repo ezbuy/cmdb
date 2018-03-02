@@ -100,8 +100,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cmdb',
         'USER': 'root',
-        'PASSWORD': 'ezbuyisthebest',
-        'HOST': '192.168.199.112',
+        'PASSWORD': '123456',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
     }
 }
