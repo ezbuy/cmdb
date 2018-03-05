@@ -19,6 +19,9 @@
                             <label class="radio-inline">
                                 <input type="radio" value="qcd" name="zone">qcd
                             </label>
+                            <label class="radio-inline">
+                                    <input type="radio" value="hsg" name="zone">hsg
+                            </label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -82,7 +85,7 @@
                     $('#ack-submit').show();
                     $('#ack-loading').hide();
                 } else if (result.hasOwnProperty('errcode') && result.errcode===403) {
-                    $('#disque-notify').text("权限不足！");
+                    $('#disque-notify').text("权限不足！").show();
                     $('#ack-submit').show();$('#ack-loading').hide();
                 } else if (result.hasOwnProperty('errcode') && result.errcode===200) {
                     $('#disque-notify').text("执行成功").show();

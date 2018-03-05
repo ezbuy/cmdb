@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from pydisque.client import Client
-from mico.settings import disque_aws, disque_qcd
+from mico.settings import disque_aws, disque_qcd, disque_hsg
 import json
 from django.shortcuts import render
 from asset.utils import logs, deny_resubmit
@@ -19,10 +19,14 @@ disqueAWS.connect()
 disqueQCD = Client(disque_qcd)
 disqueQCD.connect()
 
+disqueHSG = Client(disque_hsg)
+disqueHSG.connect()
+
 
 clientEnvMap = {
     'aws': disqueAWS,
-    'qcd': disqueQCD
+    'qcd': disqueQCD,
+    'hsg': disqueHSG
 }
 
 default_content_type = 'application/json'
