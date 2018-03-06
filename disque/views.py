@@ -94,7 +94,7 @@ def add_job(request):
         return HttpResponse(json.dumps({'errcode': 400, 'msg': 'unknown disque zone:%s' % env}), content_type=DEFAULT_CONTENT_TYPE)
     if (not queue) or len(queue) == 0:
         logs(user, ip, 'add job: %s - %s' % (env, queue), 'empty queue name')
-        return HttpResponse(json.dumps({'errcode': 400, 'msg': 'emtpy queue name'}), content_type=DEFAULT_CONTENT_TYPE)
+        return HttpResponse(json.dumps({'errcode': 400, 'msg': 'empty queue name'}), content_type=DEFAULT_CONTENT_TYPE)
     if len(jobs) == 0:
         logs(user, ip, 'add job: %s - %s' % (env, queue), 'empty jobs')
         return HttpResponse(json.dumps({'errcode': 400, 'msg': 'empty jobs'}), content_type=DEFAULT_CONTENT_TYPE)
