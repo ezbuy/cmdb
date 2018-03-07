@@ -219,7 +219,9 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
 
 
+class DisqueCluster(models.Model):
+    name = models.CharField(max_length=32, verbose_name=u"disque cluster alias name")
+    addr = models.TextField(blank=True, null=True, default='', verbose_name=u"cluster address")
 
-
-
-
+    def __unicode__(self):
+        return self.name
