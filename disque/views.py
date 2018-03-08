@@ -9,7 +9,7 @@ from pydisque.client import Client
 import json
 from django.shortcuts import render
 from asset.utils import logs, deny_resubmit
-from asset.models import DisqueCluster
+from disque.models import ClusterInfo
 # Create your views here.
 
 
@@ -19,14 +19,14 @@ DEFAULT_CONTENT_TYPE = 'application/json'
 @login_required
 @deny_resubmit(page_key='disque_ack_job')
 def ackjob_index(request):
-    disque_zone = DisqueCluster.objects.all().order_by('name')
+    disque_zone = ClusterInfo.objects.all().order_by('name')
     return render(request, 'disque_ack_job.html', {'zone': disque_zone})
 
 
 @login_required
 @deny_resubmit(page_key='disque_add_job')
 def addjob_index(request):
-    disque_zone = DisqueCluster.objects.all().order_by('name')
+    disque_zone = ClusterInfo.objects.all().order_by('name')
     return render(request, 'disque_add_job.html', {'zone': disque_zone})
 
 
@@ -40,12 +40,12 @@ def ack_job(request):
         logs(user, ip, 'ack job: %s , zone: %s' % (jobIds, zone), 'permission denied')
         return HttpResponse(json.dumps({'errcode': 403}), content_type=DEFAULT_CONTENT_TYPE)
     try:
-        clusterInfo = DisqueCluster.objects.get(name=zone)
+        clusterInfo = ClusterInfo.objects.get(name=zone)
         print clusterInfo.addr
-    except DisqueCluster.DoesNotExist:
+    except ClusterInfo.DoesNotExist:
         logs(user, ip, 'ack job: %s' % jobIds, 'unknown disque zone: %s' % zone)
         return HttpResponse(json.dumps({'errcode': 400, 'msg': 'unknown disque zone:%s' % zone}), content_type=DEFAULT_CONTENT_TYPE)
-    except DisqueCluster.MultipleObjectsReturned:
+    except ClusterInfo.MultipleObjectsReturned:
         logs(user, ip, 'ack job: %s' % jobIds, 'multi objects returned for zone: %s' % zone)
         return HttpResponse(json.dumps({'errcode': 400, 'msg': 'multi objects returned for zone:%s' % zone}), content_type=DEFAULT_CONTENT_TYPE)
     except Exception as e:
@@ -93,12 +93,12 @@ def add_job(request):
         return HttpResponse(json.dumps({'errcode': 403}), content_type=DEFAULT_CONTENT_TYPE)
 
     try:
-        clusterInfo = DisqueCluster.objects.get(name=zone)
+        clusterInfo = ClusterInfo.objects.get(name=zone)
         print clusterInfo.addr
-    except DisqueCluster.DoesNotExist:
+    except ClusterInfo.DoesNotExist:
         logs(user, ip, 'add job: %s - %s' % (zone, queue), 'unknown disque zone: %s' % zone)
         return HttpResponse(json.dumps({'errcode': 400, 'msg': 'unknown disque zone:%s' % zone}), content_type=DEFAULT_CONTENT_TYPE)
-    except DisqueCluster.MultipleObjectsReturned:
+    except ClusterInfo.MultipleObjectsReturned:
         logs(user, ip, 'add job: %s - %s' % (zone, queue), 'multi objects returned for zone: %s' % zone)
         return HttpResponse(json.dumps({'errcode': 400, 'msg': 'multi objects returned for zone:%s' % zone}), content_type=DEFAULT_CONTENT_TYPE)
     except Exception as e:
