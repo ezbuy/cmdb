@@ -218,8 +218,3 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=11)
     user = models.OneToOneField(User)
 
-
-
-
-
-

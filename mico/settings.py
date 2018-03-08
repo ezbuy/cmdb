@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
@@ -24,7 +23,6 @@ SECRET_KEY = 'xxr%x@-u5r(p6shkn+n)uv+h+@l61k8&8t-yonli9!y9h6h!%6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 
 ALLOWED_HOSTS = []
 
@@ -54,6 +52,7 @@ INSTALLED_APPS = [
     'config_center',
     'command_job',
     'consul_kv',
+    'disque',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -66,19 +65,16 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'cmdb.http.SetRemoteAddrFromForwardedFor',
-
 ]
 
 ROOT_URLCONF = 'mico.urls'
 BROKER_URL = 'redis://127.0.0.1:6379/3'
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/4'
 
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,8 +86,6 @@ TEMPLATES = [
         },
     },
 ]
-
-
 
 WSGI_APPLICATION = 'mico.wsgi.application'
 
@@ -112,25 +106,27 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
@@ -145,14 +141,12 @@ USE_L10N = True
 
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_ROOT = '/django/static/'
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR,"static"),)
-
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"), )
 
 #salt api info
 salt_api_url = 'https://192.168.199.61:18080/'
@@ -160,7 +154,6 @@ salt_api_url2 = 'https://192.168.199.61:18080/'
 salt_user = 'saltapis'
 salt_password = 'saltapis'
 salt_location = 'slq'
-
 
 ##dingding notification
 dingding_api = 'http://dlog.abc.me/dlog'
@@ -200,26 +193,27 @@ gitlab_private_token = 'sdadasdadwwe'
 
 ##jenkins
 jenkins_url = {
-    'uat':['http://abc.com/job/uat/','http://abc.com/job/uat2/'],
-    'uat_aws':['http://abc.com/job/uat_aws/'],
+    'uat': ['http://abc.com/job/uat/', 'http://abc.com/job/uat2/'],
+    'uat_aws': ['http://abc.com/job/uat_aws/'],
     'deploy': 'http://abc.com/job/deploy/'
 }
 jenkins_webhook_url = {
-    'uat':['http://abc.com/project/uat','http://abc.com/project/uat2'],
-    'uat_aws':['http://abc.com/project/uat_aws'],
-    'deploy':'http://abc.com/project/deploy'
+    'uat': ['http://abc.com/project/uat', 'http://abc.com/project/uat2'],
+    'uat_aws': ['http://abc.com/project/uat_aws'],
+    'deploy': 'http://abc.com/project/deploy'
 }
 jenkins_username = 'abc'
 jenkins_password = 'abc'
-
 
 graphite_api = 'http://192.168.199.61:8080'
 aac_api = 'http://192.168.199.178:9090/api/v1.0'
 aac_headers = {'X-AUTH-TOKEN': 'd14b7042a2af18a9ffe15a0da343497f'}
 
 ##consul
-consul_api = {'hsg':'http://192.168.199.64:8500/v1/kv/',
-    'aws':'http://192.168.199.64:8500/v1/kv/'}
+consul_api = {
+    'hsg': 'http://192.168.199.64:8500/v1/kv/',
+    'aws': 'http://192.168.199.64:8500/v1/kv/'
+}
 
 ##nginx api
 nginx_api = ['http://192.168.199.63:8081']
@@ -241,6 +235,7 @@ qingcloud_secretKey = '123456'
 ## command
 cmd_host_aws = '127.0.0.1'
 cmd_host_qcd = '127.0.0.1'
+
 
 # consul_kv
 CONSUL_AGENT = {

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% include 'link_css.html' %}
+{% block content %}
+    <div class="alert alert-danger" id="disque-notify" style="display:none"></div>
+    <div class="row">
+    <div class="col-lg-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h2>Ack Disque Job</h2>
+            </div>
+            <div class="ibox-content">
+                <div class="form-horizontal" id="ackjob-form">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">disque zone</label>
+                        <div class="col-sm-10">
+                            {% for z in zone %}
+                                <label class="radio-inline">
+                                    <input type="radio" value="{{ z.name }}" name="zone">{{ z.name }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">job id</label>
+                        <div class="col-sm-10">
+                                <textarea id="job-ids" cols="40" rows="5" placeholder="多个job id以回车换行"></textarea>
+                            <!-- <input type="text" name="key" id="job-ids" style="width: 100%;"> -->
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group" id="jobId-val-div" style="display: none;">
+                        <label class="col-sm-2 control-label">Value</label>
+                        <div class="col-sm-10">
+                            <textarea name="val" id="jobId-val" style="width: 100%;height: auto;"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-4 col-sm-offset-2">
+                            <button class="btn btn-primary" id="ack-submit" onclick="submit();return false;">ack job</button>
+                            <button class="btn btn-warning" id="ack-loading" disabled style="display: none;">Loading...</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+    function submit(){
+        $('#disque-notify').text("").hide();
+        zone = $('[name="zone"]:checked').val()
+        if (!zone) {
+            alert('pls select disque zone')
+            return false
+        }
+        
+        jobIds = $('#job-ids').val()
+        if (!jobIds || jobIds.length==0){
+            alert('empty jobIds')
+            return false
+        }
+
+        var data={
+            zone:zone,
+            jobIds: jobIds.split('\n')
+        };
+
+        $('#ack-submit').hide();$('#ack-loading').show();
+        $('#ack-notify').text("请求处理中，请稍等......").show();
+        $.ajax({
+            url: '/disque/api/ackjob/',
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/x-www-form-urlencoded',
+            data: data,
+            traditional:true,
+            success: function(result){
+                if (result.hasOwnProperty('errcode') && result.errcode===400) {
+                    $('#disque-notify').text(result.msg).show();
+                    $('#ack-submit').show();
+                    $('#ack-loading').hide();
+                } else if (result.hasOwnProperty('errcode') && result.errcode===403) {
+                    $('#disque-notify').text("权限不足！").show();
+                    $('#ack-submit').show();$('#ack-loading').hide();
+                } else if (result.hasOwnProperty('errcode') && result.errcode===200) {
+                    $('#disque-notify').text("执行成功").show();
+                    $('#ack-submit').show();$('#ack-loading').hide();
+                    $('#job-ids').val('')
+                }
+            },
+            error: function(){
+                $('#disque-notify').text("服务器出现问题，请联系运维同事！");
+                $('#ack-submit').show();$('#ack-loading').hide();
+            }
+        })
+    }
+    </script>
+{% endblock %}

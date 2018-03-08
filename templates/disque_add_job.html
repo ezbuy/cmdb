@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% include 'link_css.html' %}
+{% block content %}
+    <div class="alert alert-danger" id="disque-notify" style="display:none"></div>
+    <div class="row">
+    <div class="col-lg-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h2>Add Disque Job</h2>
+            </div>
+            <div class="ibox-content">
+                <div class="form-horizontal" id="ackjob-form">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">disque zone</label>
+                        <div class="col-sm-10">
+                            {% for z in zone %}
+                                <label class="radio-inline">
+                                    <input type="radio" value="{{ z.name }}" name="zone">{{ z.name }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">queue name</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="queue_name" id="queue_name" style="width: 50%;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                            <label class="col-sm-2 control-label">job content</label>
+                            <div class="col-sm-10">
+                                    <textarea id="jobs" cols="61" rows="5" placeholder="多个job 以回车换行"></textarea>
+                                <!-- <input type="text" name="key" id="job-ids" style="width: 100%;"> -->
+                            </div>
+                    </div>
+                    <!-- <div class="form-group">
+                            <label class="col-sm-2 control-label">timeout(ms)</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="timeout_ms" id="timeout_ms" style="width: 50%;">
+                            </div>
+                    </div>
+                    <div class="form-group">
+                            <label class="col-sm-2 control-label">replicate</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="replicate" id="replicate" style="width: 50%;">
+                            </div>
+                    </div>
+                    <div class="form-group">
+                            <label class="col-sm-2 control-label">retry(second)</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="retry_sec" id="retry_sec" style="width: 50%;">
+                            </div>
+                    </div>
+                    <div class="form-group">
+                            <label class="col-sm-2 control-label">delay(second)</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="delay_sec" id="delay_sec" style="width: 50%;">
+                            </div>
+                    </div>
+                    <div class="form-group">
+                            <label class="col-sm-2 control-label">ttl(second)</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="ttl_sec" id="ttl_sec" style="width: 50%;">
+                            </div>
+                    </div> -->
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group" id="add-val-div" style="display: none;">
+                        <label class="col-sm-2 control-label">Value</label>
+                        <div class="col-sm-10">
+                            <textarea name="val" id="add-val" style="width: 100%;height: auto;"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-4 col-sm-offset-2">
+                            <button class="btn btn-primary" id="add-submit" onclick="submit();return false;">Add</button>
+                            <button class="btn btn-warning" id="add-loading" disabled style="display: none;">Loading...</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+    function submit(){
+        $('#disque-notify').text("").hide();
+
+        zone = $('[name="zone"]:checked').val()
+        queueName = $('#queue_name').val()
+        // timeout_ms = $('#timeout_ms').val()
+        // replicate = $('#replicate').val()
+        // retry_sec = $('#retry_sec').val()
+        // delay_sec = $('#delay_sec').val()
+        // ttl_sec = $('#ttl_sec').val()
+        jobs = $('#jobs').val()
+
+        if (!zone){
+            alert('please select disque zone')
+            return false
+        }
+        
+        if (!queueName || queueName.length==0){
+            alert('empty queue name')
+            return false
+        }
+        
+        if (!jobs || jobs.length==0){
+            alert('empty job content')
+            return false
+        }
+
+        var data={
+            zone: $('[name="zone"]:checked').val(),
+            queue_name: queueName,
+            // timeout_ms:timeout_ms,
+            // replicate:replicate,
+            // retry_sec:retry_sec,
+            // delay_sec:delay_sec,
+            // ttl_sec:ttl_sec,
+            jobs:jobs.split('\n')
+        };
+
+        $('#add-submit').hide();
+        $('#add-loading').show();
+        $('#disque-notify').text("请求处理中，请稍等......").show();
+        $.ajax({
+            url: '/disque/api/addjob/',
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/x-www-form-urlencoded',
+            data: data,
+            traditional:true,
+            success: function(result){
+                if (result.hasOwnProperty('errcode') && result.errcode===400) {
+                    $('#disque-notify').text(result.msg).show();
+                    $('#add-submit').show();
+                    $('#add-loading').hide();
+                } else if (result.hasOwnProperty('errcode') && result.errcode===403) {
+                    $('#disque-notify').text("权限不足！").show();
+                    $('#add-submit').show();$('#add-loading').hide();
+                } else if (result.hasOwnProperty('errcode') && result.errcode===200) {
+                    var txt = [];
+                    txt.push('<div>')
+                    txt.push('添加成功的job id: ')
+                    txt.push(result.jobIds.join(', '))
+                    txt.push('</div><br/>\n<div>')
+                    txt.push('添加失败的job: ')
+                    txt.push(result.failJobs.join(', '))
+                    txt.push('</div>')
+                    $('#disque-notify').html(txt.join(''));
+                    $('#add-submit').show();
+                    $('#add-loading').hide();
+                    $('#jobs').val('')
+                
+                }
+            },
+            error: function(){
+                $('#disque-notify').text("服务器出现问题，请联系运维同事！");
+                $('#add-submit').show();
+                $('#add-loading').hide();
+            }
+        })
+    }
+    </script>
+{% endblock %}
