@@ -1,4 +1,8 @@
 # coding: utf-8
+import json
+import requests
+from pyzabbix import ZabbixAPI
+from bs4 import BeautifulSoup
 
 from django.shortcuts import render,render_to_response,HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -12,8 +16,64 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 
-
 # Create your views here.
+class EZUser(object):
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+        self.email = username + '@ezbuy.com'
+
+    def create_zabbix(self, url, admin_user, admin_pass, usrgrpid):
+        """
+        :param url: URL of zabbix server
+        :param admin_user: login name of zabbix admin
+        :param admin_pass: login password of zabbix admin
+        :param usrgrpid: zabbix groups attach to :username
+        :return: None
+        """
+        za = ZabbixAPI(url)
+        print '-- Zabbix Login: %s@%s' % (admin_user, url)
+        za.login(admin_user, admin_pass)
+        params = {
+            'alias': self.username,
+            'passwd': self.password,
+            'usrgrps': [
+                {'usrgrpid': usrgrpid}
+            ]
+        }
+        print params
+        resp = za.do_request(method='user.create', params=params)
+        print resp
+
+    def create_grafana(self, url):
+        """
+        :param url: URL of grafana
+        :return: bool
+        """
+        req_url = url + '/api/admin/users'
+        headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+        data = dict(name=self.username, email=self.email, login=self.username, password=self.password)
+        resp = requests.post(req_url, data=json.dumps(data), headers=headers)
+        return resp.status_code == 200
+
+    def create_sentry(self, url):
+        req_url = url + '/auth/login/sentry/'
+        s = requests.session()
+        resp = s.get(req_url)
+        soup = BeautifulSoup(resp.content, 'html.parser')
+        csrf = soup.select_one('form.form-stacked input[name="csrfmiddlewaretoken"]').get('value')
+        op = 'register'
+
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Referer': 'https://sentry.65dg.me/auth/login/sentry/',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/64.0.3282.186 Safari/537.36',
+        }
+        data = dict(csrfmiddlewaretoken=csrf, op=op, username=self.email, password=self.password)
+        resp2 = s.post(req_url, data=data, headers=headers)
+        return resp2.status_code == 200
+
 
 @login_required
 def user_list(request):
