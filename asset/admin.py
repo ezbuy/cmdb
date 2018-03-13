@@ -4,7 +4,7 @@ from asset.models import *
 
 
 class goServicesAdmin(admin.ModelAdmin):
-    list_display = ('ip','name','env','group','saltminion','owner','has_statsd','has_sentry','comment')
+    list_display = ('ip','name','env','group','saltminion','owner','has_statsd','has_sentry','comment','ports')
     search_fields = ['name','owner']
 
 class svnAdmin(admin.ModelAdmin):
