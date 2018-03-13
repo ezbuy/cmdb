@@ -1,6 +1,7 @@
 amqp==1.4.9
 anyjson==0.3.3
 backports-abc==0.5
+beautifulsoup4==4.6.0
 billiard==3.3.0.23
 celery==3.1.17
 certifi==2017.4.17
@@ -23,6 +24,7 @@ python-consul==0.7.2
 python-gitlab==0.21.2
 pytz==2017.2
 PyYAML==3.12
+pyzabbix==0.7.4
 pyzmq==16.0.2
 qcloudapi-sdk-python==2.0.10
 qingcloud-sdk==1.2
