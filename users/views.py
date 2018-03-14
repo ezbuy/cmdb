@@ -119,37 +119,42 @@ def user_add(request):
         print e
         result = [{'add_user': 'failed'}]
     else:
-        ez = EZUser(name, password)
-        # create zabbix user
-        for zbx in ZABBIX_INFO:
-            try:
-                ez.create_zabbix(*zbx)
-                result.append({'add_user zabbix(%s)' % zbx[0]: 'successful'})
-            except Exception as e:
-                print e
-                result.append({'add_user zabbix(%s)' % zbx[0]: 'failed'})
+        third = request.POST.getlist('third')
+        if third:
+            ez = EZUser(name, password)
+            if u'zabbix' in third:
+                # create zabbix user
+                for zbx in ZABBIX_INFO:
+                    try:
+                        ez.create_zabbix(*zbx)
+                        result.append({'add_user zabbix(%s)' % zbx[0]: 'successful'})
+                    except Exception as e:
+                        print e
+                        result.append({'add_user zabbix(%s)' % zbx[0]: 'failed'})
 
-        # create grafana user
-        try:
-            code_g = ez.create_grafana(GRAFANA_URL)
-            if code_g:
-                result.append({'add_user grafana': 'successful'})
-            else:
-                raise Exception('Grafana response code %s' % code_g)
-        except Exception as e:
-            print e
-            result.append({'add_user grafana': 'failed'})
+            if u'statsd' in third:
+                # create grafana user
+                try:
+                    code_g = ez.create_grafana(GRAFANA_URL)
+                    if code_g:
+                        result.append({'add_user grafana': 'successful'})
+                    else:
+                        raise Exception('Grafana response code %s' % code_g)
+                except Exception as e:
+                    print e
+                    result.append({'add_user grafana': 'failed'})
 
-        # create sentry user
-        try:
-            code_s = ez.create_sentry(SENTRY_URL)
-            if code_s:
-                result.append({'add_user sentry': 'successful'})
-            else:
-                raise Exception('Sentry response code %s' % code_s)
-        except Exception as e:
-            print e
-            result.append({'add_user sentry': 'failed'})
+            if u'sentry' in third:
+                # create sentry user
+                try:
+                    code_s = ez.create_sentry(SENTRY_URL)
+                    if code_s:
+                        result.append({'add_user sentry': 'successful'})
+                    else:
+                        raise Exception('Sentry response code %s' % code_s)
+                except Exception as e:
+                    print e
+                    result.append({'add_user sentry': 'failed'})
 
     return render(request,'getdata.html',{'result':result})
 

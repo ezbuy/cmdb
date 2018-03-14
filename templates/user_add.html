@@ -42,6 +42,12 @@
                         <fieldset class="form-group">
                             <input type="text" class="form-control" id="phone" placeholder="用来发送钉钉消息" name="phone" required="">
                         </fieldset>
+                            <label for="third-party">创建其他系统账号</label>
+                            <fieldset class="form-group">
+                                <label class="checkbox-inline"><input type="checkbox" name="third" value="zabbix"> Zabbix </label>
+                                <label class="checkbox-inline"><input type="checkbox" name="third" value="statsd"> Statsd </label>
+                                <label class="checkbox-inline"><input type="checkbox" name="third" value="sentry"> Sentry </label>
+                            </fieldset>
                     </table>
                 </div>
                     <input id="sub" type="submit" value="提交">
