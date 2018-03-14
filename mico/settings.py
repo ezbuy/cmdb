@@ -243,3 +243,9 @@ CONSUL_AGENT = {
     'aws': '127.0.0.1',
     'qcd': '127.0.0.1',
 }
+
+ZABBIX_INFO = [
+    ('https://zabbix.localhost', 'admin', 'admin', '13'),
+]
+GRAFANA_URL = 'https://<user>:<pass>@grafana.localhost'
+SENTRY_URL = 'https://sentry.localhost'

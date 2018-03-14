@@ -3,6 +3,7 @@ import json
 import requests
 from pyzabbix import ZabbixAPI
 from bs4 import BeautifulSoup
+from mico.settings import ZABBIX_INFO, GRAFANA_URL, SENTRY_URL
 
 from django.shortcuts import render,render_to_response,HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -114,6 +115,39 @@ def user_add(request):
     except Exception, e:
         print e
         result = [{'add_user': 'failed'}]
+    else:
+        ez = EZUser(name, password)
+        # create zabbix user
+        for zbx in ZABBIX_INFO:
+            try:
+                ez.create_zabbix(*zbx)
+                result.append({'add_user zabbix(%s)' % zbx[0]: 'successful'})
+            except Exception as e:
+                print e
+                result.append({'add_user zabbix(%s)' % zbx[0]: 'failed'})
+
+        # create grafana user
+        try:
+            code_g = ez.create_grafana(GRAFANA_URL)
+            if code_g:
+                result.append({'add_user grafana': 'successful'})
+            else:
+                raise Exception('Grafana response code %s' % code_g)
+        except Exception as e:
+            print e
+            result.append({'add_user grafana': 'failed'})
+
+        # create sentry user
+        try:
+            code_s = ez.create_sentry(SENTRY_URL)
+            if code_s:
+                result.append({'add_user sentry': 'successful'})
+            else:
+                raise Exception('Sentry response code %s' % code_s)
+        except Exception as e:
+            print e
+            result.append({'add_user sentry': 'failed'})
+
     return render(request,'getdata.html',{'result':result})
 
 class user_edit_form(ModelForm):
