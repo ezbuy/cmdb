@@ -62,7 +62,6 @@ def mautic_restart(request):
     ip = request.META['REMOTE_ADDR']
     host = request.POST['host']
 
-    result = []
     try:
         if not user.groups.filter(name__in=['admin', 'mautic']).exists():
             raise Exception('Permission Denied!')
@@ -74,12 +73,11 @@ def mautic_restart(request):
             'tgt': host,
             'arg': 'service php7.1-fpm restart',
         }
-        resp = salt_api.salt_cmd(data)
-        result.append(resp['return'])
+        result = salt_api.salt_cmd(data)['return']
         logs(user, ip, host, 'service php7.1-fpm restart')
     except Exception as e:
         print e
-        result.append({'restart mautic failed': str(e)})
+        result = [{'restart mautic failed': str(e)}]
 
     return render(request, 'getdata.html', {'result': result})
 
