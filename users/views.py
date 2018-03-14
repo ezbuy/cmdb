@@ -1,7 +1,6 @@
 # coding: utf-8
 import json
 import requests
-import urllib3
 from pyzabbix import ZabbixAPI
 from bs4 import BeautifulSoup
 from mico.settings import ZABBIX_INFO, GRAFANA_URL, SENTRY_URL
@@ -16,8 +15,6 @@ from django.forms import ModelForm
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
-
-urllib3.disable_warnings()
 
 
 # Create your views here.
