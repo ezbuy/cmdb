@@ -49,6 +49,41 @@ def command_req(request):
     return render(request, 'getdata.html', {'result': result})
 
 
+@login_required
+@deny_resubmit(page_key='restart_mautic')
+def mautic_index(request):
+    return render(request, 'restartMautic.html')
+
+
+@login_required
+@deny_resubmit(page_key='restart_mautic')
+def mautic_restart(request):
+    user = request.user
+    ip = request.META['REMOTE_ADDR']
+    host = request.POST['host']
+
+    result = []
+    try:
+        if not user.groups.filter(name__in=['admin', 'mautic']).exists():
+            raise Exception('Permission Denied!')
+
+        salt_api = SaltApi()
+        data = {
+            'client': 'local',
+            'fun': 'cmd.run',
+            'tgt': host,
+            'arg': 'service php7.1-fpm restart',
+        }
+        resp = salt_api.salt_cmd(data)
+        result.append(resp['return'])
+        logs(user, ip, host, 'service php7.1-fpm restart')
+    except Exception as e:
+        print e
+        result.append({'restart mautic failed': str(e)})
+
+    return render(request, 'getdata.html', {'result': result})
+
+
 @task
 def command_exec(username, phone, ip, svc_name, cmd, zone, output):
     cmd_host = cmd_host_qcd if zone == 'qcd' else cmd_host_aws

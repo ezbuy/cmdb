@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% include 'link_css.html' %}
+{% block content %}
+
+    <div class="well m-t">
+        <strong>mautic：重启 PHP</strong>
+    </div>
+
+<div class="text-center">
+<form  class="col-lg-12" action="{% url 'mautic_restart' %}" method="post">
+     <fieldset class="form-group">
+        <label for="host">区域</label>
+        <select class="selectpicker form-control" data-live-search="true" id="host" name="host"  onchange="getoption(this.value)">
+            <option></option>
+            <option value="p-aws2-sg-mautic-2">sg</option>
+            <option value="p-aws2-sg-mautic-1">my</option>
+            <option value="p-aws2-sg-mautic-3">th</option>
+        </select>
+     </fieldset>
+
+    <input  id="sub" class="btn btn-danger" type="submit" value="run" disabled>
+</form>
+</div>
+
+<script>
+    function getoption(val) {
+        if (val) {
+            $("#sub").attr("disabled", false)
+        }
+        else{
+            $("#sub").attr("disabled", true)
+        }
+    }
+</script>
+{% endblock %}
