@@ -39,6 +39,8 @@
     </span>
     <select id="services" multiple class="selectpicker form-control" data-live-search="true" name="services"></select>
     <input id="url" name="url" type="hidden">
+    <input id="sql" name="sql" type="hidden">
+
   </div>
 
 <br/>
@@ -90,7 +92,7 @@ $(document).ready(function () {
             return false;
         }
         var url = document.getElementById("url");
-        var url_address = prompt("Please enter your tower url: ","")
+        var url_address = prompt("请输入发布的TAPD URL: ","")
 
         if (url_address == null)
         {
@@ -100,13 +102,22 @@ $(document).ready(function () {
         else if (url_address.match("tower.im") || url_address.match("tapd.cn"))
         {
             url.value = url_address
+            var sql = document.getElementById("sql");
+            var is_sql = prompt("是否有SQL要执行: ","")
+            if (is_sql == "")
+            {
+                alert('不能为空')
+                return false
+            }
+            console.log(is_sql)
             return true
         }
         else
         {
-            alert('The url is error....')
+            alert('URL填写错误')
             return false
         }
+
     }
 </script>
 
