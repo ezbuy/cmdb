@@ -103,7 +103,7 @@ $(document).ready(function () {
         {
             url.value = url_address
             var sql = document.getElementById("sql");
-            var is_sql = prompt("是否有SQL要执行: ","")
+            var is_sql = prompt("是否有SQL要执行，如果有请让DBA执行后再发布: ","")
             if (is_sql == "")
             {
                 alert('不能为空')
@@ -111,7 +111,7 @@ $(document).ready(function () {
             }
             else{
                 var consul = document.getElementById("consul");
-                var is_consul = prompt("是否有consul key添加或修改: ","")
+                var is_consul = prompt("是否有consul key添加或修改，如果有请让运维修改或添加后再发布: ","")
                 if (is_consul == "")
                 {
                     alert('不能为空')
