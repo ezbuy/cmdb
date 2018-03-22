@@ -46,6 +46,38 @@ class EZUser(object):
         resp = za.do_request(method='user.create', params=params)
         print resp
 
+    def delete_zabbix(self, url, admin_user, admin_pass, usrgrpid):
+        """Delete zabbix user.
+
+        :param url: URL of zabbix server
+        :param admin_user: login name of zabbix admin
+        :param admin_pass: login password of zabbix admin
+        :param usrgrpid: zabbix groups attach to :username
+        :return: None
+        """
+        za = ZabbixAPI(url)
+        print '-- Zabbix Login: %s@%s' % (admin_user, url)
+        za.login(admin_user, admin_pass)
+
+        # -- get user id
+        params = {
+            'filter': {
+                'alias': self.username
+            },
+        }
+        resp = za.do_request(method='user.get', params=params)
+        try:
+            userid = resp['result'][0]['userid']
+        except IndexError:
+            return None
+        except Exception as e:
+            print e
+            return None
+
+        # -- delete user id
+        resp = za.do_request(method='user.delete', params=[userid])
+        print resp
+
     def create_grafana(self, url):
         """
         :param url: URL of grafana
@@ -55,6 +87,31 @@ class EZUser(object):
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
         data = dict(name=self.username, email=self.email, login=self.username, password=self.password)
         resp = requests.post(req_url, data=json.dumps(data), headers=headers)
+        return resp.status_code == 200
+
+    def delete_grafana(self, url):
+        """
+        :param url: URL of grafana
+        :return: bool
+        """
+        headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+        # -- get user id
+        req_url = '%s/api/users' % (url,)
+        resp = requests.get(req_url, headers=headers)
+        try:
+            for x in resp.json():
+                if x['email'] == self.email:
+                    userid = x['id']
+                    break
+            else:
+                raise Exception('Not found user: %s' % self.email)
+        except Exception as e:
+            print e
+            return True
+
+        # -- delete user id
+        req_url = '%s/api/admin/users/%s' % (url, userid)
+        resp = requests.delete(req_url, headers=headers)
         return resp.status_code == 200
 
     def create_sentry(self, url):
@@ -203,6 +260,21 @@ def user_is_active(request,id):
     user_info = User.objects.get(id=id)
     if user_info.is_active:
         user_info.is_active = False
+
+        # -- Delete third party account
+        ez = EZUser(user_info.username, None)
+        # delete zabbix user
+        for zbx in ZABBIX_INFO:
+            try:
+                ez.delete_zabbix(*zbx)
+            except Exception as e:
+                print e
+
+        # delete grafana user
+        try:
+            ez.delete_grafana(GRAFANA_URL)
+        except Exception as e:
+            print e
     else:
         user_info.is_active = True
 
