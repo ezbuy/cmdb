@@ -656,7 +656,7 @@ def dingding_robo(hostname='',project='',result='',username='',phone_number='',t
         }
     print data
     try:
-        requests.post(url,headers=headers,data=json.dumps(data),timeout=3)
+        #requests.post(url,headers=headers,data=json.dumps(data),timeout=3)
         requests.post(url2,headers=headers,data=json.dumps(data),timeout=3)
     except Exception,e:
         print e
