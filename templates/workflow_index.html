@@ -136,7 +136,7 @@
                         <select id="service_name" class="selectpicker form-control" data-live-search="true" name="service_name">
                             <option></option>
                             {% for s in services %}
-                                <option value="{{ s['name'] }}">{{ s['name'] }}</option>
+                                <option value="{{ s.name }}">{{ s.name }}</option>
                             {% endfor %}
                         </select>
                         <td>
