@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from asset.utils import deny_resubmit,logs
 from models import TicketType,TicketTasks,TicketOperating,WebInfo
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q, Count
 from salt_api.api import SaltApi
 from asset.models import gogroup,svn,minion,GOTemplate,goservices,gostatus,UserProfile
 from mico.settings import svn_username,svn_password,go_local_path,go_move_path,go_revert_path,svn_gotemplate_repo
@@ -27,7 +27,7 @@ salt_api = SaltApi()
 def index(request):
     ticket_type = TicketType.objects.all()
     webInfo = WebInfo.objects.all().order_by('site_name')
-    services = goservices.objects.values('name')
+    services = goservices.objects.values('name').annotate(dcount=Count('name')).order_by('name')
     return render(request,'workflow_index.html',{'ticket_type':ticket_type,'webInfo':webInfo, 'services': services})
 
 
