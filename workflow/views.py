@@ -16,6 +16,7 @@ import uuid
 import xmlrpclib
 from utils import existGitlabProject
 import time
+import os
 
 salt_api = SaltApi()
 
@@ -134,6 +135,15 @@ def submit_tickets(request):
             "handler":handler,
             "owner":owner
 	    }
+    elif ticket_type == 'offline_go':
+        service_name = request.POST['service_name']
+        salt_command = {
+            'title': title,
+            'ticket_type': ticket_type,
+            'service_name': service_name,
+            'handler': handler,
+            'owner': owner,
+        }
     try:
         salt_command = json.dumps(salt_command)
         ticket_type = TicketType.objects.get(type_name=ticket_type)
@@ -362,6 +372,16 @@ def handle_tickets(request):
             info = 'The "%s" order is failed.' % (content['title'])
             dingding_robo(phone_number=phone_number, types=2, info=info)
             result = [{'HandleTasks':'The task_id handle to failed!'}]
+    elif content['ticket_type'] == 'offline_go':
+        try:
+            offline_go(content['service_name'])
+        except Exception as e:
+            print e
+            handle_result = 1
+            TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
+            TicketOperating.objects.create(operating_id=operating_id, handler=username, content=reply, result='3', submitter=content['owner'])
+            logs(user=request.user, ip=request.META['REMOTE_ADDR'], action='handle ticket (%s)' % content['title'], result='failed')
+            result = [{'HandleTasks': 'The task_id handle to failed!'}]
     else:
         print '--------type is error...'
         handle_result = 1
@@ -387,3 +407,50 @@ def handled_tasks(request):
     return render(request,'handled_tasks.html',{'tasks':tasks})
 
 
+# ****************************************************************************
+#
+# Offline Go Services
+#
+# ****************************************************************************
+def _offline_go(name, super_host, super_port, super_user, super_pass):
+    s = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (super_user, super_pass, super_host, super_port))
+
+    # 1. stop process
+    print '--> 1. stop process: %s' % name
+    try:
+        s.supervisor.stopProcess(name)
+    except Exception as e:
+        print e
+
+    # 2. remove process
+    print '--> 2. remove process: %s' % name
+    try:
+        s.supervisor.removeProcessGroup(name)
+    except Exception as e:
+        print e
+
+
+def _offline_clean(name, salt_minion_hostname):
+    # 3. remove config
+    print '--> 3. remove config: %s' % name
+    basedir = '/etc/supervisord.d'
+    data = {
+        'client': 'local',
+        'tgt': salt_minion_hostname,
+        'fun': 'file.rename',
+        'arg': [os.path.join(basedir, name+'.ini'), os.path.join(basedir, name+'.ini.offline')],
+    }
+    result = salt_api.salt_cmd(data)
+    print result
+
+
+def offline_go(name):
+    services = goservices.objects.filter(name=name)
+    for svc in services:
+        _super = gostatus.objects.get(supervisor_host=svc.ip)
+        _offline_go(name, _super.supervisor_host, _super.supervisor_port,
+                    _super.supervisor_username, _super.supervisor_password)
+        _offline_clean(name, svc.saltminion)
+
+    print '--> 4. delete db record: %s' % name
+    services.delete()
