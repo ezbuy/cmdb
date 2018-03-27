@@ -129,6 +129,23 @@
                     </tr>
                 </table>
             </div>
+            <div id="offline_go" style="display: none">
+                <table align="center">
+                    <tr>
+                        <label for="formGroupExampleInput">Go 服务名称</label>
+                        <select id="service_name" class="selectpicker form-control" data-live-search="true" name="service_name">
+                            <option></option>
+                            {% for s in services %}
+                                <option value="{{ s['name'] }}">{{ s['name'] }}</option>
+                            {% endfor %}
+                        </select>
+                        <td>
+                            <button type="button" onclick="offline_left()">上一步</button>
+                            <button type="button" onclick="offline_right()">下一步</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 			<div id="end" style="display: none">
                 <div class="progress">
 					<div class="bar bar-success" style="width:100%;"></div>
@@ -162,7 +179,10 @@ function one() {
     else if(formSubmit("title") && ticket_types("uat_jenkins")){
         $("#master").hide();
         $("#uat_jenkins").show();
-    } 
+    } else if(formSubmit("title") && ticket_types("offline_go")){
+        $('#master').hide();
+        $('#offline_go').show();
+    }
 }
 
 function go_left() {
@@ -174,6 +194,17 @@ function go_right() {
     if(formSubmit("function") && formSubmit("project") && formSubmit("sentry") && formSubmit("hosts") && formSubmit("go_command") && formSubmit("statsd") && formSubmit("sentry")){
         $("#go").hide();
         $("#end").show();
+    }
+}
+
+function offline_left() {
+    $('#offline_go').hide();
+    $('#master').show();
+}
+function offline_right() {
+    if(formSubmit("service_name")){
+        $('#offline_go').hide();
+        $('#end').show();
     }
 }
 

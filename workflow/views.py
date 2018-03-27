@@ -27,7 +27,8 @@ salt_api = SaltApi()
 def index(request):
     ticket_type = TicketType.objects.all()
     webInfo = WebInfo.objects.all().order_by('site_name')
-    return render(request,'workflow_index.html',{'ticket_type':ticket_type,'webInfo':webInfo})
+    services = goservices.objects.values('name')
+    return render(request,'workflow_index.html',{'ticket_type':ticket_type,'webInfo':webInfo, 'services': services})
 
 
 @login_required
