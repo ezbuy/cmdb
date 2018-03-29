@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf.urls import url,include
 from django.contrib import admin
 from workflow.views import index,get_hosts,my_tickets,get_ticket_tasks,submit_tickets,handle_tickets,handled_tasks
+from workflow.views import get_svc_minions
 
 
 urlpatterns = [
@@ -26,4 +27,5 @@ urlpatterns = [
     url(r'^submit_tickets/$', submit_tickets, name='submit_tickets'),
     url(r'^handle_tickets/$', handle_tickets, name='handle_tickets'),
     url(r'^handled_tasks/$', handled_tasks, name='handled_tasks'),
+    url(r'^svc_minions/$', get_svc_minions, name='get_svc_minions'),
 ]

@@ -1,6 +1,12 @@
 
 {% extends 'base.html' %}
 {% include 'link_css.html' %}
+{% block self_head_css_js %}
+    <link href="/static/alert/chosen.min.css" rel="stylesheet">
+{% endblock %}
+{% block self_footer_js %}
+    <script src="/static/alert/chosen.jquery.min.js"></script>
+{% endblock %}
 {% block content %}
 
 
@@ -146,6 +152,37 @@
                     </tr>
                 </table>
             </div>
+            <div id="migrate_go" style="display: none">
+                <table align="center">
+                    <tr>
+                        <label for="formGroupExampleInput">Go 服务名称</label>
+                        <select id="service_name_m" class="selectpicker form-control" data-live-search="true" name="service_name_m" onchange="migrateMinion(this.value);">
+                            <option></option>
+                            {% for s in services %}
+                                <option value="{{ s.name }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="formGroupExampleInput">选择迁出的服务器</label>
+{#                        <select multiple id="from_hosts_m" class="selectpicker form-control" data-live-search="true" name="from_hosts">#}
+{#                            <option></option>#}
+{#                        </select>#}
+                        <select multiple id="from_hosts_m" name="from_hosts" class="chosen-select">
+                            <option></option>
+                        </select>
+                        <label for="formGroupExampleInput">选择迁入的服务器</label>
+{#                        <select multiple id="to_hosts_m" class="selectpicker form-control" data-live-search="true" name="to_hosts" style="height: 80%;">#}
+{#                            <option></option>#}
+{#                        </select>#}
+                        <select multiple id="to_hosts_m" name="to_hosts" class="chosen-select">
+                            <option></option>
+                        </select>
+                        <td>
+                            <button type="button" onclick="migrate_left()">上一步</button>
+                            <button type="button" onclick="migrate_right()">下一步</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 			<div id="end" style="display: none">
                 <div class="progress">
 					<div class="bar bar-success" style="width:100%;"></div>
@@ -182,6 +219,9 @@ function one() {
     } else if(formSubmit("title") && ticket_types("offline_go")){
         $('#master').hide();
         $('#offline_go').show();
+    } else if(formSubmit("title") && ticket_types("migrate_go")){
+        $('#master').hide();
+        $('#migrate_go').show();
     }
 }
 
@@ -206,6 +246,39 @@ function offline_right() {
         $('#offline_go').hide();
         $('#end').show();
     }
+}
+function migrate_left() {
+    $('#migrate_go').hide();
+    $('#master').show();
+}
+function migrate_right() {
+    if(formSubmit("service_name_m")){
+        $('#migrate_go').hide();
+        $('#end').show();
+    }
+}
+function migrateMinion(val){
+    $.getJSON('/workflow/svc_minions', {'name': val}, function(result){
+        console.log(result);
+        var objFrom=document.getElementById('from_hosts_m'),
+            objTo=document.getElementById('to_hosts_m');
+        objFrom.options.length=0;
+        objTo.options.length=0;
+        for(var i=0;i<result['s'].length;i++){
+            var o=document.createElement('OPTION');
+            o.value=result['s'][i];
+            o.text=result['s'][i];
+            objFrom.add(o)
+        }
+        for(var j=0;j<result['m'].length;j++){
+            var oo=document.createElement('OPTION');
+            oo.value=result['m'][j];
+            oo.text=result['m'][j];
+            objTo.add(oo)
+        }
+        $('#from_hosts_m').trigger("chosen:updated");
+        $('#to_hosts_m').trigger("chosen:updated");
+    })
 }
 
 
@@ -254,6 +327,14 @@ function end() {
     else if(ticket_types("uat_jenkins")){
         $("#end").hide();
         $("#uat_jenkins").show();
+    }
+    else if(ticket_types("offline_go")){
+        $("#end").hide();
+        $("#offline_go").show();
+    }
+    else if(ticket_types("migrate_go")){
+        $("#end").hide();
+        $("#migrate_go").show();
     }
 } 
 
@@ -323,6 +404,8 @@ function getSubmit() {
             $("#sub").attr("disabled", true)
     }
 }
-
+$(document).ready(function(){
+    $('.chosen-select').chosen({width: "100%"});
+})
 </script>
 {% endblock content %}

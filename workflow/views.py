@@ -32,6 +32,15 @@ def index(request):
 
 
 @login_required
+def get_svc_minions(request):
+    svc = goservices.objects.filter(name=request.GET.get('name'))
+    s = [str(i.saltminion) for i in svc]
+    ms = minion.objects.exclude(saltname__in=s).order_by('saltname')
+    m = [str(j) for j in ms]
+    return HttpResponse(json.dumps(dict(m=m, s=s)))
+
+
+@login_required
 def get_hosts(request):
     ticket_type = request.GET['ticket_type']
     obj = TicketType.objects.get(type_name=ticket_type)
@@ -144,6 +153,17 @@ def submit_tickets(request):
             'service_name': service_name,
             'handler': handler,
             'owner': owner,
+        }
+    elif ticket_type == 'migrate_go':
+        service_name = request.POST['service_name_m']
+        salt_command = {
+            'title': title,
+            'ticket_type': ticket_type,
+            'service_name': service_name,
+            'handler': handler,
+            'owner': owner,
+            'to_hosts': request.POST.getlist('to_hosts'),
+            'from_hosts': request.POST.getlist('from_hosts'),
         }
     try:
         salt_command = json.dumps(salt_command)
@@ -376,6 +396,7 @@ def handle_tickets(request):
     elif content['ticket_type'] == 'offline_go':
         try:
             offline_go(content['service_name'])
+            result = [{'HandleTasks': 'The task_id handled successfully!'}]
         except Exception as e:
             print e
             handle_result = 1
@@ -383,19 +404,56 @@ def handle_tickets(request):
             TicketOperating.objects.create(operating_id=operating_id, handler=username, content=reply, result='3', submitter=content['owner'])
             logs(user=request.user, ip=request.META['REMOTE_ADDR'], action='handle ticket (%s)' % content['title'], result='failed')
             result = [{'HandleTasks': 'The task_id handle to failed!'}]
+    elif content['ticket_type'] == 'migrate_go':
+        for host in content['to_hosts']:
+            try:
+                result = _online_go(content['service_name'], host)
+
+                minion_host = minion.objects.get(saltname=host)
+                supervisor_info = gostatus.objects.get(hostname=minion_host)
+                supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (
+                    supervisor_info.supervisor_username, supervisor_info.supervisor_password,
+                    supervisor_info.supervisor_host, supervisor_info.supervisor_port))
+                if supervisor_obj.supervisor.getProcessInfo(content['supervisor_name']):
+                    print '-------successful-----'
+            except Exception as e:
+                print e
+                TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
+                TicketOperating.objects.create(operating_id=operating_id, handler=username, content=reply, result='3',
+                                               submitter=content['owner'])
+                logs(user=request.user, ip=request.META['REMOTE_ADDR'], action='handle ticket (%s)' % content['title'],
+                     result='failed')
+                info = 'The "%s" order is failed,please check in %s host.' % (content['title'], host)
+                dingding_robo(phone_number=phone_number, types=2, info=info)
+                result = [{'HandleTasks': 'The task_id handle to failed!'}]
+                print '------failed-------------'
+                return render(request, 'getdata.html', {'result': result})
+
+        for host in content['from_hosts']:
+            try:
+                offline_go(content['service_name'], host)
+            except Exception as e:
+                print e
+                handle_result = 1
+                TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
+                TicketOperating.objects.create(operating_id=operating_id, handler=username, content=reply, result='3',
+                                               submitter=content['owner'])
+                logs(user=request.user, ip=request.META['REMOTE_ADDR'], action='handle ticket (%s)' % content['title'],
+                     result='failed')
+                result = [{'HandleTasks': 'The task_id handle to failed!'}]
     else:
         print '--------type is error...'
         handle_result = 1
         result = [{'HandleTasks':'The type is error!'}]
     if handle_result == 0:
-            TicketTasks.objects.filter(tasks_id=task_id).update(state='3')
-            TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
-            logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='successful')
-            username = User.objects.get(username=content['owner'])            
-            phone_number = UserProfile.objects.get(user=username).phone_number  
-            info = 'Your "%s" order has been processed,please visit to workflow page.' % content['title']
-            dingding_robo(phone_number=phone_number,types=2,info=info)
-            result = [{'HandleTasks':'The task_id handle to success!'}]
+        TicketTasks.objects.filter(tasks_id=task_id).update(state='3')
+        TicketOperating.objects.create(operating_id=operating_id,handler=username,content=reply,result='1',submitter=content['owner'])
+        logs(user=request.user,ip=request.META['REMOTE_ADDR'],action='handle ticket (%s)' % content['title'],result='successful')
+        username = User.objects.get(username=content['owner'])
+        phone_number = UserProfile.objects.get(user=username).phone_number
+        info = 'Your "%s" order has been processed,please visit to workflow page.' % content['title']
+        dingding_robo(phone_number=phone_number,types=2,info=info)
+        result = [{'HandleTasks':'The task_id handle to success!'}]
     return render(request,'getdata.html',{'result':result}) 
 
 
@@ -417,14 +475,14 @@ def _offline_go(name, super_host, super_port, super_user, super_pass):
     s = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (super_user, super_pass, super_host, super_port))
 
     # 1. stop process
-    print '--> 1. stop process: %s' % name
+    print '--> 1. stop process: %s@%s' % (name, super_host)
     try:
         s.supervisor.stopProcess(name)
     except Exception as e:
         print e
 
     # 2. remove process
-    print '--> 2. remove process: %s' % name
+    print '--> 2. remove process: %s@%s' % (name, super_host)
     try:
         s.supervisor.removeProcessGroup(name)
     except Exception as e:
@@ -433,7 +491,7 @@ def _offline_go(name, super_host, super_port, super_user, super_pass):
 
 def _offline_clean(name, salt_minion_hostname):
     # 3. remove config
-    print '--> 3. remove config: %s' % name
+    print '--> 3. remove config: %s@%s' % (name, salt_minion_hostname)
     basedir = '/etc/supervisord.d'
     data = {
         'client': 'local',
@@ -445,13 +503,63 @@ def _offline_clean(name, salt_minion_hostname):
     print result
 
 
-def offline_go(name):
-    services = goservices.objects.filter(name=name)
+def offline_go(name, host=None):
+    if host is None:
+        services = goservices.objects.filter(name=name)
+    else:
+        services = goservices.objects.filter(name=name, saltminion__saltname=host)
+
     for svc in services:
         _super = gostatus.objects.get(supervisor_host=svc.ip)
         _offline_go(name, _super.supervisor_host, _super.supervisor_port,
                     _super.supervisor_username, _super.supervisor_password)
         _offline_clean(name, svc.saltminion)
 
-    print '--> 4. delete db record: %s' % name
+    print '--> 4. delete db record: %s%s' % (name, '' if host is None else '@' + host)
     services.delete()
+
+
+def _online_go(name, host):
+    svc = goservices.objects.get(name=name)
+    nvs = svn.objects.get(project=svc.group)
+
+    if host.find(salt_location) > 0:
+        print '-----salt_location:', salt_location
+        salt_run = SaltApi(salt_location)
+    else:
+        salt_run = SaltApi()
+
+    data = {
+        'client': 'local_async',
+        'fun': 'state.sls',
+        'tgt': host,
+        'arg': [
+            'goservices.supervisor_submodule',
+            'pillar={'
+            '"goprograme":"%s",'
+            '"svnrepo":"%s",'
+            '"supProgrameName":"%s",'
+            '"goRunCommand":"%s -c /srv/gotemplate/%s/conf.ctmpl"}' % (
+                nvs.project, nvs.repo, name, ' '.join(name.split('_')), nvs.project
+            )
+        ]
+    }
+    result = salt_run.salt_cmd(data)
+    jid = result['return'][0]['jid']
+    print '------jid------:', jid
+
+    jid_data = {
+        'client': 'runner',
+        'fun': 'jobs.exit_success',
+        'jid': jid
+    }
+    while 1:
+        jid_result = salt_run.salt_cmd(jid_data)
+        print '----jid_result----', jid_result['return'][0][host]
+        if jid_result['return'][0][host]:
+            break
+        else:
+            time.sleep(10)
+
+    print '---jid_result-----', jid_result
+    return result
