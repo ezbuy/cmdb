@@ -65,6 +65,10 @@
                     <fieldset class="form-group">
                         <input type="text" class="form-control" id="go_command" placeholder="spike shop" name="go_command">
                     </fieldset>
+                    <label for="formGroupExampleInput">服务监听端口(服务监听多个端口用逗号隔开，服务没有监听端口请输入None)</label>
+                    <fieldset class="form-group">
+                        <input type="text" class="form-control" id="go_port" placeholder="14101,14102" name="go_port">
+                    </fieldset>
                     <label for="formGroupExampleInput">statsd地址</label>
                     <fieldset class="form-group">
                         <input type="text" class="form-control" id="statsd" placeholder="http://stats.abc.com/svn/spike" name="statsd">
@@ -231,7 +235,10 @@ function go_left() {
 }
 
 function go_right() {
-    if(formSubmit("function") && formSubmit("project") && formSubmit("sentry") && formSubmit("hosts") && formSubmit("go_command") && formSubmit("statsd") && formSubmit("sentry")){
+    if(formSubmit("function") && formSubmit("project") &&
+        formSubmit("sentry") && formSubmit("hosts") &&
+        formSubmit("go_command") && formSubmit("statsd") &&
+        formSubmit("sentry") && formSubmit("go_port")){
         $("#go").hide();
         $("#end").show();
     }

@@ -83,6 +83,7 @@ def submit_tickets(request):
         project = request.POST['project']
         project = project.strip()
         go_command = request.POST['go_command']
+        go_port = request.POST['go_port'].replace(' ','')
         supervisor_name = go_command.replace(" ", "_")
         svn_repo = svn_repo_url + project
         statsd = request.POST['statsd']
@@ -98,6 +99,7 @@ def submit_tickets(request):
             "svn_repo":svn_repo,
             "supervisor_name":supervisor_name,
             "go_command":go_command,
+            "go_port": go_port,
             "statsd":statsd,
             "sentry":sentry,
             "handler":handler,
@@ -321,7 +323,9 @@ def handle_tickets(request):
                             owner=content['owner'],
                             has_statsd=content['statsd'],
                             has_sentry=content['sentry'],
-                            comment=content['function'])
+                            comment=content['function'],
+                            ports=content['go_port']
+                        )
                         obj.save()                     
             except Exception, e:
                 print e
