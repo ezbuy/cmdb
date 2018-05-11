@@ -187,6 +187,27 @@
                     </tr>
                 </table>
             </div>
+            <div id="scale_go" style="display: none">
+                <table align="center">
+                    <tr>
+                        <label for="formGroupExampleInput">Go 服务名称</label>
+                        <select id="service_name_s" class="selectpicker form-control" data-live-search="true" name="service_name_s" onchange="scaleMinion(this.value);">
+                            <option></option>
+                            {% for s in services %}
+                                <option value="{{ s.name }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="formGroupExampleInput">选择扩容的服务器</label>
+                        <select multiple id="scale_hosts" name="scale_hosts" class="chosen-select">
+                            <option></option>
+                        </select>
+                        <td>
+                            <button type="button" onclick="scale_left()">上一步</button>
+                            <button type="button" onclick="scale_right()">下一步</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 			<div id="end" style="display: none">
                 <div class="progress">
 					<div class="bar bar-success" style="width:100%;"></div>
@@ -226,6 +247,9 @@ function one() {
     } else if(formSubmit("title") && ticket_types("migrate_go")){
         $('#master').hide();
         $('#migrate_go').show();
+    } else if(formSubmit("title") && ticket_types("scale_go")){
+        $('#master').hide();
+        $('#scale_go').show();
     }
 }
 
@@ -287,6 +311,30 @@ function migrateMinion(val){
         $('#to_hosts_m').trigger("chosen:updated");
     })
 }
+function scale_left() {
+    $('#scale_go').hide();
+    $('#master').show();
+}
+function scale_right() {
+    if(formSubmit("service_name_s")){
+        $('#scale_go').hide();
+        $('#end').show();
+    }
+}
+function scaleMinion(val){
+    $.getJSON('/workflow/svc_minions', {'name': val}, function(result){
+        console.log(result);
+        var objTo=document.getElementById('scale_hosts');
+        objTo.options.length=0;
+        for(var j=0;j<result['m'].length;j++){
+            var oo=document.createElement('OPTION');
+            oo.value=result['m'][j];
+            oo.text=result['m'][j];
+            objTo.add(oo)
+        }
+        $('#scale_hosts').trigger("chosen:updated");
+    })
+}
 
 
 function webpage_left() {
@@ -342,6 +390,10 @@ function end() {
     else if(ticket_types("migrate_go")){
         $("#end").hide();
         $("#migrate_go").show();
+    }
+    else if(ticket_types("scale_go")){
+        $("#end").hide();
+        $("#scale_go").show();
     }
 } 
 

@@ -167,6 +167,16 @@ def submit_tickets(request):
             'to_hosts': request.POST.getlist('to_hosts'),
             'from_hosts': request.POST.getlist('from_hosts'),
         }
+    elif ticket_type == 'scale_go':
+        service_name = request.POST['service_name_s']
+        salt_command = {
+            'title': title,
+            'ticket_type': ticket_type,
+            'service_name': service_name,
+            'handler': handler,
+            'owner': owner,
+            'scale_hosts': request.POST.getlist('scale_hosts'),
+        }
     try:
         salt_command = json.dumps(salt_command)
         ticket_type = TicketType.objects.get(type_name=ticket_type)
@@ -412,14 +422,17 @@ def handle_tickets(request):
         for host in content['to_hosts']:
             try:
                 result = _online_go(content['service_name'], host)
+                print '==> MIGRATE', result
 
                 minion_host = minion.objects.get(saltname=host)
                 supervisor_info = gostatus.objects.get(hostname=minion_host)
                 supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (
                     supervisor_info.supervisor_username, supervisor_info.supervisor_password,
                     supervisor_info.supervisor_host, supervisor_info.supervisor_port))
-                if supervisor_obj.supervisor.getProcessInfo(content['supervisor_name']):
+                if supervisor_obj.supervisor.getProcessInfo(content['service_name']):
                     print '-------successful-----'
+
+                _update_record(content['service_name'], host)
             except Exception as e:
                 print e
                 TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
@@ -445,6 +458,33 @@ def handle_tickets(request):
                 logs(user=request.user, ip=request.META['REMOTE_ADDR'], action='handle ticket (%s)' % content['title'],
                      result='failed')
                 result = [{'HandleTasks': 'The task_id handle to failed!'}]
+    elif content['ticket_type'] == 'scale_go':
+        for host in content['scale_hosts']:
+            try:
+                result = _online_go(content['service_name'], host)
+                print '==> SCALE', result
+
+                minion_host = minion.objects.get(saltname=host)
+                supervisor_info = gostatus.objects.get(hostname=minion_host)
+                supervisor_obj = xmlrpclib.Server('http://%s:%s@%s:%s/RPC2' % (
+                    supervisor_info.supervisor_username, supervisor_info.supervisor_password,
+                    supervisor_info.supervisor_host, supervisor_info.supervisor_port))
+                if supervisor_obj.supervisor.getProcessInfo(content['service_name']):
+                    print '-------successful-----'
+
+                _update_record(content['service_name'], host)
+            except Exception as e:
+                print e
+                TicketTasks.objects.filter(tasks_id=task_id).update(state='5')
+                TicketOperating.objects.create(operating_id=operating_id, handler=username, content=reply, result='3',
+                                               submitter=content['owner'])
+                logs(user=request.user, ip=request.META['REMOTE_ADDR'], action='handle ticket (%s)' % content['title'],
+                     result='failed')
+                info = 'The "%s" order is failed,please check in %s host.' % (content['title'], host)
+                dingding_robo(phone_number=phone_number, types=2, info=info)
+                result = [{'HandleTasks': 'The task_id handle to failed!'}]
+                print '------failed-------------'
+                return render(request, 'getdata.html', {'result': result})
     else:
         print '--------type is error...'
         handle_result = 1
@@ -524,7 +564,7 @@ def offline_go(name, host=None):
 
 
 def _online_go(name, host):
-    svc = goservices.objects.get(name=name)
+    svc = goservices.objects.filter(name=name).first()
     nvs = svn.objects.get(project=svc.group)
 
     if host.find(salt_location) > 0:
@@ -567,3 +607,41 @@ def _online_go(name, host):
 
     print '---jid_result-----', jid_result
     return result
+
+
+def _update_record(name, host):
+    _svc = goservices.objects.filter(name=name).first()
+    minion_host = minion.objects.get(saltname=host)
+    project = _svc.group
+
+    # -------------------------gotemplate-----------------------------------
+    if GOTemplate.objects.filter(hostname=minion_host).filter(project=project).filter(env=1):
+        print 'The %s gotemplate project is existing!!' % project.name
+    else:
+        obj = GOTemplate(
+            username=svn_username,
+            password=svn_password,
+            repo=svn_gotemplate_repo + project.name,
+            localpath=svn_gotemplate_local_path + project.name,
+            env=1,
+            hostname=minion_host,
+            project=project)
+        obj.save()
+
+    # -------------------------goservices-----------------------------------
+    if goservices.objects.filter(saltminion=minion_host).filter(group=project).filter(name=name).filter(env=1):
+        print 'The %s goservice is existing!!' % name
+    else:
+        obj = goservices(
+            ip=minion_host.ip,
+            name=name,
+            env=1,
+            group=project,
+            saltminion=minion_host,
+            owner=_svc.owner,
+            has_statsd=_svc.has_statsd,
+            has_sentry=_svc.has_sentry,
+            comment=_svc.comment,
+            ports=_svc.ports,
+        )
+        obj.save()
