@@ -47,10 +47,10 @@
                                     <th class="text-center"> 端口 </th>
                                     <th class="text-center"> salt minion </th>
                                     <th class="text-center"> owner </th>
+                                    <th class="text-center"> level </th>
+                                    <th class="text-center"> comment </th>
                                     <th class="text-center"> has_statsd </th>
                                     <th class="text-center"> has_sentry </th>
-                                    <th class="text-center"> comment </th>
-
                                 </tr>
                             </thead>
                             <tbody>
@@ -65,9 +65,10 @@
                                     <td class="text-center"> {{ services.ports }} </td>
                                     <td class="text-center">{{ services.saltminion.saltname }}</td>
                                     <td class="text-center">{{ services.owner }}</td>
+                                    <td class="text-center">{{ services.level }}</td>
+                                    <td class="text-center">{{ services.comment }}</td>
                                     <td class="text-center">{{ services.has_statsd  }}</td>
                                     <td class="text-center">{{ services.has_sentry }}</td>
-                                    <td class="text-center">{{ services.comment }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
