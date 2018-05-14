@@ -65,6 +65,13 @@
                     <fieldset class="form-group">
                         <input type="text" class="form-control" id="go_command" placeholder="spike shop" name="go_command">
                     </fieldset>
+                    <label for="formGroupExampleInput">服务级别</label>
+                    <fieldset class="form-group">
+                        <select id="level" name="level" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                            <option value ="P0">P0</option>
+                            <option value ="P1">P1</option>
+                        </select>
+                    </fieldset>
                     <label for="formGroupExampleInput">服务监听端口(服务监听多个端口用逗号隔开，服务没有监听端口请输入None)</label>
                     <fieldset class="form-group">
                         <input type="text" class="form-control" id="go_port" placeholder="14101,14102" name="go_port">
@@ -262,7 +269,9 @@ function go_right() {
     if(formSubmit("function") && formSubmit("project") &&
         formSubmit("sentry") && formSubmit("hosts") &&
         formSubmit("go_command") && formSubmit("statsd") &&
-        formSubmit("sentry") && formSubmit("go_port")){
+        formSubmit("sentry") && formSubmit("go_port") &&
+        formSubmit("level")
+    ){
         $("#go").hide();
         $("#end").show();
     }
