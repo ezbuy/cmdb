@@ -17,6 +17,7 @@ from QcloudApi.qcloudapi import QcloudApi
 from mico.settings import qcloud_region,qcloud_secretId,qcloud_secretKey
 import qingcloud.iaas
 from mico.settings import qingcloud_secretId,qingcloud_secretKey
+import redis
 salt_api = SaltApi()
 
 
@@ -660,3 +661,20 @@ def dingding_robo(hostname='',project='',result='',username='',phone_number='',t
         requests.post(url2,headers=headers,data=json.dumps(data),timeout=3)
     except Exception,e:
         print e
+
+def in_time_range(ranges):
+    now = time.strptime(time.strftime("%H%M%S"), "%H%M%S")
+    ranges = ranges.split(",")
+    for range in ranges:
+        r = range.split("-")
+        if time.strptime(r[0], "%H%M%S") <= now <= time.strptime(r[1], "%H%M%S") or \
+            time.strptime(r[0], "%H%M%S") >= now >= time.strptime(r[1], "%H%M%S"):
+            print 'inside'
+            return True
+    print 'outside'
+    return False
+
+def get_deploy_user_info():
+    redis_pool = redis.ConnectionPool(host='localhost', port=6379, decode_responses=True,db=0)
+    r = redis.Redis(connection_pool=redis_pool)
+    

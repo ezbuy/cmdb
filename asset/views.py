@@ -5,8 +5,10 @@ from asset.models import *
 from asset.utils import *
 from salt.client import LocalClient
 import os,commands,re,json
-from asset.utils import getNowTime,get_cronjob_list
+from asset.utils import getNowTime,get_cronjob_list,in_time_range
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+from mico.settings import allow_time_range
+
 
 
 
@@ -38,6 +40,10 @@ def getData(request):
     ip = request.META['REMOTE_ADDR']
     Publish = goPublish(env)
 
+    if not in_time_range(allow_time_range):
+        print 'user: %s' % request.user
+        info = {'result':'Not in the deploy time range,the deploy time range is %s everyday.' % allow_time_range}
+        return render(request, 'getdata.html', {'result': [info]})
     result = []
     for svc in services:
         rst = Publish.deployGo(data, svc, request.user, ip, tower_url, request.POST['phone_number'])

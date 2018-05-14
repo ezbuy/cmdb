@@ -249,3 +249,6 @@ ZABBIX_INFO = [
 ]
 GRAFANA_URL = 'https://<user>:<pass>@grafana.localhost'
 SENTRY_URL = 'https://sentry.localhost'
+
+# define allow deploy time range
+allow_time_range=("093000-113000,133000-143000,190000-230000")
