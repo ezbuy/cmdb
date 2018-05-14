@@ -129,6 +129,7 @@ class goservices(models.Model):
     has_statsd = models.CharField(max_length=256)
     has_sentry = models.CharField(max_length=256)
     ports = models.CharField(max_length=128, null=True, verbose_name=u'ports')
+    level = models.CharField(max_length=128, null=True, verbose_name=u'level')
     def __unicode__(self):
         return self.name
 

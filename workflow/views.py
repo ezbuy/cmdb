@@ -88,6 +88,7 @@ def submit_tickets(request):
         svn_repo = svn_repo_url + project
         statsd = request.POST['statsd']
         sentry = request.POST['sentry']
+        level = request.POST['level']
         go_command = go_command + " -c /srv/gotemplate/%s/conf.ctmpl" % project
         
         salt_command = {
@@ -96,6 +97,7 @@ def submit_tickets(request):
             "function":function,
             "hosts":hosts,
             "project":project,
+            "level":level,
             "svn_repo":svn_repo,
             "supervisor_name":supervisor_name,
             "go_command":go_command,
@@ -334,7 +336,8 @@ def handle_tickets(request):
                             has_statsd=content['statsd'],
                             has_sentry=content['sentry'],
                             comment=content['function'],
-                            ports=content['go_port']
+                            ports=content['go_port'],
+                            level=content['level']
                         )
                         obj.save()                     
             except Exception, e:
@@ -643,5 +646,6 @@ def _update_record(name, host):
             has_sentry=_svc.has_sentry,
             comment=_svc.comment,
             ports=_svc.ports,
+            level=_svc.level
         )
         obj.save()
