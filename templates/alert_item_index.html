@@ -98,7 +98,11 @@
                                     {% else %}
                                         <td class="text-center">禁用告警</td>
                                     {% endif %}
-                                    <td class="text-center">{{ info.expr }}</td>
+                                    {% if info.state_ratio == 0 %}
+                                        <td class="text-center">日环比 超过{{ info.expr }}%</td>
+                                    {% else %}
+                                        <td class="text-center">{{ info.expr }}</td>
+                                    {% endif %}
                                     <td class="text-center">{{ info.interval }}秒</td>
                                     <td class="text-center">
                                         {% if info.func == 'avg' %}
@@ -179,8 +183,9 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right">触发条件：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <span>
-                                            <select required id="modal-form-expr-logic" name="expr-logic">
+                                            <select required id="modal-form-expr-logic" name="expr-logic" onchange="selectRatio(this.value);">
                                                 <option></option>
+                                                <option value=">>>">日环比 超过</option>
                                                 <option value=">">大于</option>
                                                 <option value=">=">大于等于</option>
                                                 <option value="<">小于</option>
@@ -191,6 +196,7 @@
                                         </span>
                                         <span>
                                             <input required digits="true" type="text" id="modal-form-expr-threshold" name="expr-threshold">
+                                            <span id="modal-form-ratio-mark" style="display: none">%</span>
                                         </span>
                                     </div>
                                 </div>
@@ -296,8 +302,9 @@
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right">触发条件：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <span>
-                                            <select required id="modal-form-edit-expr-logic" name="expr-logic">
+                                            <select required id="modal-form-edit-expr-logic" name="expr-logic" onchange="selectRatioEdit(this.value);">
                                                 <option></option>
+                                                <option value=">>>">日环比 超过</option>
                                                 <option value=">">大于</option>
                                                 <option value=">=">大于等于</option>
                                                 <option value="<">小于</option>
@@ -308,6 +315,7 @@
                                         </span>
                                         <span>
                                             <input required digits="true" type="text" id="modal-form-edit-expr-threshold" name="expr-threshold">
+                                            <span id="modal-form-edit-ratio-mark" style="display: none">%</span>
                                         </span>
                                     </div>
                                 </div>
@@ -413,10 +421,13 @@
             $('#modal-form').modal('show');
         }
         function editModal(item_id, name, ref, key, state, expr, interval, func){
-            var eee=expr.match(/(<|<=|>|>=|==|!=)\s*(\d+)\s*/);
-            var exprLogic=eee[1], exprThreshold=eee[2];
+            var eee=expr.match(/(<|<=|>|>=|==|!=|>>>)\s*(\d+)\s*/), exprLogic, exprThreshold;
+            if(eee){exprLogic=eee[1];exprThreshold=eee[2];}
+            else{exprLogic='>>>';exprThreshold=expr;}
+
             $('#modal-form-edit-expr-threshold').val(exprThreshold);
             $('#modal-form-edit-expr-logic').find('option[value="'+exprLogic+'"]').prop('selected', true).trigger('chosen:updated');
+            if(exprLogic==='>>>'){$('#modal-form-edit-ratio-mark').show()}
 
             $('#modal-form-edit-id').val(item_id);
             $('#modal-form-edit-name').val(name);
@@ -432,7 +443,8 @@
             var exprLogic=$('#modal-form-expr-logic').val(), exprThreshold=$('#modal-form-expr-threshold').val();
             var fd=new FormData(form);
             fd.append('pid', '{{ pid }}');
-            fd.append('expr', exprLogic+exprThreshold);
+            if(exprLogic==='>>>'){fd.append('expr', exprThreshold);fd.append('state_ratio', '0');}
+            else{fd.append('expr', exprLogic+exprThreshold);fd.append('state_ratio', '1');}
             $.ajax({
                 url: "/alert/items/add/",
                 type: "POST",
@@ -452,7 +464,8 @@
             $('#modal-loading').modal('show');
             var exprLogic=$('#modal-form-edit-expr-logic').val(), exprThreshold=$('#modal-form-edit-expr-threshold').val();
             var fd=new FormData(form);
-            fd.append('expr', exprLogic+exprThreshold);
+            if(exprLogic==='>>>'){fd.append('expr', exprThreshold);fd.append('state_ratio', '0');}
+            else{fd.append('expr', exprLogic+exprThreshold);fd.append('state_ratio', '1');}
             var item_id=$('#modal-form-edit-id').val();
             $.ajax({
                 url: "/alert/items/edit/?item_id="+item_id,
@@ -485,6 +498,28 @@
             });
         }
         {% endif %}
+        function selectRatio(val){
+            if(val==='>>>'){
+                $('#modal-form-ratio-mark').show();
+                $('#modal-form-interval').val('3600').closest('div.form-group').hide();
+                $('#modal-form-func option[value="last"]').attr('disabled', true);
+            } else{
+                $('#modal-form-ratio-mark').hide();
+                $('#modal-form-interval').val('60').closest('div.form-group').show();
+                $('#modal-form-func option[value="last"]').attr('disabled', false);
+            }
+        }
+        function selectRatioEdit(val){
+            if(val==='>>>'){
+                $('#modal-form-edit-ratio-mark').show();
+                $('#modal-form-edit-interval').val('3600').closest('div.form-group').hide();
+                $('#modal-form-edit-func option[value="last"]').attr('disabled', true);
+            } else{
+                $('#modal-form-edit-ratio-mark').hide();
+                $('#modal-form-edit-interval').val('60').closest('div.form-group').show();
+                $('#modal-form-edit-func option[value="last"]').attr('disabled', false);
+            }
+        }
 
         jQuery(function($) {
             $('#modal-form form.form-horizontal').validate({
