@@ -211,7 +211,8 @@ def item_view(request):
 def item_add(request):
     aac_url = '%s/items' % aac_api
     try:
-        keys = ('pid', 'name', 'ref', 'key', 'state', 'expr', 'interval', 'error', 'recovery', 'func', 'state_ratio')
+        keys = ('pid', 'name', 'ref', 'key', 'state', 'expr', 'interval', 'error', 'recovery', 'func', 'state_ratio',
+                'silent_from', 'silent_to')
         data = {k: v for k, v in request.POST.items() if k in keys}
         if not check_metrics(data['key']):
             raise Exception('<strong>%s</strong> is NOT FOUND, please check and try again.' % data['key'])
@@ -232,7 +233,8 @@ def item_edit(request):
 
     aac_url = '%s/items/%s' % (aac_api, item_id)
     try:
-        keys = ('pid', 'name', 'ref', 'key', 'state', 'expr', 'interval', 'error', 'recovery', 'func', 'state_ratio')
+        keys = ('pid', 'name', 'ref', 'key', 'state', 'expr', 'interval', 'error', 'recovery', 'func', 'state_ratio',
+                'silent_from', 'silent_to')
         data = {k: v for k, v in request.POST.items() if k in keys}
         if not check_metrics(data['key']):
             raise Exception('<strong>%s</strong> is NOT FOUND, please check and try again.' % data['key'])

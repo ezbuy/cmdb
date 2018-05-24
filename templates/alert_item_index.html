@@ -83,6 +83,7 @@
                                     <th class="text-center"> 触发条件 </th>
                                     <th class="text-center"> 触发间隔 </th>
                                     <th class="text-center"> 触发函数 </th>
+                                    <th class="text-center"> 静默时间 </th>
                                     <th class="text-center"> </th>
                                 </tr>
                             </thead>
@@ -118,8 +119,15 @@
                                         {% endif %}
                                     </td>
                                     <td class="text-center">
+                                        {% if info.silent_from == -1 or info.silent_to == -1 or info.silent_from == info.silent_to %}
+                                            无
+                                        {% else %}
+                                            {{ info.silent_from }}:00 ~ {% if info.silent_from > info.silent_to %}次日{% endif %}{{ info.silent_to }}:00
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
                                         <button onclick="histModal('{{ info.id }}', '{{ info.name }}');return false;">历史数据</button>
-                                        <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.ref }}', '{{ info.key }}', '{{ info.state }}', '{{ info.expr }}', '{{ info.interval }}', '{{ info.func }}');return false;">编辑</button>
+                                        <button onclick="editModal('{{ info.id }}', '{{ info.name }}', '{{ info.ref }}', '{{ info.key }}', '{{ info.state }}', '{{ info.expr }}', '{{ info.interval }}', '{{ info.func }}', '{{ info.silent_from }}', '{{ info.silent_to }}');return false;">编辑</button>
                                         {% if request.user.is_superuser %}
                                             <button onclick="removeProject('{{ info.id }}', '{{ info.name }}');return false;">删除</button>
                                         {% endif %}
@@ -224,6 +232,30 @@
                                                 <option value="sum">总和</option>
                                             </select>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-silent_from">静默时间：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <span>
+                                            <select name="silent_from" id="modal-form-silent_from">
+                                                <option value="-1"></option>
+                                                {% for _ in 'x'|ljust:'24' %}
+                                                    <option value="{{ forloop.counter0 }}">{{ forloop.counter0 }}:00</option>
+                                                {% endfor %}
+                                            </select>
+                                        </span>
+                                        <span> ~ </span>
+                                        <span>
+                                            <select name="silent_to" id="modal-form-silent_to">
+                                                <option value="-1"></option>
+                                                {% for _ in 'x'|ljust:'24' %}
+                                                    <option value="{{ forloop.counter0 }}">{{ forloop.counter0 }}:00</option>
+                                                {% endfor %}
+                                            </select>
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="space-2"></div>
@@ -349,6 +381,30 @@
                                 <div class="space-2"></div>
 
                                 <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-silent_from">静默时间：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <span>
+                                            <select name="silent_from" id="modal-form-edit-silent_from">
+                                                <option value="-1"></option>
+                                                {% for _ in 'x'|ljust:'24' %}
+                                                    <option value="{{ forloop.counter0 }}">{{ forloop.counter0 }}:00</option>
+                                                {% endfor %}
+                                            </select>
+                                        </span>
+                                        <span> ~ </span>
+                                        <span>
+                                            <select name="silent_to" id="modal-form-edit-silent_to">
+                                                <option value="-1"></option>
+                                                {% for _ in 'x'|ljust:'24' %}
+                                                    <option value="{{ forloop.counter0 }}">{{ forloop.counter0 }}:00</option>
+                                                {% endfor %}
+                                            </select>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-edit-state">状态：</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
@@ -420,7 +476,7 @@
         function addModal(){
             $('#modal-form').modal('show');
         }
-        function editModal(item_id, name, ref, key, state, expr, interval, func){
+        function editModal(item_id, name, ref, key, state, expr, interval, func, silent_from, silent_to){
             var eee=expr.match(/(<|<=|>|>=|==|!=|>>>)\s*(\d+)\s*/), exprLogic, exprThreshold;
             if(eee){exprLogic=eee[1];exprThreshold=eee[2];}
             else{exprLogic='>>>';exprThreshold=expr;}
@@ -436,6 +492,8 @@
             $('#modal-form-edit-state').find('option[value='+state+']').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit-interval').val(interval);
             $('#modal-form-edit-func').find('option[value="'+func+'"]').prop('selected', true).trigger('chosen:updated');
+            $('#modal-form-edit-silent_from').find('option[value="'+silent_from+'"]').prop('selected', true).trigger('chosen:updated');
+            $('#modal-form-edit-silent_to').find('option[value="'+silent_to+'"]').prop('selected', true).trigger('chosen:updated');
             $('#modal-form-edit').modal('show');
         }
         function addProject(form) {
