@@ -122,6 +122,14 @@ def index_metrics():
     return metrics
 
 
+def _phone_to_name(phone):
+    try:
+        user = User.objects.get(userprofile__phone_number=phone)
+        return user.username
+    except Exception as e:
+        return ''
+
+
 @login_required
 def project_view(request):
     aac_url = '%s/projects' % aac_api
@@ -130,8 +138,10 @@ def project_view(request):
         data = resp.json()
         for project in data['projects']:
             try:
-                user = User.objects.get(userprofile__phone_number=project['owner'])
-                project['owner_name'] = user.username
+                phones = project['owner'].split(',')
+                names = set([_phone_to_name(phone) for phone in phones])
+                names.discard('')
+                project['owner_name'] = ','.join(sorted(names))
             except Exception as e:
                 del e
                 project['owner_name'] = project['owner']
