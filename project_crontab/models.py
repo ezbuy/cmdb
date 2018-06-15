@@ -18,7 +18,7 @@ class Svn(models.Model):
     repo = models.CharField(max_length=128, default="http://svn.abc.com/svn/test")
     local_path = models.CharField(max_length=64, default='/srv/testsvn')
     creator = models.ForeignKey(User, verbose_name=u"创建者", related_name="creator_of_svn", default=1)
-    create_time = models.DateTimeField(verbose_name=u"创建日期", default=timezone.now())
+    create_time = models.DateTimeField(verbose_name=u"创建日期", auto_now_add=True, null=True, blank=True)
     updater = models.ForeignKey(User, verbose_name=u"最后更新者", related_name="updater_of_svn", blank=True, null=True)
     update_time = models.DateTimeField(verbose_name=u"最后更新日期", auto_now=True, blank=True, null=True)
 
@@ -38,7 +38,7 @@ class Project(models.Model):
     path = models.CharField(max_length=64, verbose_name=u"本地路径", blank=False, null=False)
     svn = models.ForeignKey(Svn, verbose_name=u"项目的SVN", related_name="svn_of_project")
     creator = models.ForeignKey(User, verbose_name=u"创建者", related_name="creator_of_project", default=1)
-    create_time = models.DateTimeField(verbose_name=u"创建日期", default=timezone.now())
+    create_time = models.DateTimeField(verbose_name=u"创建日期", auto_now_add=True, null=True, blank=True)
     updater = models.ForeignKey(User, verbose_name=u"最后更新者", related_name="updater_of_project", blank=True, null=True)
     update_time = models.DateTimeField(verbose_name=u"最后更新日期", auto_now=True, blank=True, null=True)
 
@@ -59,7 +59,7 @@ class CrontabCmd(models.Model):
     auto_cmd = models.CharField(max_length=128, verbose_name=u"自动补全的命令", blank=False, null=False)
     frequency = models.CharField(max_length=16, verbose_name=u"执行频率", blank=False, null=False)
     creator = models.ForeignKey(User, verbose_name=u"创建者", related_name="creator_of_crontab", default=1)
-    create_time = models.DateTimeField(verbose_name=u"创建日期", default=timezone.now())
+    create_time = models.DateTimeField(verbose_name=u"创建日期", auto_now_add=True, null=True, blank=True)
     updater = models.ForeignKey(User, verbose_name=u"最后更新者", related_name="updater_of_crontab", blank=True, null=True)
     update_time = models.DateTimeField(verbose_name=u"最后更新日期", auto_now=True, blank=True, null=True)
 

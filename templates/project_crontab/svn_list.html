@@ -10,7 +10,7 @@
                         <h5> CRONTAB SVN列表</h5>
                         <div class="ibox-tools">
                             <a>
-                                <i class="fa fa-plus" data-toggle="modal" data-target="#addSvnModal"></i>
+                                <i class="fa fa-plus" data-toggle="modal" data-target="#addSvnModal" id="addSvnIcon"></i>
                             </a>
                             <a>
                                 <i class="fa fa-minus" data-toggle="modal" data-target="#deleteSvnModal"></i>
@@ -37,14 +37,12 @@
                                     <div class="modal-body">
                                         <form class="form-horizontal">
                                             <div class="form-group">
-                                                <label class="col-lg-2 control-label">Salt主机名</label>
+                                                <label class="col-lg-2 control-label">Salt主机</label>
                                                 <div class="col-lg-10">
                                                     <select class="form-control">
-                                                        <option>1</option>
-                                                        <option>2</option>
-                                                        <option>3</option>
-                                                        <option>4</option>
-                                                        <option>5</option>
+                                                        {% for minion in minion_objs %}
+                                                            <option value={{ minion.id }}>{{ minion.saltname }} &nbsp;&nbsp;&nbsp;&nbsp; {{ minion.ip }}</option>
+                                                        {% endfor %}
                                                     </select>
                                                 </div>
                                             </div>
@@ -120,12 +118,12 @@
                                             data-editable='false'>
                                             <input name="id" value="{{ svn.id }}" type="checkbox" class="i-checks">
                                         </td>
-                                        <td class="text-center hostname">{{ svn.salt_minion__saltname }}</td>
-                                        <td class="text-center">{{ svn.salt_minion__ip }}</td>
+                                        <td class="text-center hostname">{{ svn.salt_name }}</td>
+                                        <td class="text-center">{{ svn.salt_ip }}</td>
                                         <td class="text-center hostname">{{ svn.repo }}</td>
                                         <td class="text-center">{{ svn.local_path }}</td>
                                         <td class="text-center">
-                                            {% if svn.creator_chinesename %}{{ svn.creator_chinesename }}{% else %}{{ svn.creator__username }}{% endif %}
+                                            {{ svn.creator_name }}
                                         </td>
                                         <td class="text-center"> {{ svn.create_time|date:"Y-m-d H:i:s" }} </td>
                                     </tr>
