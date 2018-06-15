@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins" id="all">
+                    <div class="ibox-title">
+                        <h5> CRONTAB SVN列表</h5>
+                        <div class="ibox-tools">
+                            <a>
+                                <i class="fa fa-plus" data-toggle="modal" data-target="#addSvnModal"></i>
+                            </a>
+                            <a>
+                                <i class="fa fa-minus" data-toggle="modal" data-target="#deleteSvnModal"></i>
+                            </a>
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="ibox-content">
+                        {# 新增项目的弹框 #}
+                        <div class="modal inmodal fade" id="addSvnModal" tabindex="-1" role="dialog"
+                             aria-labelledby="addModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content animated fadeIn">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"><span
+                                                aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                        <i class="fa fa-dropbox modal-icon"></i>
+                                        <h4 class="modal-title">SVN配置</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label">Salt主机名</label>
+                                                <div class="col-lg-10">
+                                                    <select class="form-control">
+                                                        <option>1</option>
+                                                        <option>2</option>
+                                                        <option>3</option>
+                                                        <option>4</option>
+                                                        <option>5</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label">SVN URL</label>
+                                                <div class="col-lg-10">
+                                                    <input type="text" placeholder="http://svn.abc.com/svn/test"
+                                                           class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label">本地路径</label>
+                                                <div class="col-lg-10">
+                                                    <input type="text" placeholder="/srv/testsvn"
+                                                           class="form-control">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                                        <button type="button" class="btn btn-primary" id="addSvnButton">保存</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {# 新增项目的弹框--end #}
+
+                        {# 删除项目的弹框 #}
+                        <div class="modal inmodal fade" id="deleteSvnModal" tabindex="-1" role="dialog"
+                             aria-labelledby="deleteModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content animated fadeIn">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"><span
+                                                aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                        <i class="fa fa-warning modal-icon" style="color: red"></i>
+                                        <h4 class="modal-title text-danger">确定删除所选SVN？</h4>
+                                        <br>
+                                        <small class="text-warning">请小心操作！</small>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                                        <button type="button" class="btn btn-danger" id="deleteSvnButton">删除</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {# 删除项目的弹框--end #}
+
+                        <form id="asset_form">
+                            <table class="table table-striped table-bordered table-hover " id="editable"
+                                   name="editable">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">
+                                        <input id="checkall" type="checkbox" class="i-checks" name="checkall"
+                                               value="checkall" data-editable='false' onclick="check_all('asset_form')">
+                                    </th>
+                                    <th class="text-center"> Salt主机名</th>
+                                    <th class="text-center"> Salt IP</th>
+                                    <th class="text-center"> SVN URL</th>
+                                    <th class="text-center"> 本地路径</th>
+                                    <th class="text-center"> 创建者</th>
+                                    <th class="text-center"> 创建时间</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for svn in svn_list %}
+                                    <tr class="gradeX">
+                                        <td class="text-center" name="id" value="{{ svn.id }}"
+                                            data-editable='false'>
+                                            <input name="id" value="{{ svn.id }}" type="checkbox" class="i-checks">
+                                        </td>
+                                        <td class="text-center hostname">{{ svn.salt_minion__saltname }}</td>
+                                        <td class="text-center">{{ svn.salt_minion__ip }}</td>
+                                        <td class="text-center hostname">{{ svn.repo }}</td>
+                                        <td class="text-center">{{ svn.local_path }}</td>
+                                        <td class="text-center">
+                                            {% if svn.creator_chinesename %}{{ svn.creator_chinesename }}{% else %}{{ svn.creator__username }}{% endif %}
+                                        </td>
+                                        <td class="text-center"> {{ svn.create_time|date:"Y-m-d H:i:s" }} </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/custom/svn.js"></script>
+{% endblock %}
+

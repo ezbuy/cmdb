@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'command_job',
     'consul_kv',
     'disque',
+    'project_crontab',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -158,7 +159,7 @@ salt_location = 'slq'
 ##dingding notification
 dingding_api = 'http://dlog.abc.me/dlog'
 
-##crontab api
+##project_crontab api
 crontab_api = 'http://192.168.199.64:5000'
 
 ##kettle setting
