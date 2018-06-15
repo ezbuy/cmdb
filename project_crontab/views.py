@@ -40,10 +40,10 @@ def addCronSvn(request):
     msg = 'ok'
     user = request.user
     salt_id = request.POST['salt_id']
-    repo = request.POST['repo']
-    local_path = request.POST['local_path']
-    username = request.POST['username']
-    password = request.POST['password']
+    repo = request.POST['repo'].strip()
+    local_path = request.POST['local_path'].strip()
+    username = request.POST['username'].strip()
+    password = request.POST['password'].strip()
     try:
         minion_obj = asset_models.minion.objects.get(id=int(salt_id))
     except asset_models.minion.DoesNotExist:
@@ -109,8 +109,8 @@ def addCronProject(request):
     msg = 'ok'
     user = request.user
     svn_id = request.POST['svn_id']
-    name = request.POST['name']
-    path = request.POST['path']
+    name = request.POST['name'].strip()
+    path = request.POST['path'].strip()
     try:
         svn_obj = models.Svn.objects.get(id=int(svn_id))
     except models.Svn.DoesNotExist:
@@ -148,20 +148,75 @@ def delCronProject(request):
 
 @login_required
 def crontabList(request):
-    crontab_list = models.CrontabCmd.objects.all().order_by('project__name', 'cmd')
-    return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list})
+    project_objs = models.Project.objects.all().order_by('name')
+    project_list = [
+        {'id': svn_obj.id,
+         'name': svn_obj.name,
+         'svn_url': svn_obj.svn.repo,
+         }
+        if svn_obj.creator.first_name or svn_obj.creator.last_name
+        else
+        {'id': svn_obj.id,
+         'name': svn_obj.name,
+         'svn_url': svn_obj.svn.repo,
+         }
+        for svn_obj in project_objs]
+    crontab_objs = models.CrontabCmd.objects.all().order_by('project__name', 'cmd')
+    return render(request, 'project_crontab/crontab_list.html', {'crontab_objs': crontab_objs, 'project_list': project_list})
 
 
 @login_required
 def addCrontab(request):
-    crontab_list = models.CrontabCmd.objects.all().order_by('project__name', 'cmd')
-    return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list})
+    errcode = 0
+    msg = 'ok'
+    user = request.user
+    project_id = request.POST['project_id']
+    cmd = request.POST['cmd'].strip()
+    frequency = request.POST['frequency'].strip()
+    try:
+        project_obj = models.Project.objects.get(id=int(project_id))
+    except models.Project.DoesNotExist:
+        print 'Project DoesNotExist'
+        errcode = 500
+        msg = u'所选项目不存在'
+    else:
+        try:
+            models.CrontabCmd.objects.get(project=project_obj, cmd=cmd, frequency=frequency)
+        except models.CrontabCmd.DoesNotExist:
+            path = project_obj.path
+            cmd_list = cmd.strip().split(' ')
+            tag = cmd_list[-1].split('.')[0]
+            if tag != 'conf':
+                log_name = tag + '.log'
+            else:
+                log_name = cmd_list[0] + '.log'
+            auto_cmd = frequency.strip() + ' root ' + path + ' '.join(cmd_list[0: -1]) + ' ' + path + \
+                       'conf/' + cmd_list[-1] + ' >> ' + path + log_name + ' 2>&1'
+            print 'auto_cmd : '
+            print auto_cmd
+            models.CrontabCmd.objects.create(project=project_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency, creator=user)
+        else:
+            print 'already exist CrontabCmd'
+            errcode = 500
+            msg = u'相同Crontab Cmd已存在'
+    data = dict(code=errcode, msg=msg)
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 @login_required
 def delCrontab(request):
-    crontab_list = models.CrontabCmd.objects.all().order_by('project__name', 'cmd')
-    return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list})
+    errcode = 0
+    msg = 'ok'
+    svn_ids = request.POST.getlist('svn_ids', [])
+    del_svn_ids = [int(i) for i in svn_ids]
+    svn_objs = models.CrontabCmd.objects.filter(id__in=del_svn_ids)
+    # if len(svn_objs) == 0:
+    #     errcode = 500
+    #     msg = u'选中的项目在数据库中不存在'
+    # else:
+    #     svn_objs.delete()
+    data = dict(code=errcode, msg=msg)
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 @login_required

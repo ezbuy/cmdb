@@ -46,8 +46,9 @@ $(document).ready(function () {
         let del_salt_ids = [];
         $("#editable").find(":checkbox:checked").each(function () {
             let salt_id = $(this).val();
-            console.log(salt_id);
-            del_salt_ids.push(salt_id);
+            if (!isNaN(salt_id)){
+                del_salt_ids.push(salt_id);
+            }
         });
 
         if (del_salt_ids.length === 0) {

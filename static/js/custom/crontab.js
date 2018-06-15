@@ -4,19 +4,19 @@
  *********************************/
 
 $(document).ready(function () {
-    $('#addProjectButton').click(function () {
-        let svn_id = $("#svn_select").val();
-        let name = $("#project_name").val().trim();
-        let path = $("#project_path").val().trim();
-        if (svn_id.length === 0 || name.length === 0 || path.length === 0) {
+    $('#addCrontabButton').click(function () {
+        let project_id = $("#project_select").val();
+        let cmd = $("#cmd").val().trim();
+        let frequency = $("#frequency").val().trim();
+        if (project_id.length === 0 || cmd.length === 0 || frequency.length === 0) {
             alert("请填写必填内容");
             return false;
         }
-        let url = "/project_crontab/cronProject/add/";
+        let url = "/project_crontab/cronList/add/";
         let data = {
-            'svn_id': svn_id,
-            'name': name,
-            'path': path,
+            'project_id': project_id,
+            'cmd': cmd,
+            'frequency': frequency,
         };
         $.ajax({
             url: url,
@@ -38,19 +38,25 @@ $(document).ready(function () {
         });
     });
 
-    $('#deleteProjectButton').click(function () {
+    $('#deleteCrontabButton').click(function () {
         let del_svn_ids = [];
         $("#editable").find(":checkbox:checked").each(function () {
             let salt_id = $(this).val();
-            console.log(salt_id);
-            del_svn_ids.push(salt_id);
+            if (!isNaN(salt_id)){
+                alert('isNan');
+                del_svn_ids.push(salt_id);
+            }
+            else{
+                alert('else');
+            }
         });
+        console.log(del_svn_ids);
 
         if (del_svn_ids.length === 0) {
             alert("请选择要删除的项目");
             return false;
         }
-        let url = "/project_crontab/cronProject/del/";
+        let url = "/project_crontab/cronList/del/";
         let data = {
             'svn_ids': del_svn_ids,
         };

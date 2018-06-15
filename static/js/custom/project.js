@@ -12,6 +12,10 @@ $(document).ready(function () {
             alert("请填写必填内容");
             return false;
         }
+        if (path.charAt(path.length - 1) != "/") {
+            alert("本地路径必须以'/'结尾");
+            return false;
+        }
         let url = "/project_crontab/cronProject/add/";
         let data = {
             'svn_id': svn_id,
@@ -42,8 +46,9 @@ $(document).ready(function () {
         let del_svn_ids = [];
         $("#editable").find(":checkbox:checked").each(function () {
             let salt_id = $(this).val();
-            console.log(salt_id);
-            del_svn_ids.push(salt_id);
+            if (!isNaN(salt_id)){
+                del_svn_ids.push(salt_id);
+            }
         });
 
         if (del_svn_ids.length === 0) {

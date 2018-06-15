@@ -55,8 +55,8 @@ class CrontabCmd(models.Model):
     crontab命令信息
     """
     project = models.ForeignKey(Project, verbose_name=u"Crontab所属项目", related_name="project_of_crontab")
-    cmd = models.CharField(max_length=64, verbose_name=u"手动填入的命令", blank=False, null=False)
-    auto_cmd = models.CharField(max_length=128, verbose_name=u"自动补全的命令", blank=False, null=False)
+    cmd = models.CharField(max_length=256, verbose_name=u"手动填入的命令", blank=False, null=False)
+    auto_cmd = models.TextField(verbose_name=u"自动补全的命令", blank=False, null=False)
     frequency = models.CharField(max_length=16, verbose_name=u"执行频率", blank=False, null=False)
     creator = models.ForeignKey(User, verbose_name=u"创建者", related_name="creator_of_crontab", default=1)
     create_time = models.DateTimeField(verbose_name=u"创建日期", auto_now_add=True, null=True, blank=True)
