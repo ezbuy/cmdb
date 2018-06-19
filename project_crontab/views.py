@@ -1,8 +1,10 @@
 # coding:utf8
 from django.shortcuts import render, render_to_response, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 import json
+import getopt
 
 from asset.utils import *
 from project_crontab import models
@@ -145,6 +147,7 @@ def delCronProject(request):
 
 @login_required
 def crontabList(request):
+    page = request.GET.get('page', 1)
     project_objs = models.Project.objects.all().order_by('name')
     project_list = [
         {'id': svn_obj.id,
@@ -159,7 +162,16 @@ def crontabList(request):
          }
         for svn_obj in project_objs]
     crontab_objs = models.CrontabCmd.objects.all().order_by('project__name', 'cmd')
-    return render(request, 'project_crontab/crontab_list.html', {'crontab_objs': crontab_objs, 'project_list': project_list})
+    paginator = Paginator(crontab_objs, 20)
+    try:
+        crontab_list = paginator.page(page)
+    except PageNotAnInteger:
+        crontab_list = paginator.page(1)
+    except EmptyPage:
+        crontab_list = paginator.page(paginator.num_pages)
+    print 'crontab_list : '
+    print crontab_list
+    return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list, 'project_list': project_list})
 
 
 @login_required
@@ -181,15 +193,39 @@ def addCrontab(request):
         except models.CrontabCmd.DoesNotExist:
             path = project_obj.path
             cmd_list = cmd.strip().split(' ')
-            tag = cmd_list[-1].split('.')[0]
-            if tag != 'conf':
-                log_name = tag + '.log'
-            else:
-                log_name = cmd_list[0] + '.log'
-            auto_cmd = frequency.strip() + ' root ' + path + ' '.join(cmd_list[0: -1]) + ' ' + path + \
-                       'conf/' + cmd_list[-1] + ' >> ' + path + log_name + ' 2>&1'
-            print 'auto_cmd : '
+            args_list = []
+            opts_dict = {}
+            options, args = getopt.getopt(cmd_list, "hc:f:d:s:n:")
+            for opt in args:
+                if opt.startswith('-'):
+                    index = args.index(opt)
+                    args_list = args[:index]
+                    key_list = args[index::2]
+                    value_list = args[index+1::2]
+                    opts_dict = dict(zip(key_list, value_list))
+                    break
+
+            auto_cmd = frequency.strip() + ' root ' + path + ' '.join(args_list) + ' '
             print auto_cmd
+            if opts_dict:
+                if '-d' in opts_dict.keys():
+                    log_name = opts_dict['-d'].split('.')[0] + '.log'
+                elif '-c' in opts_dict.keys():
+                    log_name = args_list[0] + '_conf.log'
+                else:
+                    log_name = args_list[0] + '.log'
+                print 'log_name : '
+                print log_name
+                for k, v in opts_dict.items():
+                    if k == '-c':
+                        auto_cmd += k + ' ' + path + 'conf/' + v + ' '
+                    elif k == '-d':
+                        auto_cmd += k + ' ' + path + 'conf/' + v + ' '
+                    else:
+                        auto_cmd += k + ' ' + v + ' '
+
+                auto_cmd += '>> ' + path + log_name + ' 2>&1'
+
             # DB中新增
             models.CrontabCmd.objects.create(project=project_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency, creator=user)
             # 机器上新增
