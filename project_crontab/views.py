@@ -148,7 +148,7 @@ def delCronProject(request):
 @login_required
 def crontabList(request):
     page = request.GET.get('page', 1)
-    project_objs = models.Project.objects.all().order_by('name')
+    project_objs = models.Project.objects.all().order_by('name', '-create_time')
     project_list = [
         {'id': svn_obj.id,
          'name': svn_obj.name,
@@ -169,8 +169,6 @@ def crontabList(request):
         crontab_list = paginator.page(1)
     except EmptyPage:
         crontab_list = paginator.page(paginator.num_pages)
-    print 'crontab_list : '
-    print crontab_list
     return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list, 'project_list': project_list})
 
 
@@ -229,6 +227,25 @@ def addCrontab(request):
             # DB中新增
             models.CrontabCmd.objects.create(project=project_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency, creator=user)
             # 机器上新增
+            saltApi = SaltApi()
+            salt_host = project_obj.svn.salt_minion.saltname
+            pause_auto_cmd = '#' + auto_cmd
+            cmd_on_salt = ["echo '%s' >> /etc/crontab" % pause_auto_cmd, 'env={"LC_ALL": "en_US.UTF-8"}']
+            # cmd = ["svn checkout %s %s --username=%s --password=%s --non-interactive " % (project_obj.svn.repo, project_obj.svn.local_path, project_obj.svn.username, project_obj.svn.password), 'env={"LC_ALL": "en_US.UTF-8"}']
+            print 'cmd_on_salt : '
+            print cmd_on_salt
+            data = {
+                'client': 'local',
+                'tgt': salt_host,
+                'fun': 'cmd.run',
+                'arg': cmd_on_salt
+            }
+            result = salt_api.salt_cmd(data)
+            if result != 0:
+                result = result['return']
+                print result
+
+            # logs(self.login_user, self.ip, 'update svn', result)
 
         else:
             errcode = 500
