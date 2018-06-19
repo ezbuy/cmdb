@@ -43,14 +43,9 @@ $(document).ready(function () {
         $("#editable").find(":checkbox:checked").each(function () {
             let salt_id = $(this).val();
             if (!isNaN(salt_id)){
-                alert('isNan');
                 del_svn_ids.push(salt_id);
             }
-            else{
-                alert('else');
-            }
         });
-        console.log(del_svn_ids);
 
         if (del_svn_ids.length === 0) {
             alert("请选择要删除的项目");

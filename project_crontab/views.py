@@ -204,11 +204,11 @@ def delCrontab(request):
     svn_ids = request.POST.getlist('svn_ids', [])
     del_svn_ids = [int(i) for i in svn_ids]
     svn_objs = models.CrontabCmd.objects.filter(id__in=del_svn_ids)
-    # if len(svn_objs) == 0:
-    #     errcode = 500
-    #     msg = u'选中的项目在数据库中不存在'
-    # else:
-    #     svn_objs.delete()
+    if len(svn_objs) == 0:
+        errcode = 500
+        msg = u'选中的项目在数据库中不存在'
+    else:
+        svn_objs.delete()
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
