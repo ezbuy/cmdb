@@ -47,7 +47,6 @@ def addCronSvn(request):
     try:
         minion_obj = asset_models.minion.objects.get(id=int(salt_id))
     except asset_models.minion.DoesNotExist:
-        print 'minion DoesNotExist'
         errcode = 500
         msg = u'salt minion不存在'
     else:
@@ -57,7 +56,6 @@ def addCronSvn(request):
             models.Svn.objects.create(salt_minion=minion_obj, repo=repo, local_path=local_path, username=username,
                                       password=password, creator=user)
         else:
-            print 'already exist svn'
             errcode = 500
             msg = u'相同svn已存在'
     data = dict(code=errcode, msg=msg)
@@ -114,7 +112,6 @@ def addCronProject(request):
     try:
         svn_obj = models.Svn.objects.get(id=int(svn_id))
     except models.Svn.DoesNotExist:
-        print 'svn DoesNotExist'
         errcode = 500
         msg = u'crontab SVN不存在'
     else:
@@ -123,7 +120,6 @@ def addCronProject(request):
         except models.Project.DoesNotExist:
             models.Project.objects.create(svn=svn_obj, name=name, path=path, creator=user)
         else:
-            print 'already exist Project'
             errcode = 500
             msg = u'相同项目已存在'
     data = dict(code=errcode, msg=msg)
@@ -176,7 +172,6 @@ def addCrontab(request):
     try:
         project_obj = models.Project.objects.get(id=int(project_id))
     except models.Project.DoesNotExist:
-        print 'Project DoesNotExist'
         errcode = 500
         msg = u'所选项目不存在'
     else:
@@ -196,7 +191,6 @@ def addCrontab(request):
             print auto_cmd
             models.CrontabCmd.objects.create(project=project_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency, creator=user)
         else:
-            print 'already exist CrontabCmd'
             errcode = 500
             msg = u'相同Crontab Cmd已存在'
     data = dict(code=errcode, msg=msg)
