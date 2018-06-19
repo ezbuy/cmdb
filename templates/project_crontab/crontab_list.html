@@ -124,18 +124,23 @@
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
                                             width="250px">{{ crontab.cmd }}</td>
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
-                                            width="400px">{{ crontab.auto_cmd }}</td>
+                                            width="450px">{{ crontab.auto_cmd }}</td>
                                         <td class="text-center">{{ crontab.frequency }}</td>
-                                        <td class="text-center" width="100px">{% if crontab.last_run_time %}
+                                        <td class="text-center" width="90px">{% if crontab.last_run_time %}
                                             {{ crontab.last_run_time|date:"Y-m-d H:i:s" }} {% else %}
-                                            --:--:-- {% endif %}</td>
+                                            --:--:-- {% endif %}
+                                        </td>
                                         <td class="text-center" width="60px">
                                             {% if crontab.last_run_result != 1 and crontab.last_run_result != '1' %}
-                                                {{ crontab.last_run_result }} {% else %} -- {% endif %}</td>
-                                        <td class="text-center" width="50px">
-                                            <a><i class="fa fa-play" style="color: #1ab394"></i></a>
-                                            &nbsp;
-                                            <a><i class="fa fa-pause" style="color: orange"></i></a>
+                                                {{ crontab.last_run_result }} {% else %} -- {% endif %}
+                                        </td>
+                                        <td class="text-center" width="30px">
+                                            {% if crontab.cmd_status == 2 or crontab.cmd_status == '2' %}
+                                                <a><i class="fa fa-play" style="color: #1ab394;"></i></a>
+                                            {% else %}
+                                                <a><i class="fa fa-pause" style="color: orange;"></i></a>
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
