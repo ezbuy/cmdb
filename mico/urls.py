@@ -40,5 +40,5 @@ urlpatterns = [
     url(r'^command/', include('command_job.urls')),
     url(r'^consul_kv/', include('consul_kv.urls')),
     url(r'^disque/', include('disque.urls')),
-    url(r'^project_crontab/', include('project_crontab.urls')),
+    url(r'^crontab_manage/', include('project_crontab.urls')),
 ]

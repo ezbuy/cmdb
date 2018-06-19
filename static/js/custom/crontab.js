@@ -12,7 +12,7 @@ $(document).ready(function () {
             alert("请填写必填内容");
             return false;
         }
-        let url = "/project_crontab/cronList/add/";
+        let url = "/crontab_manage/cronList/add/";
         let data = {
             'project_id': project_id,
             'cmd': cmd,
@@ -48,10 +48,10 @@ $(document).ready(function () {
         });
 
         if (del_svn_ids.length === 0) {
-            alert("请选择要删除的项目");
+            alert("请选择要删除的crontab");
             return false;
         }
-        let url = "/project_crontab/cronList/del/";
+        let url = "/crontab_manage/cronList/del/";
         let data = {
             'svn_ids': del_svn_ids,
         };

@@ -14,7 +14,7 @@ $(document).ready(function () {
             alert("请填写必填内容");
             return false;
         }
-        let url = "/project_crontab/cronSvn/add/";
+        let url = "/crontab_manage/cronSvn/add/";
         let data = {
             'salt_id': salt_id,
             'repo': repo,
@@ -55,7 +55,7 @@ $(document).ready(function () {
             alert("请选择要删除的svn");
             return false;
         }
-        let url = "/project_crontab/cronSvn/del/";
+        let url = "/crontab_manage/cronSvn/del/";
         let data = {
             'salt_ids': del_salt_ids,
         };

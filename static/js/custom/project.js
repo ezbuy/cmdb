@@ -16,7 +16,7 @@ $(document).ready(function () {
             alert("本地路径必须以'/'结尾");
             return false;
         }
-        let url = "/project_crontab/cronProject/add/";
+        let url = "/crontab_manage/cronProject/add/";
         let data = {
             'svn_id': svn_id,
             'name': name,
@@ -55,7 +55,7 @@ $(document).ready(function () {
             alert("请选择要删除的项目");
             return false;
         }
-        let url = "/project_crontab/cronProject/del/";
+        let url = "/crontab_manage/cronProject/del/";
         let data = {
             'svn_ids': del_svn_ids,
         };

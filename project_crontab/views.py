@@ -7,6 +7,7 @@ import json
 from asset.utils import *
 from project_crontab import models
 from asset import models as asset_models
+from salt_api.api import SaltApi
 
 
 @login_required
@@ -189,7 +190,10 @@ def addCrontab(request):
                        'conf/' + cmd_list[-1] + ' >> ' + path + log_name + ' 2>&1'
             print 'auto_cmd : '
             print auto_cmd
+            # DB中新增
             models.CrontabCmd.objects.create(project=project_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency, creator=user)
+            # 机器上新增
+
         else:
             errcode = 500
             msg = u'相同Crontab Cmd已存在'

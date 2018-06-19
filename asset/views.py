@@ -305,6 +305,8 @@ def crontab_update(request):
 @login_required
 def cronjob_list(request):
     cron_list = get_cronjob_list()
+    print 'cron_list : ', cron_list
+    print type(cron_list)
     paginator = Paginator(cron_list, 20)
     page = request.GET.get('page')
 
