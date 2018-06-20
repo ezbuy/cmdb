@@ -302,7 +302,10 @@ def startCrontab(request):
         my_cron = CronTab(tabfile='/etc/crontab', user=False)
         auto_cmd = crontab_obj.auto_cmd
         iter = my_cron.find_command(auto_cmd)
-        iter.enable()
+        for i in iter:
+            i.enable()
+            print 'enable---done'
+            break
         my_cron.write()
 
         # 修改数据库中cmd状态
@@ -324,6 +327,14 @@ def pauseCrontab(request):
         msg = u'所选Crontab在数据库中不存在'
     else:
         # 修改机器上crontab状态为暂停
+        my_cron = CronTab(tabfile='/etc/crontab', user=False)
+        auto_cmd = crontab_obj.auto_cmd
+        iter = my_cron.find_command(auto_cmd)
+        for i in iter:
+            i.enable(False)
+            print 'disable---done'
+            break
+        my_cron.write()
 
         # 修改数据库中cmd状态
         crontab_obj.cmd_status = 1
