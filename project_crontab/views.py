@@ -203,7 +203,7 @@ def addCrontab(request):
                     opts_dict = dict(zip(key_list, value_list))
                     break
 
-            auto_cmd = frequency.strip() + ' root ' + path + ' '.join(args_list) + ' '
+            auto_cmd = 'root ' + path + ' '.join(args_list) + ' '
             print auto_cmd
             if opts_dict:
                 if '-d' in opts_dict.keys():
@@ -229,7 +229,7 @@ def addCrontab(request):
             # 机器上新增
             saltApi = SaltApi()
             salt_host = project_obj.svn.salt_minion.saltname
-            pause_auto_cmd = '#' + auto_cmd
+            pause_auto_cmd = '#' + frequency.strip() + ' ' + auto_cmd
             cmd_on_salt = ["echo '%s' >> /etc/crontab" % pause_auto_cmd, 'env={"LC_ALL": "en_US.UTF-8"}']
             # cmd = ["svn checkout %s %s --username=%s --password=%s --non-interactive " % (project_obj.svn.repo, project_obj.svn.local_path, project_obj.svn.username, project_obj.svn.password), 'env={"LC_ALL": "en_US.UTF-8"}']
             print 'cmd_on_salt : '
@@ -240,9 +240,10 @@ def addCrontab(request):
                 'fun': 'cmd.run',
                 'arg': cmd_on_salt
             }
-            result = salt_api.salt_cmd(data)
+            result = saltApi.salt_cmd(data)
             if result != 0:
                 result = result['return']
+                print 'addCrontab--saltApi.salt_cmd--result : '
                 print result
 
             # logs(self.login_user, self.ip, 'update svn', result)

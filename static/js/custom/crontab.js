@@ -74,5 +74,12 @@ $(document).ready(function () {
             }
         });
     });
-
 });
+
+function pauseCrontab(crontab_id) {
+    alert('pause '+crontab_id);
+}
+
+function startCrontab(crontab_id) {
+    alert('start '+crontab_id);
+}

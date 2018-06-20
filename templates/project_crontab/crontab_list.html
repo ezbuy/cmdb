@@ -136,9 +136,9 @@
                                         </td>
                                         <td class="text-center" width="30px">
                                             {% if crontab.cmd_status == 2 or crontab.cmd_status == '2' %}
-                                                <a><i class="fa fa-play" style="color: #1ab394;"></i></a>
+                                                <a href="javascript:void(0);" onclick="pauseCrontab({{ crontab.id }})"><i class="fa fa-play" style="color: #1ab394;"></i></a>
                                             {% else %}
-                                                <a><i class="fa fa-pause" style="color: orange;"></i></a>
+                                                <a href="javascript:void(0);" onclick="startCrontab({{ crontab.id }})"><i class="fa fa-pause" style="color: orange;"></i></a>
                                             {% endif %}
                                         </td>
                                     </tr>
