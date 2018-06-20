@@ -88,10 +88,65 @@ $(document).ready(function () {
     });
 });
 
-function pauseCrontab(crontab_id) {
-    alert('pause ' + crontab_id);
-}
 
 function startCrontab(crontab_id) {
-    alert('start ' + crontab_id);
+    let url = '/crontab_manage/cronList/start/';
+    let data = {
+        'crontab_id': crontab_id,
+    };
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: data,
+        contentType: 'application/x-www-form-urlencoded',
+        traditional: true,
+        beforeSend: function () {
+            // 禁用按钮防止重复提交
+            $("#deleteCrontabButton").attr({disabled: "disabled"});
+        },
+        success: function (result) {
+            if (result.code === 0) {
+                window.location.reload();
+            }
+            else {
+                alert(result.msg);
+                $("#deleteCrontabButton").removeAttr("disabled");
+            }
+        },
+        error: function () {
+            alert('失败');
+            $("#deleteCrontabButton").removeAttr("disabled");
+        }
+    });
+}
+
+function pauseCrontab(crontab_id) {
+    let url = '/crontab_manage/cronList/pause/';
+    let data = {
+        'crontab_id': crontab_id,
+    };
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: data,
+        contentType: 'application/x-www-form-urlencoded',
+        traditional: true,
+        beforeSend: function () {
+            // 禁用按钮防止重复提交
+            $("#deleteCrontabButton").attr({disabled: "disabled"});
+        },
+        success: function (result) {
+            if (result.code === 0) {
+                window.location.reload();
+            }
+            else {
+                alert(result.msg);
+                $("#deleteCrontabButton").removeAttr("disabled");
+            }
+        },
+        error: function () {
+            alert('失败');
+            $("#deleteCrontabButton").removeAttr("disabled");
+        }
+    });
 }

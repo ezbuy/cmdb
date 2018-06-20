@@ -3,8 +3,10 @@ from django.shortcuts import render, render_to_response, HttpResponse, HttpRespo
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-import json
+from crontab import CronTab
 import getopt
+import commands
+import re
 
 from asset.utils import *
 from project_crontab import models
@@ -163,7 +165,7 @@ def crontabList(request):
          'svn_url': svn_obj.svn.repo,
          }
         for svn_obj in project_objs]
-    crontab_objs = models.CrontabCmd.objects.all().order_by('project__name', 'cmd')
+    crontab_objs = models.CrontabCmd.objects.all().order_by('-create_time')
     paginator = Paginator(crontab_objs, 20)
     try:
         crontab_list = paginator.page(page)
@@ -195,18 +197,24 @@ def addCrontab(request):
             cmd_list = cmd.strip().split(' ')
             args_list = []
             opts_dict = {}
-            options, args = getopt.getopt(cmd_list, "hc:f:d:s:n:")
-            for opt in args:
-                if opt.startswith('-'):
-                    index = args.index(opt)
-                    args_list = args[:index]
-                    key_list = args[index::2]
-                    value_list = args[index+1::2]
-                    opts_dict = dict(zip(key_list, value_list))
-                    break
+            if ' -' not in cmd:
+                # 没有参数的命令
+                auto_cmd = 'root ' + path + cmd
+            else:
+                # 有参数的命令
+                options, args = getopt.getopt(cmd_list, "hc:f:d:s:n:")
+                for opt in args:
+                    if opt.startswith('-'):
+                        index = args.index(opt)
+                        args_list = args[:index]
+                        key_list = args[index::2]
+                        value_list = args[index+1::2]
+                        opts_dict = dict(zip(key_list, value_list))
+                        break
+                auto_cmd = 'root ' + path + ' '.join(args_list) + ' '
 
-            auto_cmd = 'root ' + path + ' '.join(args_list) + ' '
             print auto_cmd
+
             if opts_dict:
                 if '-d' in opts_dict.keys():
                     log_name = opts_dict['-d'].split('.')[0] + '.log'
@@ -224,32 +232,38 @@ def addCrontab(request):
                     else:
                         auto_cmd += k + ' ' + v + ' '
 
-                auto_cmd += '>> ' + path + log_name + ' 2>&1'
+                auto_cmd += '>> ' + path + log_name + ' 2>&1' + '\n'
+            else:
+                auto_cmd += auto_cmd + '\n'
 
             # DB中新增
             models.CrontabCmd.objects.create(project=project_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency, creator=user)
+
             # 机器上新增
-            saltApi = SaltApi()
-            salt_host = project_obj.svn.salt_minion.saltname
-            pause_auto_cmd = '#' + frequency.strip() + ' ' + auto_cmd + '\n'
-            cmd_on_salt = ["echo '%s' >> /etc/crontab" % pause_auto_cmd, 'env={"LC_ALL": "en_US.UTF-8"}']
-            # cmd = ["svn checkout %s %s --username=%s --password=%s --non-interactive " % (project_obj.svn.repo, project_obj.svn.local_path, project_obj.svn.username, project_obj.svn.password), 'env={"LC_ALL": "en_US.UTF-8"}']
-            print 'cmd_on_salt : '
-            print cmd_on_salt
-            data = {
-                'client': 'local',
-                'tgt': salt_host,
-                'fun': 'cmd.run',
-                'arg': cmd_on_salt
-            }
-            result = saltApi.salt_cmd(data)
-            if result != 0:
-                result = result['return']
-                print 'addCrontab--saltApi.salt_cmd--result : '
-                print result
-
+            my_cron = CronTab(tabfile='/etc/crontab', user=False)
+            job = my_cron.new(command=auto_cmd)
+            job.setall(frequency.strip())
+            job.enable(False)
+            my_cron.write()
+            # saltApi = SaltApi()
+            # salt_host = project_obj.svn.salt_minion.saltname
+            #pause_auto_cmd = '#' + frequency.strip() + ' ' + auto_cmd
+            # cmd_on_salt = ["echo '%s' >> /etc/crontab" % pause_auto_cmd, 'env={"LC_ALL": "en_US.UTF-8"}']
+            # # cmd = ["svn checkout %s %s --username=%s --password=%s --non-interactive " % (project_obj.svn.repo, project_obj.svn.local_path, project_obj.svn.username, project_obj.svn.password), 'env={"LC_ALL": "en_US.UTF-8"}']
+            # print 'cmd_on_salt : '
+            # print cmd_on_salt
+            # data = {
+            #     'client': 'local',
+            #     'tgt': salt_host,
+            #     'fun': 'cmd.run',
+            #     'arg': cmd_on_salt
+            # }
+            # result = saltApi.salt_cmd(data)
+            # if result != 0:
+            #     result = result['return']
+            #     print 'addCrontab--saltApi.salt_cmd--result : '
+            #     print result
             # logs(self.login_user, self.ip, 'update svn', result)
-
         else:
             errcode = 500
             msg = u'相同Crontab Cmd已存在'
@@ -275,17 +289,45 @@ def delCrontab(request):
 
 @login_required
 def startCrontab(request):
-    crontab_list = models.CrontabCmd.objects.all().order_by('project__name', 'cmd')
-    return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list})
+    errcode = 0
+    msg = 'ok'
+    crontab_id = int(request.POST['crontab_id'])
+    try:
+        crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
+    except models.CrontabCmd.DoesNotExist:
+        errcode = 500
+        msg = u'所选Crontab在数据库中不存在'
+    else:
+        # 修改机器上crontab状态为启动
+        my_cron = CronTab(tabfile='/etc/crontab', user=False)
+        auto_cmd = crontab_obj.auto_cmd
+        iter = my_cron.find_command(auto_cmd)
+        iter.enable()
+        my_cron.write()
 
-
-@login_required
-def stopCrontab(request):
-    crontab_list = models.CrontabCmd.objects.all().order_by('project__name', 'cmd')
-    return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list})
+        # 修改数据库中cmd状态
+        crontab_obj.cmd_status = 2
+        crontab_obj.save()
+    data = dict(code=errcode, msg=msg)
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 @login_required
 def pauseCrontab(request):
-    crontab_list = models.CrontabCmd.objects.all().order_by('project__name', 'cmd')
-    return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list})
+    errcode = 0
+    msg = 'ok'
+    crontab_id = int(request.POST['crontab_id'])
+    try:
+        crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
+    except models.CrontabCmd.DoesNotExist:
+        errcode = 500
+        msg = u'所选Crontab在数据库中不存在'
+    else:
+        # 修改机器上crontab状态为暂停
+
+        # 修改数据库中cmd状态
+        crontab_obj.cmd_status = 1
+        crontab_obj.save()
+    data = dict(code=errcode, msg=msg)
+    return HttpResponse(json.dumps(data), content_type='application/json')
+

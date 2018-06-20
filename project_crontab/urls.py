@@ -13,6 +13,5 @@ urlpatterns = patterns('',
                        url(r'^cronList/add/$', addCrontab, name='addCrontab'),
                        url(r'^cronList/del/$', delCrontab, name='delCrontab'),
                        url(r'^cronList/start/$', startCrontab, name='startCrontab'),
-                       url(r'^cronList/stop/$', stopCrontab, name='stopCrontab'),
                        url(r'^cronList/pause/$', pauseCrontab, name='pauseCrontab'),
                        )
