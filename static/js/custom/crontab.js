@@ -24,16 +24,22 @@ $(document).ready(function () {
             data: data,
             contentType: 'application/x-www-form-urlencoded',
             traditional: true,
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#addCrontabButton").attr({disabled: "disabled"});
+            },
             success: function (result) {
                 if (result.code === 0) {
                     window.location.reload();
                 }
                 else {
-                    alert(result.msg)
+                    alert(result.msg);
+                    $("#addCrontabButton").removeAttr("disabled");
                 }
             },
             error: function () {
                 alert('失败');
+                $("#addCrontabButton").removeAttr("disabled");
             }
         });
     });
@@ -42,7 +48,7 @@ $(document).ready(function () {
         let del_svn_ids = [];
         $("#editable").find(":checkbox:checked").each(function () {
             let salt_id = $(this).val();
-            if (!isNaN(salt_id)){
+            if (!isNaN(salt_id)) {
                 del_svn_ids.push(salt_id);
             }
         });
@@ -61,25 +67,31 @@ $(document).ready(function () {
             data: data,
             contentType: 'application/x-www-form-urlencoded',
             traditional: true,
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#deleteCrontabButton").attr({disabled: "disabled"});
+            },
             success: function (result) {
                 if (result.code === 0) {
                     window.location.reload();
                 }
                 else {
-                    alert(result.msg)
+                    alert(result.msg);
+                    $("#deleteCrontabButton").removeAttr("disabled");
                 }
             },
             error: function () {
                 alert('失败');
+                $("#deleteCrontabButton").removeAttr("disabled");
             }
         });
     });
 });
 
 function pauseCrontab(crontab_id) {
-    alert('pause '+crontab_id);
+    alert('pause ' + crontab_id);
 }
 
 function startCrontab(crontab_id) {
-    alert('start '+crontab_id);
+    alert('start ' + crontab_id);
 }

@@ -152,12 +152,14 @@ def crontabList(request):
     project_list = [
         {'id': svn_obj.id,
          'name': svn_obj.name,
+         'local_path': svn_obj.svn.local_path,
          'svn_url': svn_obj.svn.repo,
          }
         if svn_obj.creator.first_name or svn_obj.creator.last_name
         else
         {'id': svn_obj.id,
          'name': svn_obj.name,
+         'local_path': svn_obj.svn.local_path,
          'svn_url': svn_obj.svn.repo,
          }
         for svn_obj in project_objs]
@@ -229,7 +231,7 @@ def addCrontab(request):
             # 机器上新增
             saltApi = SaltApi()
             salt_host = project_obj.svn.salt_minion.saltname
-            pause_auto_cmd = '#' + frequency.strip() + ' ' + auto_cmd
+            pause_auto_cmd = '#' + frequency.strip() + ' ' + auto_cmd + '\n'
             cmd_on_salt = ["echo '%s' >> /etc/crontab" % pause_auto_cmd, 'env={"LC_ALL": "en_US.UTF-8"}']
             # cmd = ["svn checkout %s %s --username=%s --password=%s --non-interactive " % (project_obj.svn.repo, project_obj.svn.local_path, project_obj.svn.username, project_obj.svn.password), 'env={"LC_ALL": "en_US.UTF-8"}']
             print 'cmd_on_salt : '
