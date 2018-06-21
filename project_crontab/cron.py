@@ -20,6 +20,5 @@ def syncCronHost2DB():
             try:
                 models.CrontabCmd.objects.get(auto_cmd=job.command)
             except models.CrontabCmd.DoesNotExist:
-                pass
-                # frequency = job.split('root')[0].strip()
-                # models.CrontabCmd.objects.create(project=, cmd=job.command, auto_cmd=job.command,frequency=, cmd_status=2, last_run_time=, last_run_result=)
+                frequency = str(job).split('root')[0].strip()
+                models.CrontabCmd.objects.create(project=, cmd=job.command, auto_cmd=job.command, frequency=frequency, cmd_status=2, last_run_time=, last_run_result=)

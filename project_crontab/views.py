@@ -236,15 +236,20 @@ def addCrontab(request):
             else:
                 auto_cmd += auto_cmd + '\n'
 
-            # DB中新增
-            models.CrontabCmd.objects.create(project=project_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency, creator=user)
-
             # 机器上新增
             my_cron = CronTab(tabfile='/etc/crontab', user=False)
             job = my_cron.new(command=auto_cmd, user='root')
             job.setall(frequency.strip())
             job.enable(False)
             my_cron.write()
+
+            # DB中新增
+            if job.is_valid():
+                is_valid = 1
+            else:
+                is_valid = 2
+            models.CrontabCmd.objects.create(project=project_obj, cmd=cmd, auto_cmd=auto_cmd, is_valid=is_valid, frequency=frequency, creator=user)
+
             # saltApi = SaltApi()
             # salt_host = project_obj.svn.salt_minion.saltname
             #pause_auto_cmd = '#' + frequency.strip() + ' ' + auto_cmd
