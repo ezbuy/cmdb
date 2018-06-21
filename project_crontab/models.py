@@ -54,7 +54,7 @@ class CrontabCmd(models.Model):
     crontab命令信息
     """
     STATUS = (
-        (1, U'暂停'),
+        (1, U'暂停中'),
         (2, U'运行中'),
     )
     VALID = (
