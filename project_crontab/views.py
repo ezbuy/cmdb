@@ -306,12 +306,10 @@ def startCrontab(request):
     else:
         # 修改机器上crontab状态为启动
         my_cron = CronTab(tabfile='/etc/crontab', user=False)
-        auto_cmd = crontab_obj.auto_cmd
+        auto_cmd = crontab_obj.auto_cmd.strip()
         print 'startCrontab---auto_cmd : '
         print auto_cmd
         iter = my_cron.find_command(auto_cmd)
-        print 'startCrontab----iter : '
-        print iter
         for i in iter:
             i.enable()
             print 'startCrontab----enable---done'
@@ -339,12 +337,10 @@ def pauseCrontab(request):
     else:
         # 修改机器上crontab状态为暂停
         my_cron = CronTab(tabfile='/etc/crontab', user=False)
-        auto_cmd = crontab_obj.auto_cmd
+        auto_cmd = crontab_obj.auto_cmd.strip()
         print 'pauseCrontab---auto_cmd : '
         print auto_cmd
         iter = my_cron.find_command(auto_cmd)
-        print 'pauseCrontab----iter : '
-        print iter
         for i in iter:
             i.enable()
             print 'disable---done'
