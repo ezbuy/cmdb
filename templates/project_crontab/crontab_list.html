@@ -104,10 +104,11 @@
                                         <input id="checkall" type="checkbox" class="i-checks" name="checkall"
                                                value="checkall" data-editable='false' onclick="check_all('asset_form')">
                                     </th>
+                                    <th class="text-center"> 项目</th>
+                                    <th class="text-center"> Salt主机名</th>
                                     <th class="text-center"> 输入CMD</th>
                                     <th class="text-center"> 执行频率</th>
                                     <th class="text-center"> 自动补全CMD</th>
-                                    <th class="text-center"> Salt主机名</th>
                                     <th class="text-center"> 有效性</th>
                                     <th class="text-center"> 上次执行时间</th>
                                     <th class="text-center"> 上次执行结果</th>
@@ -121,12 +122,13 @@
                                             data-editable='false'>
                                             <input name="id" value="{{ crontab.id }}" type="checkbox" class="i-checks">
                                         </td>
+                                        <td class="text-center hostname">{{ crontab.svn.project_name }}</td>
+                                        <td class="text-center hostname">{{ crontab.svn.salt_minion.saltname }}</td>
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
                                             width="200px">{{ crontab.cmd }}</td>
                                         <td class="text-center">{{ crontab.frequency }}</td>
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
                                             width="450px">{{ crontab.auto_cmd }}</td>
-                                        <td class="text-center hostname">{{ crontab.svn.salt_minion.saltname }}</td>
                                         <td class="text-center">
                                             {% if crontab.is_valid == 2 or crontab.is_valid == '2' %}
                                                 <p style="color: orange">无效</p>
