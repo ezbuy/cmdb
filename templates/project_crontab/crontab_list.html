@@ -39,9 +39,9 @@
                                             <div class="form-group">
                                                 <label class="col-lg-2 control-label"><span style="color: red;">*</span>所属项目</label>
                                                 <div class="col-lg-10">
-                                                    <select class="form-control" id="project_select">
-                                                        {% for minion in project_list %}
-                                                            <option value={{ minion.id }}>{{ minion.name }}&nbsp;&nbsp;&nbsp;&nbsp;{{ minion.local_path }}&nbsp;&nbsp;&nbsp;&nbsp;{{ minion.svn_url }}</option>
+                                                    <select class="form-control" id="svn_select">
+                                                        {% for svn in svn_list %}
+                                                            <option value={{ svn.id }}>{{ svn.name }}&nbsp;&nbsp;&nbsp;&nbsp;{{ svn.local_path }}&nbsp;&nbsp;&nbsp;&nbsp;{{ svn.svn_url }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>

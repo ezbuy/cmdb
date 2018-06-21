@@ -5,16 +5,16 @@
 
 $(document).ready(function () {
     $('#addCrontabButton').click(function () {
-        let project_id = $("#project_select").val();
+        let svn_id = $("#svn_select").val();
         let cmd = $("#cmd").val().trim();
         let frequency = $("#frequency").val().trim();
-        if (project_id.length === 0 || cmd.length === 0 || frequency.length === 0) {
+        if (svn_id.length === 0 || cmd.length === 0 || frequency.length === 0) {
             alert("请填写必填内容");
             return false;
         }
         let url = "/crontab_manage/cronList/add/";
         let data = {
-            'project_id': project_id,
+            'svn_id': svn_id,
             'cmd': cmd,
             'frequency': frequency,
         };
