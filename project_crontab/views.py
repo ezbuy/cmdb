@@ -311,7 +311,7 @@ def startCrontab(request):
         print auto_cmd
         for job in my_cron[4:]:
             if job.command == auto_cmd:
-                job.enable(False)
+                job.enable()
                 print 'startCrontab----enable---done'
                 my_cron.write()
                 break
@@ -342,7 +342,7 @@ def pauseCrontab(request):
         print auto_cmd
         for job in my_cron[4:]:
             if job.command == auto_cmd:
-                job.enable()
+                job.enable(False)
                 print 'startCrontab----disable---done'
                 my_cron.write()
                 break
