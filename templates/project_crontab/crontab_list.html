@@ -139,8 +139,11 @@
                                             --:--:-- {% endif %}
                                         </td>
                                         <td class="text-center" width="60px">
-                                            {% if crontab.last_run_result != 'None' %}
-                                                {{ crontab.last_run_result }} {% else %} -- {% endif %}
+                                            {% if crontab.last_run_result and crontab.last_run_result != 'None' %}
+                                                {{ crontab.last_run_result }}
+                                            {% else %}
+                                                --
+                                            {% endif %}
                                         </td>
                                         <td class="text-center" width="30px">
                                             {% if crontab.cmd_status == 2 or crontab.cmd_status == '2' %}
