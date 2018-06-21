@@ -313,10 +313,10 @@ def startCrontab(request):
         print 'startCrontab----iter : '
         print iter
         for i in iter:
-            i.enable(False)
+            i.enable()
             print 'startCrontab----enable---done'
+            my_cron.write()
             break
-        my_cron.write()
 
         # 修改数据库中cmd状态
         crontab_obj.cmd_status = 2
@@ -348,8 +348,8 @@ def pauseCrontab(request):
         for i in iter:
             i.enable()
             print 'disable---done'
+            my_cron.write(False)
             break
-        my_cron.write()
 
         # 修改数据库中cmd状态
         crontab_obj.cmd_status = 1
