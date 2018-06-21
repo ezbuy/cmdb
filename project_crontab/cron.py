@@ -20,5 +20,11 @@ def syncCronHost2DB():
             try:
                 models.CrontabCmd.objects.get(auto_cmd=job.command)
             except models.CrontabCmd.DoesNotExist:
+                if job.is_valid():
+                    is_valid = 1
+                else:
+                    is_valid = 2
                 frequency = str(job).split('root')[0].strip()
-                models.CrontabCmd.objects.create(project=, cmd=job.command, auto_cmd=job.command, frequency=frequency, cmd_status=2, last_run_time=, last_run_result=)
+                models.CrontabCmd.objects.create(project=, cmd=job.command, auto_cmd=job.command, is_valid=is_valid, frequency=frequency, cmd_status=2, last_run_time=None, last_run_result=None)
+            else:
+                print 'already exist in DB'
