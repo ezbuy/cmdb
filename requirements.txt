@@ -39,3 +39,4 @@ six==1.10.0
 tornado==4.5.1
 urllib3==1.21.1
 python-crontab==2.3.4
+django-crontab==0.7.1
