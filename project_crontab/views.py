@@ -309,12 +309,12 @@ def startCrontab(request):
         auto_cmd = crontab_obj.auto_cmd.strip()
         print 'startCrontab---auto_cmd : '
         print auto_cmd
-        iter = my_cron.find_command(auto_cmd)
-        for i in iter:
-            i.enable()
-            print 'startCrontab----enable---done'
-            my_cron.write()
-            break
+        for job in my_cron[4:]:
+            if job.command == auto_cmd:
+                job.enable()
+                print 'startCrontab----enable---done'
+                my_cron.write()
+                break
 
         # 修改数据库中cmd状态
         crontab_obj.cmd_status = 2
@@ -340,12 +340,12 @@ def pauseCrontab(request):
         auto_cmd = crontab_obj.auto_cmd.strip()
         print 'pauseCrontab---auto_cmd : '
         print auto_cmd
-        iter = my_cron.find_command(auto_cmd)
-        for i in iter:
-            i.enable()
-            print 'disable---done'
-            my_cron.write(False)
-            break
+        for job in my_cron[4:]:
+            if job.command == auto_cmd:
+                job.enable(False)
+                print 'startCrontab----disable---done'
+                my_cron.write()
+                break
 
         # 修改数据库中cmd状态
         crontab_obj.cmd_status = 1
