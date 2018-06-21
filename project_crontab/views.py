@@ -241,7 +241,7 @@ def addCrontab(request):
 
             # 机器上新增
             my_cron = CronTab(tabfile='/etc/crontab', user=False)
-            job = my_cron.new(command=auto_cmd)
+            job = my_cron.new(command=auto_cmd, user='root')
             job.setall(frequency.strip())
             job.enable(False)
             my_cron.write()
