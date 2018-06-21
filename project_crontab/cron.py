@@ -37,6 +37,8 @@ def syncCronHost2DB():
                     else:
                         is_valid = 2
                     frequency = str(job).split('root')[0].strip()
+                    print 'frequency : '
+                    print frequency
                     try:
                         svn_obj = models.Svn.objects.get(salt_minion=salt_obj)
                     except models.Svn.DoesNotExist:

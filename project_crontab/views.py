@@ -265,14 +265,29 @@ def addCrontab(request):
 def delCrontab(request):
     errcode = 0
     msg = 'ok'
-    svn_ids = request.POST.getlist('svn_ids', [])
-    del_svn_ids = [int(i) for i in svn_ids]
-    svn_objs = models.CrontabCmd.objects.filter(id__in=del_svn_ids)
-    if len(svn_objs) == 0:
+    cron_ids = request.POST.getlist('svn_ids', [])
+    del_cron_ids = [int(i) for i in cron_ids]
+    cron_objs = models.CrontabCmd.objects.filter(id__in=del_cron_ids)
+    # 在机器上暂停任务
+    my_cron = CronTab(tabfile='/etc/crontab', user=False)
+    for cron_obj in cron_objs:
+        auto_cmd = cron_obj.auto_cmd.strip()
+        print 'delCrontab---auto_cmd : '
+        print auto_cmd
+        for job in my_cron[4:]:
+            if job.command == auto_cmd:
+                job.enable(False)
+                print 'delCrontab----disable---done'
+                my_cron.write()
+                break
+
+    # 在DB中删除任务
+    if len(cron_objs) == 0:
         errcode = 500
         msg = u'选中的项目在数据库中不存在'
     else:
-        svn_objs.delete()
+        cron_objs.delete()
+
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -328,7 +343,7 @@ def pauseCrontab(request):
         for job in my_cron[4:]:
             if job.command == auto_cmd:
                 job.enable(False)
-                print 'startCrontab----disable---done'
+                print 'pauseCrontab----disable---done'
                 my_cron.write()
                 break
 
