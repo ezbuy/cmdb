@@ -108,6 +108,7 @@
                                     <th class="text-center"> 执行频率</th>
                                     <th class="text-center"> 自动补全CMD</th>
                                     <th class="text-center"> Salt主机名</th>
+                                    <th class="text-center"> 有效性</th>
                                     <th class="text-center"> 上次执行时间</th>
                                     <th class="text-center"> 上次执行结果</th>
                                     <th class="text-center"> 操作</th>
@@ -121,12 +122,19 @@
                                             <input name="id" value="{{ crontab.id }}" type="checkbox" class="i-checks">
                                         </td>
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
-                                            width="250px">{{ crontab.cmd }}</td>
+                                            width="200px">{{ crontab.cmd }}</td>
                                         <td class="text-center">{{ crontab.frequency }}</td>
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
                                             width="450px">{{ crontab.auto_cmd }}</td>
-                                    <td class="text-center hostname">{{ crontab.project.svn.salt_minion.saltname }}</td>
-                                        <td class="text-center" width="90px">{% if crontab.last_run_time %}
+                                        <td class="text-center hostname">{{ crontab.project.svn.salt_minion.saltname }}</td>
+                                        <td class="text-center">
+                                            {% if crontab.is_valid == 2 or crontab.is_valid == '2' %}
+                                                <p style="color: orange">无效</p>
+                                            {% else %}
+                                                <p style="color: #1ab394">有效</p>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center" width="80px">{% if crontab.last_run_time %}
                                             {{ crontab.last_run_time|date:"Y-m-d H:i:s" }} {% else %}
                                             --:--:-- {% endif %}
                                         </td>
