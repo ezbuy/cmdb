@@ -7,7 +7,7 @@
             <div class="col-sm-12">
                 <div class="ibox float-e-margins" id="all">
                     <div class="ibox-title">
-                        <h5> CRONTAB SVN列表</h5>
+                        <h5> 项目SVN列表</h5>
                         <div class="ibox-tools">
                             <a>
                                 <i class="fa fa-plus" data-toggle="modal" data-target="#addSvnModal"
@@ -33,10 +33,16 @@
                                         <button type="button" class="close" data-dismiss="modal"><span
                                                 aria-hidden="true">×</span><span class="sr-only">Close</span></button>
                                         <i class="fa fa-dropbox modal-icon"></i>
-                                        <h4 class="modal-title">SVN配置</h4>
+                                        <h4 class="modal-title">项目SVN配置</h4>
                                     </div>
                                     <div class="modal-body">
                                         <form class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label"><span style="color: red;">*</span>项目名称</label>
+                                                <div class="col-lg-10">
+                                                    <input type="text" class="form-control" id="project_name">
+                                                </div>
+                                            </div>
                                             <div class="form-group">
                                                 <label class="col-lg-2 control-label"><span style="color: red;">*</span>Salt主机</label>
                                                 <div class="col-lg-10">
@@ -116,6 +122,7 @@
                                         <input id="checkall" type="checkbox" class="i-checks" name="checkall"
                                                value="checkall" data-editable='false' onclick="check_all('asset_form')">
                                     </th>
+                                    <th class="text-center"> 项目名</th>
                                     <th class="text-center"> Salt主机名</th>
                                     <th class="text-center"> Salt IP</th>
                                     <th class="text-center"> SVN URL</th>
@@ -131,6 +138,7 @@
                                             data-editable='false'>
                                             <input name="id" value="{{ svn.id }}" type="checkbox" class="i-checks">
                                         </td>
+                                        <td class="text-center hostname">{{ svn.project_name }}</td>
                                         <td class="text-center hostname">{{ svn.salt_name }}</td>
                                         <td class="text-center">{{ svn.salt_ip }}</td>
                                         <td class="text-center hostname">{{ svn.repo }}</td>

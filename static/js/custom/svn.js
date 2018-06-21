@@ -5,18 +5,20 @@
 
 $(document).ready(function () {
     $('#addSvnButton').click(function () {
+        let project_name = $("#project_name").val();
         let salt_id = $("#salt_minion").val();
         let repo = $("#repo").val().trim();
         let local_path = $("#local_path").val().trim();
         let username = $("#username").val().trim();
         let password = $("#password").val().trim();
-        if (salt_id.length === 0 || repo.length === 0 || local_path.length === 0) {
+        if (project_name.length == 0 || salt_id.length === 0 || repo.length === 0 || local_path.length === 0) {
             alert("请填写必填内容");
             return false;
         }
         let url = "/crontab_manage/cronSvn/add/";
         let data = {
             'salt_id': salt_id,
+            'project_name': project_name,
             'repo': repo,
             'local_path': local_path,
             'username': username,

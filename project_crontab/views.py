@@ -21,6 +21,7 @@ def cronSvn(request):
     svn_list = [
         {'creator_name': svn_obj.creator.first_name + svn_obj.creator.last_name,
          'id': svn_obj.id,
+         'project_name': svn_obj.project_name,
          'salt_name': svn_obj.salt_minion.saltname,
          'salt_ip': svn_obj.salt_minion.ip,
          'repo': svn_obj.repo,
@@ -30,6 +31,7 @@ def cronSvn(request):
         else
         {'creator_name': svn_obj.creator.username,
          'id': svn_obj.id,
+         'project_name': svn_obj.project_name,
          'salt_name': svn_obj.salt_minion.saltname,
          'salt_ip': svn_obj.salt_minion.ip,
          'repo': svn_obj.repo,
@@ -45,6 +47,9 @@ def addCronSvn(request):
     msg = 'ok'
     user = request.user
     salt_id = request.POST['salt_id']
+    print 'keys : ', request.POST.keys()
+    project_name = request.POST['project_name']
+    print 'project_name : ', project_name
     repo = request.POST['repo'].strip()
     local_path = request.POST['local_path'].strip()
     username = request.POST['username'].strip()
@@ -58,7 +63,7 @@ def addCronSvn(request):
         try:
             models.Svn.objects.get(salt_minion=minion_obj, repo=repo, local_path=local_path)
         except models.Svn.DoesNotExist:
-            models.Svn.objects.create(salt_minion=minion_obj, repo=repo, local_path=local_path, username=username,
+            models.Svn.objects.create(project_name=project_name, salt_minion=minion_obj, repo=repo, local_path=local_path, username=username,
                                       password=password, creator=user)
         else:
             errcode = 500
