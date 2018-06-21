@@ -100,10 +100,10 @@ function startCrontab(crontab_id) {
         data: data,
         contentType: 'application/x-www-form-urlencoded',
         traditional: true,
-        beforeSend: function () {
-            // 禁用按钮防止重复提交
-            $("#deleteCrontabButton").attr({disabled: "disabled"});
-        },
+        // beforeSend: function () {
+        //     // 禁用按钮防止重复提交
+        //     $("#deleteCrontabButton").attr({disabled: "disabled"});
+        // },
         success: function (result) {
             if (result.code === 0) {
                 window.location.reload();
@@ -131,10 +131,10 @@ function pauseCrontab(crontab_id) {
         data: data,
         contentType: 'application/x-www-form-urlencoded',
         traditional: true,
-        beforeSend: function () {
-            // 禁用按钮防止重复提交
-            $("#deleteCrontabButton").attr({disabled: "disabled"});
-        },
+        // beforeSend: function () {
+        //     // 禁用按钮防止重复提交
+        //     $("#deleteCrontabButton").attr({disabled: "disabled"});
+        // },
         success: function (result) {
             if (result.code === 0) {
                 window.location.reload();

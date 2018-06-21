@@ -131,7 +131,7 @@
                                             --:--:-- {% endif %}
                                         </td>
                                         <td class="text-center" width="60px">
-                                            {% if crontab.last_run_result != 1 and crontab.last_run_result != '1' %}
+                                            {% if crontab.last_run_result != 'None' %}
                                                 {{ crontab.last_run_result }} {% else %} -- {% endif %}
                                         </td>
                                         <td class="text-center" width="30px">

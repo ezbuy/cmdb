@@ -297,6 +297,7 @@ def startCrontab(request):
     errcode = 0
     msg = 'ok'
     crontab_id = int(request.POST['crontab_id'])
+    print 'startCrontab----crontab_id : ', crontab_id
     try:
         crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
     except models.CrontabCmd.DoesNotExist:
@@ -306,10 +307,14 @@ def startCrontab(request):
         # 修改机器上crontab状态为启动
         my_cron = CronTab(tabfile='/etc/crontab', user=False)
         auto_cmd = crontab_obj.auto_cmd
+        print 'startCrontab---auto_cmd : '
+        print auto_cmd
         iter = my_cron.find_command(auto_cmd)
+        print 'startCrontab----iter : '
+        print iter
         for i in iter:
             i.enable()
-            print 'enable---done'
+            print 'startCrontab----enable---done'
             break
         my_cron.write()
 
@@ -325,6 +330,7 @@ def pauseCrontab(request):
     errcode = 0
     msg = 'ok'
     crontab_id = int(request.POST['crontab_id'])
+    print 'pauseCrontab----crontab_id : ', crontab_id
     try:
         crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
     except models.CrontabCmd.DoesNotExist:
@@ -334,7 +340,11 @@ def pauseCrontab(request):
         # 修改机器上crontab状态为暂停
         my_cron = CronTab(tabfile='/etc/crontab', user=False)
         auto_cmd = crontab_obj.auto_cmd
+        print 'pauseCrontab---auto_cmd : '
+        print auto_cmd
         iter = my_cron.find_command(auto_cmd)
+        print 'pauseCrontab----iter : '
+        print iter
         for i in iter:
             i.enable(False)
             print 'disable---done'
