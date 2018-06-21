@@ -313,7 +313,7 @@ def startCrontab(request):
         print 'startCrontab----iter : '
         print iter
         for i in iter:
-            i.enable()
+            i.enable(False)
             print 'startCrontab----enable---done'
             break
         my_cron.write()
@@ -346,7 +346,7 @@ def pauseCrontab(request):
         print 'pauseCrontab----iter : '
         print iter
         for i in iter:
-            i.enable(False)
+            i.enable()
             print 'disable---done'
             break
         my_cron.write()
