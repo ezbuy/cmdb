@@ -126,7 +126,7 @@
                                         <td class="text-center">{{ crontab.frequency }}</td>
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
                                             width="450px">{{ crontab.auto_cmd }}</td>
-                                        <td class="text-center hostname">{{ crontab.project.svn.salt_minion.saltname }}</td>
+                                        <td class="text-center hostname">{{ crontab.svn.salt_minion.saltname }}</td>
                                         <td class="text-center">
                                             {% if crontab.is_valid == 2 or crontab.is_valid == '2' %}
                                                 <p style="color: orange">无效</p>
