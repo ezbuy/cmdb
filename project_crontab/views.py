@@ -199,7 +199,7 @@ def addCrontab(request):
             opts_dict = {}
             if ' -' not in cmd:
                 # 没有参数的命令
-                auto_cmd = 'root ' + path + cmd
+                auto_cmd = path + cmd
             else:
                 # 有参数的命令
                 options, args = getopt.getopt(cmd_list, "hc:f:d:s:n:")
@@ -211,7 +211,7 @@ def addCrontab(request):
                         value_list = args[index+1::2]
                         opts_dict = dict(zip(key_list, value_list))
                         break
-                auto_cmd = 'root ' + path + ' '.join(args_list) + ' '
+                auto_cmd = path + ' '.join(args_list) + ' '
 
             print auto_cmd
 
@@ -241,7 +241,7 @@ def addCrontab(request):
 
             # 机器上新增
             my_cron = CronTab(tabfile='/etc/crontab', user=False)
-            job = my_cron.new(command=auto_cmd, user=False)
+            job = my_cron.new(command=auto_cmd, user='root')
             job.setall(frequency.strip())
             job.enable(False)
             my_cron.write()
