@@ -66,7 +66,7 @@ class CrontabCmd(models.Model):
     create_time = models.DateTimeField(verbose_name=u"创建日期", auto_now_add=True, null=True, blank=True)
     updater = models.ForeignKey(User, verbose_name=u"最后更新者", related_name="updater_of_crontab", blank=True, null=True)
     update_time = models.DateTimeField(verbose_name=u"最后更新日期", auto_now=True, blank=True, null=True)
-    last_run_result = models.CharField(max_length=16, verbose_name=u"上次执行结果", blank=False, null=False)
+    last_run_result = models.CharField(max_length=16, verbose_name=u"上次执行结果", blank=True, null=True)
     last_run_time = models.DateTimeField(verbose_name=u"上次执行时间", blank=True, null=True)
 
     def __unicode__(self):
