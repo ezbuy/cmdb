@@ -34,7 +34,14 @@ def syncCronHost2DB():
                         is_valid = 1
                     else:
                         is_valid = 2
-                    frequency = str(job).split('root')[0].strip()
+
+                    last_run_time = job.schedule().get_prev()
+
+                    if '*' in str(job):
+                        frequency = ' '.join(str(job).strip('#').strip().split(' ')[0:5])
+                    else:
+                        frequency = str(job).strip('#').strip().split(' ')[0]
+
                     try:
                         svn_obj = models.Svn.objects.get(salt_minion=salt_obj)
                     except models.Svn.DoesNotExist:
@@ -43,7 +50,7 @@ def syncCronHost2DB():
                         print 'Svn.DoesNotExist'
                     else:
                         try:
-                            models.CrontabCmd.objects.create(svn=svn_obj, cmd=job.command, auto_cmd=job.command, frequency=frequency, cmd_status=2, is_valid=is_valid)
+                            models.CrontabCmd.objects.create(svn=svn_obj, cmd=job.command, auto_cmd=job.command, frequency=frequency, cmd_status=2, is_valid=is_valid, last_run_time=last_run_time)
                         except Exception as e:
                             print ' '
                             print job.command
