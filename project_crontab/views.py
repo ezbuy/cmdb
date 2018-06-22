@@ -178,6 +178,7 @@ def crontabList(request):
         crontab_list = paginator.page(1)
     except EmptyPage:
         crontab_list = paginator.page(paginator.num_pages)
+
     return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list, 'svn_list': svn_list})
 
 
@@ -246,7 +247,7 @@ def addCrontab(request):
             job = my_cron.new(command=auto_cmd, user='root')
             job.setall(frequency.strip())
             job.enable(False)
-            my_cron.write()
+            # my_cron.write()
 
             # DB中新增
             if job.is_valid():
