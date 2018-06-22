@@ -63,7 +63,7 @@ class CrontabCmd(models.Model):
         (2, U'无效'),
     )
     svn = models.ForeignKey(Svn, verbose_name=u"Crontab所属SVN", related_name="svn_of_crontab")
-    cmd = models.CharField(max_length=256, verbose_name=u"手动填入的命令", blank=False, null=False)
+    cmd = models.TextField(verbose_name=u"手动填入的命令", blank=False, null=False)
     auto_cmd = models.TextField(verbose_name=u"自动补全的命令", blank=False, null=False)
     frequency = models.CharField(max_length=16, verbose_name=u"执行频率", blank=False, null=False)
     cmd_status = models.IntegerField(choices=STATUS, default=1, verbose_name=u"状态")
