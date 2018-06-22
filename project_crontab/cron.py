@@ -45,8 +45,11 @@ def syncCronHost2DB():
                         print 'Svn.DoesNotExist'
                     else:
                         print svn_obj.project_name
-                        models.CrontabCmd.objects.create(svn=svn_obj, cmd=job.command, auto_cmd=job.command, frequency=frequency, cmd_status=2, is_valid=is_valid)
-                        print 'create ct cmd done'
+                        try:
+                            models.CrontabCmd.objects.create(svn=svn_obj, cmd=job.command, auto_cmd=job.command, frequency=frequency, cmd_status=2, is_valid=is_valid)
+                            print 'create ct cmd done'
+                        except Exception as e:
+                            print 'create Exception---', e.message
                 else:
                     print 'ct cmd already exist in DB'
         return True
