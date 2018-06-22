@@ -55,6 +55,7 @@ def syncCronHost2DB():
                 else:
                     try:
                         models.CrontabCmd.objects.create(svn=svn_obj, cmd=job.command, auto_cmd=job.command, frequency=frequency, cmd_status=cmd_status, is_valid=is_valid, last_run_time=last_run_time)
+                        print 'create--ok'
                     except Exception as e:
                         print ' '
                         print job.command

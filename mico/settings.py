@@ -251,3 +251,7 @@ ZABBIX_INFO = [
 ]
 GRAFANA_URL = 'https://<user>:<pass>@grafana.localhost'
 SENTRY_URL = 'https://sentry.localhost'
+
+CRONJOBS = [
+    ('1 1 * * *', 'project_crontab.cron.syncCronHost2DB', '>>/tmp/sync_cron.log'),
+]
