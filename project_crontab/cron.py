@@ -4,6 +4,7 @@ import commands
 import sys
 import croniter
 import socket
+import traceback
 
 from project_crontab import models
 from asset import models as asset_models
@@ -21,7 +22,7 @@ def syncCronHost2DB():
     try:
         salt_obj = asset_models.minion.objects.get(saltname=hostname)
     except asset_models.minion.DoesNotExist:
-        return False
+        res = False
     else:
         my_cron = CronTab(tabfile='/etc/crontab', user=False)
         for job in my_cron[4:]:
@@ -37,6 +38,8 @@ def syncCronHost2DB():
                     try:
                         svn_obj = models.Svn.objects.get(salt_minion=salt_obj)
                     except models.Svn.DoesNotExist:
+                        print ' '
+                        print job.command
                         print 'Svn.DoesNotExist'
                     else:
                         try:
@@ -44,7 +47,7 @@ def syncCronHost2DB():
                         except Exception as e:
                             print ' '
                             print job.command
-                            print 'create Exception---', e.message
+                            print 'create Exception---', traceback.print_exc()
                 else:
                     print 'ct cmd already exist in DB'
-        return True
+    return res
