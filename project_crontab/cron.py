@@ -26,9 +26,6 @@ def syncCronHost2DB():
         my_cron = CronTab(tabfile='/etc/crontab', user=False)
         for job in my_cron[4:]:
             if job.is_enabled():
-                print ' '
-                print job.command
-                print type(job.command)
                 try:
                     models.CrontabCmd.objects.get(auto_cmd=job.command)
                 except models.CrontabCmd.DoesNotExist:
@@ -37,18 +34,16 @@ def syncCronHost2DB():
                     else:
                         is_valid = 2
                     frequency = str(job).split('root')[0].strip()
-                    print 'frequency : '
-                    print frequency
                     try:
                         svn_obj = models.Svn.objects.get(salt_minion=salt_obj)
                     except models.Svn.DoesNotExist:
                         print 'Svn.DoesNotExist'
                     else:
-                        print svn_obj.project_name
                         try:
                             models.CrontabCmd.objects.create(svn=svn_obj, cmd=job.command, auto_cmd=job.command, frequency=frequency, cmd_status=2, is_valid=is_valid)
-                            print 'create ct cmd done'
                         except Exception as e:
+                            print ' '
+                            print job.command
                             print 'create Exception---', e.message
                 else:
                     print 'ct cmd already exist in DB'
