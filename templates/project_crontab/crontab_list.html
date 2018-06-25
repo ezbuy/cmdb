@@ -109,8 +109,9 @@
                                     <th class="text-center"> 输入CMD</th>
                                     <th class="text-center"> 执行频率</th>
                                     <th class="text-center"> 自动补全CMD</th>
-                                    <th class="text-center"> 有效性</th>
+                                    <th class="text-center"> CMD是否有效</th>
                                     <th class="text-center"> 上次执行时间</th>
+                                    <th class="text-center"> 状态</th>
                                     <th class="text-center"> 操作</th>
                                 </tr>
                                 </thead>
@@ -139,13 +140,13 @@
                                             {{ crontab.last_run_time|date:"Y-m-d H:i:s" }} {% else %}
                                             --:--:-- {% endif %}
                                         </td>
-{#                                        <td class="text-center" width="60px">#}
-{#                                            {% if crontab.last_run_result and crontab.last_run_result != 'None' %}#}
-{#                                                {{ crontab.last_run_result }}#}
-{#                                            {% else %}#}
-{#                                                --#}
-{#                                            {% endif %}#}
-{#                                        </td>#}
+                                        <td class="text-center" width="30px">
+                                            {% if crontab.cmd_status == 2 or crontab.cmd_status == '2' %}
+                                                <label class="label label-primary">running</label>
+                                            {% else %}
+                                                <label class="label label-warning">pause</label>
+                                            {% endif %}
+                                        </td>
                                         <td class="text-center" width="30px">
                                             {% if crontab.cmd_status == 2 or crontab.cmd_status == '2' %}
                                                 <a href="javascript:void(0);"
