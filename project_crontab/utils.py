@@ -9,6 +9,7 @@ from asset import models
 from project_crontab import models
 from salt_api.api import SaltApi
 from mico.settings import svn_username, svn_password, go_local_path, svn_repo_url
+salt_api = SaltApi()
 
 
 class CronOperation(object):
@@ -18,38 +19,19 @@ class CronOperation(object):
         self.errcode = 0
         self.msg = 'ok'
 
-    def salt_run_cmd(self, hostname, cmd, tag):
-        salt_api = SaltApi()
-
-
-
+    def salt_run_sls(self, svnrepo, projectname, salt_hostname):
         try:
-            pillar = '''pillar=\"{'goprograme': '%s','supProgrameName': '%s','goRunCommand': '%s','svnrepo': '%s','svnusername': '%s','svnpassword': '%s'}\"''' % (self.project,self.supervisorName,self.goCommand,self.svnRepo,self.svnUsername,self.svnPassword)
-            deploy_cmd = "salt " + self.hostname + " state.sls queue=True goservices.supervisor_submodule " + pillar
-            s, result = commands.getstatusoutput(deploy_cmd)
+            pillar = '''pillar=\"{'svnrepo': '%s', 'goprograme': '%s'}\"''' % (svnrepo, projectname)
+            pull_svn_cmd = "salt " + salt_hostname + " state.sls queue=True goservices.supervisor_submodule " + pillar
+            s, result = commands.getstatusoutput(pull_svn_cmd)
             if result.find('Failed:    0') < 0:
-                logs(self.username, self.ip, 'add ' + self.project + ' service', 'Failed')
+                logs(self.login_user, self.login_ip, 'add svn ' + projectname, 'Failed')
             else:
-                logs(self.username, self.ip, 'add ' + self.project + ' service', 'Successful')
+                logs(self.login_user, self.login_ip, 'add svn ' + projectname, 'Successful')
         except Exception as e:
             self.errcode = 500
             self.msg = u'salt执行失败'
-
-
-
-
-
-        data = {
-            'client': 'local',
-            'tgt': hostname,
-            'fun': 'cmd.run',
-            'arg': cmd
-        }
-        result = salt_api.salt_cmd(data)
-        if result != 0:
-            result = result['return']
-        logs(self.login_user, self.login_ip, tag, result)
-        return result
+        return self.errcode, self.msg
 
     def get_cron_list(self):
         crontab_objs = models.CrontabCmd.objects.all().order_by('-create_time')
@@ -68,7 +50,7 @@ class CronOperation(object):
         else:
             # salt机器上拉svn目录
             repo = svn_repo_url + project_name
-            localpath = go_local_path + project_name
+            self.salt_run_sls(repo, project_name, salt_hostname)
 
             # 创建Crontab CMD
             try:
@@ -94,6 +76,7 @@ class CronOperation(object):
                             break
                     auto_cmd = path + '/' + ' '.join(args_list) + ' '
 
+                log_path = '/var/log/' + project_name + '/'
                 if opts_dict:
                     if '-d' in opts_dict.keys():
                         log_name = opts_dict['-d'].split('.')[0] + '.log'
@@ -110,9 +93,10 @@ class CronOperation(object):
                         else:
                             auto_cmd += k + ' ' + v + ' '
 
-                    auto_cmd += '>> ' + path + '/' + log_name + ' 2>&1' + '\n'
+                    auto_cmd += '>> ' + log_path + log_name + ' 2>&1' + '\n'
                 else:
-                    auto_cmd += auto_cmd + '\n'
+                    log_name = '_'.join(cmd_list) + '.log'
+                    auto_cmd += ' >> ' + log_path + log_name + ' 2>&1' + '\n'
 
                 # 机器上创建
                 # my_cron = CronTab(tabfile='/etc/crontab', user=False)
