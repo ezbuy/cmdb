@@ -12,6 +12,27 @@ from mico.settings import svn_username, svn_password, go_local_path, svn_repo_ur
 salt_api = SaltApi()
 
 
+def salt_run_sls(login_user, svnrepo, projectname, salt_hostname):
+    errcode = 0
+    msg = 'ok'
+    try:
+        pillar = '''pillar=\"{'svnrepo': '%s', 'goprograme': '%s'}\"''' % (svnrepo, projectname)
+        pull_svn_cmd = "salt " + salt_hostname + " state.sls queue=True goservices.pull_svn " + pillar
+        s, result = commands.getstatusoutput(pull_svn_cmd)
+        if result.find('Failed:    0') < 0:
+            log_content = login_user, 'pull svn ' + projectname, 'Failed'
+            print log_content
+            logs(log_content)
+        else:
+            log_content = login_user, 'pull svn ' + projectname, 'Successful'
+            print log_content
+            logs(log_content)
+    except Exception as e:
+        errcode = 500
+        msg = u'salt执行失败'
+    return errcode, msg
+
+
 class CronOperation(object):
     def __init__(self, login_user, login_ip):
         self.login_user = login_user

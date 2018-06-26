@@ -5,7 +5,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from asset.utils import *
 from asset import models as asset_models
-from project_crontab import utils
+# from project_crontab import utils
+from project_crontab import models
 
 
 @login_required
@@ -21,8 +22,7 @@ def crontabList(request):
          }
         for minion_obj in minion_objs]
 
-    CronOpera = utils.CronOperation(login_user, local_ip)
-    crontab_objs = CronOpera.get_cron_list()
+    crontab_objs = models.CrontabCmd.objects.all().order_by('-create_time')
     paginator = Paginator(crontab_objs, 20)
     try:
         crontab_list = paginator.page(page)
@@ -42,16 +42,14 @@ def addCrontab(request):
     cmd = request.POST['cmd'].strip()
     frequency = request.POST['frequency'].strip()
 
-    CronOpera = utils.CronOperation(login_user, local_ip)
-
     try:
         minion_obj = asset_models.minion.objects.get(id=int(minion_id))
     except asset_models.minion.DoesNotExist:
         errcode = 500
         msg = u'所选Salt机器不存在'
     else:
-        errcode, msg = CronOpera.add_cron(minion_obj, cmd, frequency)
-
+        pass
+    errcode, msg = 0, 'ok'
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -60,10 +58,9 @@ def addCrontab(request):
 def modifyCrontab(request):
     login_user = request.user
     local_ip = request.META['REMOTE_ADDR']
-    CronOpera = utils.CronOperation(login_user, local_ip)
     crontab_id = int(request.POST['crontab_id'])
 
-    errcode, msg = CronOpera.modify_cron(crontab_id)
+    errcode, msg = 0, 'ok'
 
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
@@ -73,12 +70,9 @@ def modifyCrontab(request):
 def delCrontab(request):
     login_user = request.user
     local_ip = request.META['REMOTE_ADDR']
-    CronOpera = utils.CronOperation(login_user, local_ip)
     cron_ids = request.POST.getlist('svn_ids', [])
     del_cron_ids = [int(i) for i in cron_ids]
-
-    errcode, msg = CronOpera.del_cron(del_cron_ids)
-
+    errcode, msg = 0, 'ok'
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -87,11 +81,8 @@ def delCrontab(request):
 def startCrontab(request):
     login_user = request.user
     local_ip = request.META['REMOTE_ADDR']
-    CronOpera = utils.CronOperation(login_user, local_ip)
     crontab_id = int(request.POST['crontab_id'])
-
-    errcode, msg = CronOpera.start_cron(crontab_id)
-
+    errcode, msg = 0, 'ok'
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -100,11 +91,8 @@ def startCrontab(request):
 def pauseCrontab(request):
     login_user = request.user
     local_ip = request.META['REMOTE_ADDR']
-    CronOpera = utils.CronOperation(login_user, local_ip)
     crontab_id = int(request.POST['crontab_id'])
-
-    errcode, msg = CronOpera.pause_cron(crontab_id)
-
+    errcode, msg = 0, 'ok'
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
