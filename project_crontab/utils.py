@@ -22,12 +22,16 @@ class CronOperation(object):
     def salt_run_sls(self, svnrepo, projectname, salt_hostname):
         try:
             pillar = '''pillar=\"{'svnrepo': '%s', 'goprograme': '%s'}\"''' % (svnrepo, projectname)
-            pull_svn_cmd = "salt " + salt_hostname + " state.sls queue=True goservices.supervisor_submodule " + pillar
+            pull_svn_cmd = "salt " + salt_hostname + " state.sls queue=True goservices.pull_svn " + pillar
             s, result = commands.getstatusoutput(pull_svn_cmd)
             if result.find('Failed:    0') < 0:
-                logs(self.login_user, self.login_ip, 'add svn ' + projectname, 'Failed')
+                log_content = self.login_user, self.login_ip, 'pull svn ' + projectname, 'Failed'
+                print log_content
+                logs(log_content)
             else:
-                logs(self.login_user, self.login_ip, 'add svn ' + projectname, 'Successful')
+                log_content = self.login_user, self.login_ip, 'pull svn ' + projectname, 'Successful'
+                print log_content
+                logs(log_content)
         except Exception as e:
             self.errcode = 500
             self.msg = u'salt执行失败'
@@ -48,14 +52,14 @@ class CronOperation(object):
             self.msg = u'Crontab Svn不存在'
             return self.errcode, self.msg
         else:
-            # salt机器上拉svn目录
-            repo = svn_repo_url + project_name
-            self.salt_run_sls(repo, project_name, salt_hostname)
-
             # 创建Crontab CMD
             try:
                 models.CrontabCmd.objects.get(svn=svn_obj, cmd=cmd, frequency=frequency)
             except models.CrontabCmd.DoesNotExist:
+                # salt机器上拉svn目录
+                repo = svn_repo_url + project_name
+                self.salt_run_sls(repo, project_name, salt_hostname)
+                # 自动补全命令
                 path = svn_obj.localpath
                 cmd_list = cmd.strip().split(' ')
                 args_list = []
