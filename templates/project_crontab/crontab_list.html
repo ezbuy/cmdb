@@ -37,11 +37,11 @@
                                     <div class="modal-body">
                                         <form class="form-horizontal">
                                             <div class="form-group">
-                                                <label class="col-lg-2 control-label"><span style="color: red;">*</span>所属项目</label>
+                                                <label class="col-lg-2 control-label"><span style="color: red;">*</span>部署机器</label>
                                                 <div class="col-lg-10">
-                                                    <select class="form-control" id="svn_select">
-                                                        {% for svn in svn_list %}
-                                                            <option value={{ svn.id }}>{{ svn.name }}&nbsp;&nbsp;&nbsp;&nbsp;{{ svn.local_path }}&nbsp;&nbsp;&nbsp;&nbsp;{{ svn.svn_url }}</option>
+                                                    <select class="form-control" id="minion_select">
+                                                        {% for minion in minion_list %}
+                                                            <option value={{ minion.id }}>{{ minion.hostname }}&nbsp;&nbsp;&nbsp;&nbsp;{{ minion.ip }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>
@@ -104,14 +104,12 @@
                                         <input id="checkall" type="checkbox" class="i-checks" name="checkall"
                                                value="checkall" data-editable='false' onclick="check_all('asset_form')">
                                     </th>
-                                    <th class="text-center"> 项目</th>
-                                    <th class="text-center"> Salt主机名</th>
+                                    <th class="text-center"> 部署主机名</th>
                                     <th class="text-center"> 输入CMD</th>
                                     <th class="text-center"> 执行频率</th>
                                     <th class="text-center"> 自动补全CMD</th>
-                                    <th class="text-center"> CMD是否有效</th>
                                     <th class="text-center"> 上次执行时间</th>
-                                    <th class="text-center"> 状态</th>
+                                    <th class="text-center"> 执行状态</th>
                                     <th class="text-center"> 操作</th>
                                 </tr>
                                 </thead>
@@ -122,20 +120,12 @@
                                             data-editable='false'>
                                             <input name="id" value="{{ crontab.id }}" type="checkbox" class="i-checks">
                                         </td>
-                                        <td class="text-center hostname">{{ crontab.svn.project_name }}</td>
-                                        <td class="text-center hostname">{{ crontab.svn.salt_minion.saltname }}</td>
+                                        <td class="text-center hostname">{{ crontab.svn.hostname.saltname }}</td>
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
                                             width="200px">{{ crontab.cmd }}</td>
                                         <td class="text-center">{{ crontab.frequency }}</td>
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
                                             width="450px">{{ crontab.auto_cmd }}</td>
-                                        <td class="text-center">
-                                            {% if crontab.is_valid == 2 or crontab.is_valid == '2' %}
-                                                <p style="color: orange">无效</p>
-                                            {% else %}
-                                                <p style="color: #1ab394">有效</p>
-                                            {% endif %}
-                                        </td>
                                         <td class="text-center" width="80px">{% if crontab.last_run_time %}
                                             {{ crontab.last_run_time|date:"Y-m-d H:i:s" }} {% else %}
                                             --:--:-- {% endif %}
@@ -178,6 +168,7 @@
         </div>
     </div>
 
+    <script src="/static/js/custom/cron_valid.js"></script>
     <script src="/static/js/custom/crontab.js"></script>
 {% endblock %}
 

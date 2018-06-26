@@ -26,19 +26,11 @@
                         </li>
                         <li class="user"><a href="{% url 'go_status' %}">服务状态<span class="label pull-right"></span></a>
                         </li>
-                        <li class="user"><a href="{% url 'crontab_update' %}">crontab更新<span
+                        <li class="user"><a href="{% url 'crontab_update' %}">crontab svn更新<span
                                 class="label pull-right"></span></a></li>
                         <li class="user"><a href="{% url 'cronjob_list' %}">cron job列表<span
                                 class="label pull-right"></span></a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-clock-o"></i> <span class="nav-label">Crontab Job</span><span
-                            class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li><a href="{% url 'cronSvn' %}">SVN配置</a></li>
-{#                        <li><a href="{% url 'cronProjectList' %}">项目配置</a></li>#}
-                        <li><a href="{% url 'crontabList' %}">crontab管理<span class="label pull-right"></span></a></li>
+                        <li class="user"><a href="{% url 'crontabList' %}">crontab管理<span class="label pull-right"></span></a></li>
                     </ul>
                 </li>
                 <li>

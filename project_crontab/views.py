@@ -11,165 +11,20 @@ import re
 from asset.utils import *
 from project_crontab import models
 from asset import models as asset_models
+from mico.settings import svn_username, svn_password, go_local_path, svn_repo_url
 from salt_api.api import SaltApi
-
-
-@login_required
-def cronSvn(request):
-    minion_objs = asset_models.minion.objects.all().order_by('saltname')
-    svn_objs = models.Svn.objects.all().order_by('salt_minion__saltname', 'create_time')
-    svn_list = [
-        {'creator_name': svn_obj.creator.first_name + svn_obj.creator.last_name,
-         'id': svn_obj.id,
-         'project_name': svn_obj.project_name,
-         'salt_name': svn_obj.salt_minion.saltname,
-         'salt_ip': svn_obj.salt_minion.ip,
-         'repo': svn_obj.repo,
-         'local_path': svn_obj.local_path,
-         'create_time': svn_obj.create_time}
-        if svn_obj.creator.first_name or svn_obj.creator.last_name
-        else
-        {'creator_name': svn_obj.creator.username,
-         'id': svn_obj.id,
-         'project_name': svn_obj.project_name,
-         'salt_name': svn_obj.salt_minion.saltname,
-         'salt_ip': svn_obj.salt_minion.ip,
-         'repo': svn_obj.repo,
-         'local_path': svn_obj.local_path,
-         'create_time': svn_obj.create_time}
-        for svn_obj in svn_objs]
-    return render(request, 'project_crontab/svn_list.html', {'svn_list': svn_list, 'minion_objs': minion_objs})
-
-
-@login_required
-def addCronSvn(request):
-    errcode = 0
-    msg = 'ok'
-    user = request.user
-    salt_id = request.POST['salt_id']
-    print 'keys : ', request.POST.keys()
-    project_name = request.POST['project_name']
-    print 'project_name : ', project_name
-    repo = request.POST['repo'].strip()
-    local_path = request.POST['local_path'].strip()
-    username = request.POST['username'].strip()
-    password = request.POST['password'].strip()
-    try:
-        minion_obj = asset_models.minion.objects.get(id=int(salt_id))
-    except asset_models.minion.DoesNotExist:
-        errcode = 500
-        msg = u'salt minion不存在'
-    else:
-        try:
-            models.Svn.objects.get(salt_minion=minion_obj, repo=repo, local_path=local_path)
-        except models.Svn.DoesNotExist:
-            models.Svn.objects.create(project_name=project_name, salt_minion=minion_obj, repo=repo, local_path=local_path, username=username,
-                                      password=password, creator=user)
-        else:
-            errcode = 500
-            msg = u'相同svn已存在'
-    data = dict(code=errcode, msg=msg)
-    return HttpResponse(json.dumps(data), content_type='application/json')
-
-
-@login_required
-def delCronSvn(request):
-    errcode = 0
-    msg = 'ok'
-    salt_ids = request.POST.getlist('salt_ids', [])
-    int_salt_ids = [int(i) for i in salt_ids]
-    svn_objs = models.Svn.objects.filter(id__in=int_salt_ids)
-    if len(svn_objs) == 0:
-        errcode = 500
-        msg = u'选中的svn在数据库中不存在'
-    else:
-        svn_objs.delete()
-    data = dict(code=errcode, msg=msg)
-    return HttpResponse(json.dumps(data), content_type='application/json')
-
-
-# @login_required
-# def cronProjectList(request):
-#     svn_objs = models.Svn.objects.all().order_by('salt_minion__saltname', 'create_time')
-#     project_objs = models.Project.objects.all().order_by('name')
-#     project_list = [
-#         {'creator_name': svn_obj.creator.first_name + svn_obj.creator.last_name,
-#          'id': svn_obj.id,
-#          'name': svn_obj.name,
-#          'path': svn_obj.path,
-#          'svn_url': svn_obj.svn.repo,
-#          'create_time': svn_obj.create_time}
-#         if svn_obj.creator.first_name or svn_obj.creator.last_name
-#         else
-#         {'creator_name': svn_obj.creator.username,
-#          'id': svn_obj.id,
-#          'name': svn_obj.name,
-#          'path': svn_obj.path,
-#          'svn_url': svn_obj.svn.repo,
-#          'create_time': svn_obj.create_time}
-#         for svn_obj in project_objs]
-#     return render(request, 'project_crontab/project_list.html', {'project_list': project_list, 'svn_objs': svn_objs})
-
-#
-# @login_required
-# def addCronProject(request):
-#     errcode = 0
-#     msg = 'ok'
-#     user = request.user
-#     svn_id = request.POST['svn_id']
-#     name = request.POST['name'].strip()
-#     path = request.POST['path'].strip()
-#     try:
-#         svn_obj = models.Svn.objects.get(id=int(svn_id))
-#     except models.Svn.DoesNotExist:
-#         errcode = 500
-#         msg = u'crontab SVN不存在'
-#     else:
-#         try:
-#             models.Project.objects.get(svn=svn_obj, name=name, path=path)
-#         except models.Project.DoesNotExist:
-#             models.Project.objects.create(svn=svn_obj, name=name, path=path, creator=user)
-#         else:
-#             errcode = 500
-#             msg = u'相同项目已存在'
-#     data = dict(code=errcode, msg=msg)
-#     return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#
-# @login_required
-# def delCronProject(request):
-#     errcode = 0
-#     msg = 'ok'
-#     svn_ids = request.POST.getlist('svn_ids', [])
-#     del_svn_ids = [int(i) for i in svn_ids]
-#     svn_objs = models.Project.objects.filter(id__in=del_svn_ids)
-#     if len(svn_objs) == 0:
-#         errcode = 500
-#         msg = u'选中的项目在数据库中不存在'
-#     else:
-#         svn_objs.delete()
-#     data = dict(code=errcode, msg=msg)
-#     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 @login_required
 def crontabList(request):
     page = request.GET.get('page', 1)
-    svn_objs = models.Svn.objects.all().order_by('project_name', '-create_time')
-    svn_list = [
-        {'id': svn_obj.id,
-         'name': svn_obj.project_name,
-         'local_path': svn_obj.local_path,
-         'svn_url': svn_obj.repo,
+    minion_objs = asset_models.minion.objects.all().order_by('saltname')
+    minion_list = [
+        {'id': minion_obj.id,
+         'hostname': minion_obj.saltname,
+         'ip': minion_obj.ip,
          }
-        if svn_obj.creator.first_name or svn_obj.creator.last_name
-        else
-        {'id': svn_obj.id,
-         'name': svn_obj.project_name,
-         'local_path': svn_obj.local_path,
-         'svn_url': svn_obj.repo,
-         }
-        for svn_obj in svn_objs]
+        for minion_obj in minion_objs]
     crontab_objs = models.CrontabCmd.objects.all().order_by('-create_time')
     paginator = Paginator(crontab_objs, 20)
     try:
@@ -179,7 +34,7 @@ def crontabList(request):
     except EmptyPage:
         crontab_list = paginator.page(paginator.num_pages)
 
-    return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list, 'svn_list': svn_list})
+    return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list, 'minion_list': minion_list})
 
 
 @login_required
@@ -187,25 +42,33 @@ def addCrontab(request):
     errcode = 0
     msg = 'ok'
     user = request.user
-    svn_id = request.POST['svn_id']
+    minion_id = request.POST['minion_id']
     cmd = request.POST['cmd'].strip()
     frequency = request.POST['frequency'].strip()
     try:
-        svn_obj = models.Svn.objects.get(id=int(svn_id))
-    except models.Svn.DoesNotExist:
+        minion_obj = asset_models.minion.objects.get(id=int(minion_id))
+    except asset_models.minion.DoesNotExist:
         errcode = 500
-        msg = u'所选SVN不存在'
+        msg = u'所选Salt机器不存在'
     else:
+        project_name = cmd.strip().split(' ')[0]
+        try:
+            svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj)
+        except asset_models.crontab_svn.DoesNotExist:
+            repo = svn_repo_url + project_name
+            localpath = go_local_path + project_name
+            svn_obj = asset_models.crontab_svn.objects.create(project=project_name, hostname=minion_obj, username=svn_username, password=svn_password, repo=repo, localpath=localpath)
+
         try:
             models.CrontabCmd.objects.get(svn=svn_obj, cmd=cmd, frequency=frequency)
         except models.CrontabCmd.DoesNotExist:
-            path = svn_obj.local_path
+            path = svn_obj.localpath
             cmd_list = cmd.strip().split(' ')
             args_list = []
             opts_dict = {}
             if ' -' not in cmd:
                 # 没有参数的命令
-                auto_cmd = path + cmd
+                auto_cmd = path + '/' + cmd
             else:
                 # 有参数的命令
                 options, args = getopt.getopt(cmd_list, "hc:f:d:s:n:")
@@ -217,7 +80,7 @@ def addCrontab(request):
                         value_list = args[index+1::2]
                         opts_dict = dict(zip(key_list, value_list))
                         break
-                auto_cmd = path + ' '.join(args_list) + ' '
+                auto_cmd = path + '/' + ' '.join(args_list) + ' '
 
             print auto_cmd
 
@@ -232,29 +95,24 @@ def addCrontab(request):
                 print log_name
                 for k, v in opts_dict.items():
                     if k == '-c':
-                        auto_cmd += k + ' ' + path + 'conf/' + v + ' '
+                        auto_cmd += k + ' ' + path + '/' + 'conf/' + v + ' '
                     elif k == '-d':
-                        auto_cmd += k + ' ' + path + 'conf/' + v + ' '
+                        auto_cmd += k + ' ' + path + '/' + 'conf/' + v + ' '
                     else:
                         auto_cmd += k + ' ' + v + ' '
 
-                auto_cmd += '>> ' + path + log_name + ' 2>&1' + '\n'
+                auto_cmd += '>> ' + path + '/' + log_name + ' 2>&1' + '\n'
             else:
                 auto_cmd += auto_cmd + '\n'
 
             # 机器上新增
-            my_cron = CronTab(tabfile='/etc/crontab', user=False)
-            job = my_cron.new(command=auto_cmd, user='root')
-            job.setall(frequency.strip())
-            job.enable(False)
+            # my_cron = CronTab(tabfile='/etc/crontab', user=False)
+            # job = my_cron.new(command=auto_cmd, user='root')
+            # job.setall(frequency.strip())
+            # job.enable(False)
             # my_cron.write()
 
-            # DB中新增
-            if job.is_valid():
-                is_valid = 1
-            else:
-                is_valid = 2
-            models.CrontabCmd.objects.create(svn=svn_obj, cmd=cmd, auto_cmd=auto_cmd, is_valid=is_valid, frequency=frequency, creator=user)
+            models.CrontabCmd.objects.create(svn=svn_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency, creator=user)
         else:
             errcode = 500
             msg = u'相同Crontab Cmd已存在'
