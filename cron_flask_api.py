@@ -6,6 +6,7 @@ import os
 import requests
 import getopt
 import functools
+from datetime import datetime
 from crontab import CronTab
 import django
 from django.contrib import auth
@@ -27,12 +28,12 @@ def login_author(func):
     @functools.wraps(func)
     def login_wrapper(*args, **kwargs):
         try:
-            usernmae = request.json.get('username')
+            username = request.json.get('username')
             password = request.json.get('password')
         except:
             return jsonify({'result': 'username or password is error'})
 
-        if auth.authenticate(username=usernmae, password=password) is not None:
+        if auth.authenticate(username=username, password=password) is not None:
             connection.close()
             if request.json.get('env') is None:
                 env = {'env': '1'}
@@ -60,9 +61,9 @@ def add_cron():
     errcode = 0
     msg = 'ok'
     username = request.json.get('username')
-    minion_id = request.json.get['minion_id']
-    cmd = request.json.get['cmd'].strip()
-    frequency = request.json.get['frequency'].strip()
+    minion_id = request.json.get('minion_id')
+    cmd = request.json.get('cmd').strip()
+    frequency = request.json.get('frequency').strip()
     try:
         minion_obj = asset_models.minion.objects.get(id=int(minion_id))
     except asset_models.minion.DoesNotExist:
@@ -153,14 +154,26 @@ def modify_cron():
     errcode = 0
     msg = 'ok'
     username = request.json.get('username')
-    crontab_id = request.json.get['crontab_id']
-    minion_id = request.json.get['minion_id']
+    crontab_id = request.json.get('crontab_id')
+    minion_id = request.json.get('minion_id')
     try:
         crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
     except models.CrontabCmd.DoesNotExist:
         errcode = 500
         msg = u'所选Crontab在数据库中不存在'
     else:
+        # 在机器上暂停任务
+        my_cron = CronTab(tabfile='/etc/crontab', user=False)
+        auto_cmd = crontab_obj.auto_cmd.strip()
+        print 'modify_cron---auto_cmd : '
+        print auto_cmd
+        for job in my_cron[4:]:
+            if job.command == auto_cmd:
+                job.enable(False)
+                print 'del_cron----disable---done'
+                my_cron.write()
+                break
+
         project_name = crontab_obj.cmd.strip().split(' ')[0]
         try:
             minion_obj = asset_models.minion.objects.get(id=int(minion_id))
@@ -168,6 +181,7 @@ def modify_cron():
             errcode = 500
             msg = u'所选Salt机器不存在'
         else:
+            salt_hostname = minion_obj.saltname
             try:
                 svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj)
             except asset_models.crontab_svn.DoesNotExist:
@@ -175,6 +189,18 @@ def modify_cron():
                 msg = u'Crontab Svn不存在'
                 return errcode, msg
             else:
+                # 在新机器上拉svn，添加crontab
+                # 新机器上拉svn目录
+                repo = svn_repo_url + project_name
+                errcode, msg = utils.salt_run_sls(username, repo, project_name, salt_hostname)
+                if errcode == 0:
+                    # 新机器上创建
+                    my_cron = CronTab(tabfile='/etc/crontab', user=False)
+                    job = my_cron.new(command=auto_cmd, user='root')
+                    job.setall(crontab_obj.frequency.strip())
+                    job.enable(False)
+                    my_cron.write()
+                # DB只修改crontab的svn
                 crontab_obj.svn = svn_obj
                 user_obj = User.objects.get(username=username)
                 crontab_obj.updater = user_obj
@@ -189,7 +215,8 @@ def del_cron():
     errcode = 0
     msg = 'ok'
     cron_ids = request.json.get('cron_ids')
-    del_cron_ids = [int(i) for i in cron_ids]
+    cron_ids_list = cron_ids.strip().strip('[').strip(']').split(',')
+    del_cron_ids = [int(i) for i in cron_ids_list]
     cron_objs = models.CrontabCmd.objects.filter(id__in=del_cron_ids)
 
     # 在机器上暂停任务
@@ -220,7 +247,8 @@ def del_cron():
 def start_cron():
     errcode = 0
     msg = 'ok'
-    crontab_id = request.json.get['crontab_id']
+    username = request.json.get('username')
+    crontab_id = request.json.get('crontab_id')
     try:
         crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
     except models.CrontabCmd.DoesNotExist:
@@ -240,7 +268,10 @@ def start_cron():
                 break
 
         # 修改数据库中cmd状态
+        user_obj = User.objects.get(username=username)
         crontab_obj.cmd_status = 2
+        crontab_obj.updater = user_obj
+        crontab_obj.update_time = datetime.now()
         crontab_obj.save()
     data = dict(code=errcode, msg=msg)
     return jsonify(data)
@@ -251,7 +282,8 @@ def start_cron():
 def pause_cron():
     errcode = 0
     msg = 'ok'
-    crontab_id = request.json.get['crontab_id']
+    username = request.json.get('username')
+    crontab_id = request.json.get('crontab_id')
     try:
         crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
     except models.CrontabCmd.DoesNotExist:
@@ -271,11 +303,14 @@ def pause_cron():
                 break
 
         # 修改数据库中cmd状态
+        user_obj = User.objects.get(username=username)
         crontab_obj.cmd_status = 1
+        crontab_obj.updater = user_obj
+        crontab_obj.update_time = datetime.now()
         crontab_obj.save()
     data = dict(code=errcode, msg=msg)
     return jsonify(data)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='127.0.0.1', port=5001)

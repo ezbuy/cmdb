@@ -64,7 +64,7 @@ $(document).ready(function () {
         }
         let url = "/asset/cronList/del/";
         let data = {
-            'svn_ids': del_svn_ids,
+            'cron_ids': del_svn_ids,
         };
         $.ajax({
             url: url,
@@ -91,8 +91,57 @@ $(document).ready(function () {
             }
         });
     });
+
+    $('#modifyCrontabButton').click(function () {
+        let minion_id = $("#minion_modify").val();
+        let old_minion_id = $("#minion_old").val();
+        let crontab_id = $("#crontab_modify").val();
+        if (minion_id.length === 0) {
+            alert("请选择部署机器");
+            return false;
+        }
+        if (old_minion_id === minion_id){
+            alert("未作修改");
+            return false;
+        }
+
+        let url = "/asset/cronList/modify/";
+        let data = {
+            'minion_id': minion_id,
+            'crontab_id': crontab_id,
+        };
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: data,
+            contentType: 'application/x-www-form-urlencoded',
+            traditional: true,
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#modifyCrontabButton").attr({disabled: "disabled"});
+            },
+            success: function (result) {
+                if (result.code === 0) {
+                    window.location.reload();
+                }
+                else {
+                    alert(result.msg);
+                    $("#modifyCrontabButton").removeAttr("disabled");
+                }
+            },
+            error: function () {
+                alert('失败');
+                $("#modifyCrontabButton").removeAttr("disabled");
+            }
+        });
+    });
 });
 
+function SendValue(crontab_id, minion_id){
+    $("#minion_old").val(minion_id);
+    $("#crontab_modify").val(crontab_id);
+    $("#minion_modify").val(minion_id);
+}
 
 function startCrontab(crontab_id) {
     let url = '/asset/cronList/start/';

@@ -71,6 +71,55 @@
                         </div>
                         {# 新增项目的弹框--end #}
 
+                        {# 修改项目的弹框 #}
+                        <div class="modal inmodal fade" id="modifyCrontabModal" tabindex="-1" role="dialog"
+                             aria-labelledby="addModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content animated fadeIn">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"><span
+                                                aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                        <i class="fa fa-clock-o modal-icon"></i>
+                                        <h4 class="modal-title" id="minion_old">修改CRONTAB配置</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label" id="crontab_modify"><span style="color: red;">*</span>部署机器</label>
+                                                <div class="col-lg-10">
+                                                    <select class="form-control" id="minion_modify">
+                                                        {% for minion in minion_list %}
+                                                            <option value={{ minion.id }}>{{ minion.hostname }}&nbsp;&nbsp;&nbsp;&nbsp;{{ minion.ip }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+{#                                            <div class="form-group">#}
+{#                                                <label class="col-lg-2 control-label"><span style="color: red;">*</span>输入CMD</label>#}
+{#                                                <div class="col-lg-10">#}
+{#                                                    <input type="text" class="form-control" id="cmd">#}
+{#                                                    <span class="help-block m-b-none">eg. ugm job updater_defined -c conf.ctmpl</span>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label class="col-lg-2 control-label"><span style="color: red;">*</span>执行频率</label>#}
+{#                                                <div class="col-lg-10">#}
+{#                                                    <input type="text" class="form-control" id="frequency">#}
+{#                                                    <span class="help-block m-b-none">eg. 0 */1 * * *</span>#}
+{#                                                </div>#}
+{#                                            </div>#}
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                                        <button type="button" class="btn btn-primary" id="modifyCrontabButton">保存</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {# 修改项目的弹框--end #}
+
                         {# 删除项目的弹框 #}
                         <div class="modal inmodal fade" id="deleteCrontabModal" tabindex="-1" role="dialog"
                              aria-labelledby="deleteModalLabel"
@@ -120,9 +169,15 @@
                                             data-editable='false'>
                                             <input name="id" value="{{ crontab.id }}" type="checkbox" class="i-checks">
                                         </td>
-                                        <td class="text-center hostname">{{ crontab.svn.hostname.saltname }}</td>
+                                        <td class="text-center hostname">
+                                            <a data-toggle="modal" data-target="#modifyCrontabModal" onclick="SendValue({{ crontab.id }}, {{ crontab.svn.hostname.id }})">
+                                                {{ crontab.svn.hostname.saltname }}
+                                            </a>
+                                        </td>
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
-                                            width="200px">{{ crontab.cmd }}</td>
+                                            width="200px">
+                                            {{ crontab.cmd }}
+                                        </td>
                                         <td class="text-center">{{ crontab.frequency }}</td>
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
                                             width="450px">{{ crontab.auto_cmd }}</td>
