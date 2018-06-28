@@ -76,9 +76,11 @@ def add_cron():
         try:
             svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj)
         except asset_models.crontab_svn.DoesNotExist:
+            print 'svn_obj not exist'
             errcode = 500
             msg = u'Crontab Svn不存在'
-            return errcode, msg
+            data = dict(code=errcode, msg=msg)
+            return jsonify(data)
         else:
             print 'else--else'
             # 创建Crontab CMD
