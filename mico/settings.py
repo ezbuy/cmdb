@@ -30,6 +30,7 @@ LOGIN_URL = '/login/'
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
     'command_job',
     'consul_kv',
     'disque',
+    'project_crontab',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -158,7 +160,7 @@ salt_location = 'slq'
 ##dingding notification
 dingding_api = 'http://dlog.abc.me/dlog'
 
-##crontab api
+##project_crontab api
 crontab_api = 'http://192.168.199.64:5000'
 
 ##kettle setting
@@ -249,3 +251,7 @@ ZABBIX_INFO = [
 ]
 GRAFANA_URL = 'https://<user>:<pass>@grafana.localhost'
 SENTRY_URL = 'https://sentry.localhost'
+
+CRONJOBS = [
+    ('1 1 * * *', 'project_crontab.cron.syncCronHost2DB', '>>/tmp/sync_cron.log'),
+]
