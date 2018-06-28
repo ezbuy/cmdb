@@ -27,25 +27,19 @@ def login_author(func):
     @functools.wraps(func)
     def login_wrapper(*args, **kwargs):
         try:
-            print 'request.form'
-            print request.form
-            print 'request.get_json()'
-            print request.get_json()
-            print 'request.json'
-            print request.json
-            username = request.json.get('username')
-            password = request.json.get('password')
+            username = request.form.get('username')
+            password = request.form.get('password')
         except:
             return jsonify({'result': 'username or password is error'})
 
         if auth.authenticate(username=username, password=password) is not None:
             connection.close()
-            if request.json.get('env') is None:
+            if request.form.get('env') is None:
                 env = {'env': '1'}
-            elif int(request.json.get('env')) not in [1, 2]:
+            elif int(request.form.get('env')) not in [1, 2]:
                 return jsonify({'result': 'The env not found.!!'})
             else:
-                env = {'env': request.json.get('env')}
+                env = {'env': request.form.get('env')}
             request.get_json().update(env)
             return func(*args, **kwargs)
         else:
@@ -56,7 +50,7 @@ def login_author(func):
 @app.route('/', methods=['POST'])
 @login_author
 def message():
-    print request.json.get('env')
+    print request.form.get('env')
     return jsonify({'hi': 'hello world!!'})
 
 
@@ -65,10 +59,10 @@ def message():
 def add_cron():
     errcode = 0
     msg = 'ok'
-    username = request.json.get('username')
-    minion_id = request.json.get('minion_id')
-    cmd = request.json.get('cmd').strip()
-    frequency = request.json.get('frequency').strip()
+    username = request.form.get('username')
+    minion_id = request.form.get('minion_id')
+    cmd = request.form.get('cmd').strip()
+    frequency = request.form.get('frequency').strip()
     try:
         minion_obj = asset_models.minion.objects.get(id=int(minion_id))
     except asset_models.minion.DoesNotExist:
@@ -158,9 +152,9 @@ def add_cron():
 def modify_cron():
     errcode = 0
     msg = 'ok'
-    username = request.json.get('username')
-    crontab_id = request.json.get('crontab_id')
-    minion_id = request.json.get('minion_id')
+    username = request.form.get('username')
+    crontab_id = request.form.get('crontab_id')
+    minion_id = request.form.get('minion_id')
     try:
         crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
     except models.CrontabCmd.DoesNotExist:
@@ -219,7 +213,7 @@ def modify_cron():
 def del_cron():
     errcode = 0
     msg = 'ok'
-    cron_ids = request.json.get('cron_ids')
+    cron_ids = request.form.get('cron_ids')
     cron_ids_list = cron_ids.strip().strip('[').strip(']').split(',')
     del_cron_ids = [int(i) for i in cron_ids_list]
     cron_objs = models.CrontabCmd.objects.filter(id__in=del_cron_ids)
@@ -252,8 +246,8 @@ def del_cron():
 def start_cron():
     errcode = 0
     msg = 'ok'
-    username = request.json.get('username')
-    crontab_id = request.json.get('crontab_id')
+    username = request.form.get('username')
+    crontab_id = request.form.get('crontab_id')
     try:
         crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
     except models.CrontabCmd.DoesNotExist:
@@ -287,8 +281,8 @@ def start_cron():
 def pause_cron():
     errcode = 0
     msg = 'ok'
-    username = request.json.get('username')
-    crontab_id = request.json.get('crontab_id')
+    username = request.form.get('username')
+    crontab_id = request.form.get('crontab_id')
     try:
         crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
     except models.CrontabCmd.DoesNotExist:
