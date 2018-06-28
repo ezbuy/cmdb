@@ -27,7 +27,8 @@ def login_author(func):
     @functools.wraps(func)
     def login_wrapper(*args, **kwargs):
         try:
-            print request.json.get('username')
+            print 'request.json'
+            print request.json
             username = request.json.get('username')
             password = request.json.get('password')
         except:
@@ -314,3 +315,4 @@ def pause_cron():
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5001, debug=True)
+    # app.run(host='127.0.0.1', port=5001)
