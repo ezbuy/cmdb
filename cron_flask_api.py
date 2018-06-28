@@ -32,18 +32,18 @@ def login_author(func):
         except:
             return jsonify({'result': 'username or password is error'})
 
-        if auth.authenticate(username=username, password=password) is not None:
-            connection.close()
-            if request.form.get('env') is None:
-                env = {'env': '1'}
-            elif int(request.form.get('env')) not in [1, 2]:
-                return jsonify({'result': 'The env not found.!!'})
-            else:
-                env = {'env': request.form.get('env')}
-            request.form().update(env)
-            return func(*args, **kwargs)
-        else:
-            return jsonify({'result': 'username or password is error'})
+        # if auth.authenticate(username=username, password=password) is not None:
+        #     connection.close()
+        #     if request.form.get('env') is None:
+        #         env = {'env': '1'}
+        #     elif int(request.form.get('env')) not in [1, 2]:
+        #         return jsonify({'result': 'The env not found.!!'})
+        #     else:
+        #         env = {'env': request.form.get('env')}
+        #     request.form().update(env)
+        #     return func(*args, **kwargs)
+        # else:
+        #     return jsonify({'result': 'username or password is error'})
     return login_wrapper
 
 
