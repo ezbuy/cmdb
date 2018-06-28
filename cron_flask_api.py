@@ -59,16 +59,20 @@ def message():
 def add_cron():
     errcode = 0
     msg = 'ok'
+    print 'add_cron start '
     username = request.form.get('username')
     minion_id = request.form.get('minion_id')
+    print 'add_cron minion_id : ', minion_id
     cmd = request.form.get('cmd').strip()
     frequency = request.form.get('frequency').strip()
+    print 'add_cron frequency : ', frequency
     try:
         minion_obj = asset_models.minion.objects.get(id=int(minion_id))
     except asset_models.minion.DoesNotExist:
         errcode = 500
         msg = u'所选Salt机器不存在'
     else:
+        print 'else'
         salt_hostname = minion_obj.saltname
         project_name = cmd.strip().split(' ')[0]
         try:
