@@ -18,7 +18,12 @@ def salt_run_sls(login_user, svnrepo, projectname, salt_hostname):
     try:
         pillar = '''pillar=\"{'svnrepo': '%s', 'goprograme': '%s'}\"''' % (svnrepo, projectname)
         pull_svn_cmd = "salt " + salt_hostname + " state.sls queue=True goservices.pull_svn " + pillar
+        print '--------------------------'
+        print pull_svn_cmd
         s, result = commands.getstatusoutput(pull_svn_cmd)
+        print s
+        print result
+        print '--------------------------'
         if result.find('Failed:    0') < 0:
             log_content = login_user, 'pull svn ' + projectname, 'Failed'
             print log_content

@@ -69,7 +69,6 @@ def add_cron():
         errcode = 500
         msg = u'所选Salt机器不存在'
     else:
-        print 'else'
         salt_hostname = minion_obj.saltname
         project_name = cmd.strip().split(' ')[0]
         print 'project_name : ', project_name
@@ -82,7 +81,6 @@ def add_cron():
             data = dict(code=errcode, msg=msg)
             return jsonify(data)
         else:
-            print 'else--else'
             # 创建Crontab CMD
             try:
                 models.CrontabCmd.objects.get(svn=svn_obj, cmd=cmd, frequency=frequency)
@@ -155,8 +153,6 @@ def add_cron():
                 errcode = 500
                 msg = u'相同Crontab Cmd已存在'
     data = dict(code=errcode, msg=msg)
-    print 'data : '
-    print data
     return jsonify(data)
 
 
