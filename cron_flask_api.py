@@ -33,14 +33,14 @@ def login_author(func):
             return jsonify({'result': 'username or password is error'})
 
         if auth.authenticate(username=username, password=password) is not None:
-            # connection.close()
-            # if request.form.get('env') is None:
-            #     env = {'env': '1'}
-            # elif int(request.form.get('env')) not in [1, 2]:
-            #     return jsonify({'result': 'The env not found.!!'})
-            # else:
-            #     env = {'env': request.form.get('env')}
-            # request.form().update(env)
+            connection.close()
+            if request.form.get('env') is None:
+                env = {'env': '1'}
+            elif int(request.form.get('env')) not in [1, 2]:
+                return jsonify({'result': 'The env not found.!!'})
+            else:
+                env = {'env': request.form.get('env')}
+            request.form().update(env)
             return func(*args, **kwargs)
         else:
             return jsonify({'result': 'username or password is error'})
@@ -48,14 +48,14 @@ def login_author(func):
 
 
 @app.route('/', methods=['POST'])
-@login_author
+# @login_author
 def message():
     print request.form.get('env')
     return jsonify({'hi': 'hello world!!'})
 
 
 @app.route('/cron/add', methods=['POST'])
-@login_author
+# @login_author
 def add_cron():
     errcode = 0
     msg = 'ok'
@@ -148,7 +148,7 @@ def add_cron():
 
 
 @app.route('/cron/modify', methods=['POST'])
-@login_author
+# @login_author
 def modify_cron():
     errcode = 0
     msg = 'ok'
@@ -209,7 +209,7 @@ def modify_cron():
 
 
 @app.route('/cron/del', methods=['POST'])
-@login_author
+# @login_author
 def del_cron():
     errcode = 0
     msg = 'ok'
@@ -242,7 +242,7 @@ def del_cron():
 
 
 @app.route('/cron/start', methods=['POST'])
-@login_author
+# @login_author
 def start_cron():
     errcode = 0
     msg = 'ok'
@@ -277,7 +277,7 @@ def start_cron():
 
 
 @app.route('/cron/pause', methods=['POST'])
-@login_author
+# @login_author
 def pause_cron():
     errcode = 0
     msg = 'ok'
