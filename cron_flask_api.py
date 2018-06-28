@@ -33,7 +33,7 @@ def login_author(func):
             return jsonify({'result': 'username or password is error'})
 
         if auth.authenticate(username=username, password=password) is not None:
-            connection.close()
+            # connection.close()
             # if request.form.get('env') is None:
             #     env = {'env': '1'}
             # elif int(request.form.get('env')) not in [1, 2]:
