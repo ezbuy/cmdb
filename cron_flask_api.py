@@ -84,7 +84,10 @@ def add_cron():
             except models.CrontabCmd.DoesNotExist:
                 # salt机器上拉svn目录
                 repo = svn_repo_url + project_name
+                print 'repo : ', repo
                 errcode, msg = utils.salt_run_sls(username, repo, project_name, salt_hostname)
+                print 'errcode, msg : '
+                print errcode, msg
                 if errcode == 0:
                     # 自动补全命令
                     path = svn_obj.localpath
@@ -129,21 +132,25 @@ def add_cron():
                         log_name = '_'.join(cmd_list) + '.log'
                         auto_cmd += ' >> ' + log_path + log_name + ' 2>&1' + '\n'
 
+                    print 'auto_cmd : ', auto_cmd
                     # 机器上创建
                     my_cron = CronTab(tabfile='/etc/crontab', user=False)
                     job = my_cron.new(command=auto_cmd, user='root')
                     job.setall(frequency.strip())
                     job.enable(False)
                     my_cron.write()
-
+                    print 'my cron done'
                     # DB中创建
                     user_obj = User.objects.get(username=username)
                     models.CrontabCmd.objects.create(svn=svn_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency,
                                                      creator=user_obj)
+                    print 'objects create done'
             else:
                 errcode = 500
                 msg = u'相同Crontab Cmd已存在'
     data = dict(code=errcode, msg=msg)
+    print 'data : '
+    print data
     return jsonify(data)
 
 
