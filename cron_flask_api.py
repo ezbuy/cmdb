@@ -3,12 +3,14 @@
 
 from flask import Flask, request, jsonify
 import os
+import django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mico.settings')
+django.setup()
 import requests
 import getopt
 import functools
 from datetime import datetime
 from crontab import CronTab
-import django
 from django.contrib import auth
 from django.db import connection
 from django.contrib.auth.models import User
@@ -17,9 +19,6 @@ from asset import models as asset_models
 from project_crontab import models
 from project_crontab import utils
 from mico.settings import svn_username, svn_password, go_local_path, svn_repo_url
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mico.settings')
-django.setup()
 
 app = Flask(__name__)
 
