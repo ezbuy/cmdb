@@ -43,11 +43,13 @@ def addCrontab(request):
 
     postData = {
         'username': login_user.username,
+        'password': login_user.password,
         'minion_id': minion_id,
         'cmd': cmd,
         'frequency': frequency,
     }
-    response = requests.post('http://127.0.0.1:5001/cron/add', data=postData, username=login_user.username, password=login_user.password)
+    response = requests.post('http://127.0.0.1:5001/cron/add', data=postData)
+    print 'response.text'
     print response.text
     errcode, msg = 0, 'ok'
 
