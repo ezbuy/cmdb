@@ -48,7 +48,7 @@ def addCrontab(request):
         'cmd': cmd,
         'frequency': frequency,
     }
-    response = requests.post('http://127.0.0.1:5001/cron/add', data=postData)
+    response = requests.post('http://116.196.87.93:5001/cron/add', data=postData)
     print 'response.text'
     print response.text
     errcode, msg = 0, 'ok'
@@ -68,7 +68,7 @@ def modifyCrontab(request):
         'crontab_id': crontab_id,
         'minion_id': minion_id,
     }
-    response = requests.post('http://127.0.0.1:5001/cron/modify', data=postData)
+    response = requests.post('http://116.196.87.93:5001/cron/modify', data=postData)
     print response.text
     errcode, msg = 0, 'ok'
 
@@ -83,7 +83,7 @@ def delCrontab(request):
     postData = {
         'cron_ids': cron_ids,
     }
-    response = requests.post('http://127.0.0.1:5001/cron/del', data=postData)
+    response = requests.post('http://116.196.87.93:5001/cron/del', data=postData)
     print response.text
     errcode, msg = 0, 'ok'
 
@@ -99,7 +99,7 @@ def startCrontab(request):
         'username': login_user.username,
         'crontab_id': crontab_id,
     }
-    response = requests.post('http://127.0.0.1:5001/cron/start', data=postData)
+    response = requests.post('http://116.196.87.93:5001/cron/start', data=postData)
     print response.text
     errcode, msg = 0, 'ok'
     data = dict(code=errcode, msg=msg)
@@ -114,7 +114,7 @@ def pauseCrontab(request):
         'username': login_user.username,
         'crontab_id': crontab_id,
     }
-    response = requests.post('http://127.0.0.1:5001/cron/pause', data=postData)
+    response = requests.post('http://116.196.87.93:5001/cron/pause', data=postData)
     print response.text
     errcode, msg = 0, 'ok'
     data = dict(code=errcode, msg=msg)
