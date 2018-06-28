@@ -27,6 +27,7 @@ def login_author(func):
     @functools.wraps(func)
     def login_wrapper(*args, **kwargs):
         try:
+            print request.json.get('username')
             username = request.json.get('username')
             password = request.json.get('password')
         except:
