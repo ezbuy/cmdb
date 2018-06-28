@@ -27,6 +27,10 @@ def login_author(func):
     @functools.wraps(func)
     def login_wrapper(*args, **kwargs):
         try:
+            print 'request.form'
+            print request.form
+            print 'request.get_json()'
+            print request.get_json()
             print 'request.json'
             print request.json
             username = request.json.get('username')
