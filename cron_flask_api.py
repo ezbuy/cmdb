@@ -40,7 +40,7 @@ def login_author(func):
                 return jsonify({'result': 'The env not found.!!'})
             else:
                 env = {'env': request.form.get('env')}
-            request.form.update(env)
+            request.form().update(env)
             return func(*args, **kwargs)
         else:
             return jsonify({'result': 'username or password is error'})
