@@ -146,6 +146,7 @@ def modifyCrontab(request):
         frequency = crontab_obj.frequency
         postData = {
             'auto_cmd': auto_cmd,
+            'frequency': frequency,
         }
         response = requests.post('http://116.196.87.93:5001/cron/del', data=postData)
         res_json = response.json()
