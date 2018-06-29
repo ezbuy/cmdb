@@ -1,6 +1,7 @@
 #!/usr/local/bin/python
 # coding=utf-8
 
+import commands
 from flask import Flask, request, jsonify
 import os
 import django
@@ -242,17 +243,10 @@ def listall_cron():
         auto_cmd = cron_obj.auto_cmd.strip()
         for job in my_cron:
             if job.command == auto_cmd:
-                job_frequency = str(job).split(cron_obj.svn.project)[0].strip('#').strip()
-                if job_frequency == '@hourly':
-                    job_frequency = '0 * * * *'
-                elif job_frequency == '@daily':
-                    job_frequency = '0 0 * * *'
-                elif job_frequency == '@yearly':
-                    job_frequency = '0 0 1 1 *'
-                if job_frequency == cron_obj.frequency:
-                    last_run_time = job.schedule().get_prev()
-                    cron_obj.last_run_time = last_run_time
-                    cron_obj.save()
+                status, last_run_time = commands.getstatusoutput(
+                    "grep '%s' /var/log/cron.log | tail -n 1 | awk \'{print $1,$2,$3}\'" % job.command)
+                cron_obj.last_run_time = last_run_time
+                cron_obj.save()
 
     data = dict(code=errcode, msg=msg)
     return jsonify(data)
