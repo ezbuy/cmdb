@@ -21,13 +21,8 @@ salt_api = SaltApi()
 
 
 def logs(user,ip,action,result):
-    print 'utils.logs start'
-    try:
-        goLog.objects.create(user=user, remote_ip=ip, goAction=action, result=result)
-    except Exception as e:
-        print 'e : '
-        print e.message
-    print 'utils.logs done'
+    goLog.objects.create(user=user, remote_ip=ip, goAction=action, result=result)
+
 
 def publish_logs(user,ip,url,result):
     publishLog.objects.create(user=user, remote_ip=ip, publish_url=url, publish_result=result)
