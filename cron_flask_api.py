@@ -63,6 +63,7 @@ def add_cron():
     minion_id = request.form.get('minion_id')
     cmd = request.form.get('cmd').strip()
     frequency = request.form.get('frequency').strip()
+    login_ip = request.form.get('login_ip').strip()
     try:
         minion_obj = asset_models.minion.objects.get(id=int(minion_id))
     except asset_models.minion.DoesNotExist:
@@ -88,7 +89,7 @@ def add_cron():
                 # salt机器上拉svn目录
                 repo = svn_repo_url + project_name
                 print 'repo : ', repo
-                errcode, msg = utils.salt_run_sls(username, repo, project_name, salt_hostname)
+                errcode, msg = utils.salt_run_sls(username, repo, project_name, salt_hostname, login_ip)
                 print 'errcode, msg : '
                 print errcode, msg
                 if errcode == 0:
@@ -164,6 +165,7 @@ def modify_cron():
     username = request.form.get('username')
     crontab_id = request.form.get('crontab_id')
     minion_id = request.form.get('minion_id')
+    login_ip = request.form.get('login_ip').strip()
     try:
         crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
     except models.CrontabCmd.DoesNotExist:
@@ -200,7 +202,7 @@ def modify_cron():
                 # 在新机器上拉svn，添加crontab
                 # 新机器上拉svn目录
                 repo = svn_repo_url + project_name
-                errcode, msg = utils.salt_run_sls(username, repo, project_name, salt_hostname)
+                errcode, msg = utils.salt_run_sls(username, repo, project_name, salt_hostname, login_ip)
                 if errcode == 0:
                     # 新机器上创建
                     my_cron = CronTab(tabfile='/etc/crontab', user=False)

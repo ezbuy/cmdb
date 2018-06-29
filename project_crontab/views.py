@@ -40,6 +40,7 @@ def addCrontab(request):
     minion_id = request.POST['minion_id']
     cmd = request.POST['cmd'].strip()
     frequency = request.POST['frequency'].strip()
+    login_ip = request.META['REMOTE_ADDR']
 
     postData = {
         'username': login_user.username,
@@ -47,6 +48,7 @@ def addCrontab(request):
         'minion_id': minion_id,
         'cmd': cmd,
         'frequency': frequency,
+        'login_ip': login_ip,
     }
     response = requests.post('http://116.196.87.93:5001/cron/add', data=postData)
     res_json = response.json()
@@ -62,11 +64,13 @@ def modifyCrontab(request):
     login_user = request.user
     crontab_id = int(request.POST['crontab_id'])
     minion_id = int(request.POST['minion_id'])
+    login_ip = request.META['REMOTE_ADDR']
 
     postData = {
         'username': login_user.username,
         'crontab_id': crontab_id,
         'minion_id': minion_id,
+        'login_ip': login_ip,
     }
     response = requests.post('http://116.196.87.93:5001/cron/modify', data=postData)
     print response.text

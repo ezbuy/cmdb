@@ -12,7 +12,7 @@ from mico.settings import svn_username, svn_password, go_local_path, svn_repo_ur
 salt_api = SaltApi()
 
 
-def salt_run_sls(login_user, svnrepo, projectname, salt_hostname):
+def salt_run_sls(login_user, svnrepo, projectname, salt_hostname, login_ip):
     errcode = 0
     msg = 'ok'
     try:
@@ -23,12 +23,12 @@ def salt_run_sls(login_user, svnrepo, projectname, salt_hostname):
         s, result = commands.getstatusoutput(pull_svn_cmd)
         print '**************************'
         if result.find('Failed:    0') < 0:
-            log_content = login_user, 'pull svn ' + projectname, 'Failed'
+            log_content = login_user, login_ip, 'pull svn ' + projectname, 'Failed'
             print log_content
             logs(log_content)
             print 'logs Failed done'
         else:
-            log_content = login_user, 'pull svn ' + projectname, 'Successful'
+            log_content = login_user, login_ip, 'pull svn ' + projectname, 'Successful'
             print log_content
             logs(log_content)
             print 'logs Successful done'
