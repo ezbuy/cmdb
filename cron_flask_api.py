@@ -246,8 +246,9 @@ def listall_cron():
                 status, last_run_time = commands.getstatusoutput("grep '%s' /var/log/cron.log | tail -n 1 | awk \'{print $1,$2,$3}\'" % job.command)
                 print last_run_time
                 print type(last_run_time)
-                cron_obj.last_run_time = last_run_time
-                cron_obj.save()
+                if last_run_time:
+                    cron_obj.last_run_time = last_run_time
+                    cron_obj.save()
 
     data = dict(code=errcode, msg=msg)
     return jsonify(data)
