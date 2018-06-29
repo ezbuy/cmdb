@@ -125,6 +125,7 @@ def multi_del_cron():
         for job in my_cron:
             if job.command == auto_cmd:
                 job_frequency = str(job).split('root')[0].strip('#').strip()
+                print 'job_frequency : ', job_frequency
                 if job_frequency == cron_obj.frequency:
                     job.enable(False)
                     my_cron.write()

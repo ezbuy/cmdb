@@ -32,7 +32,7 @@ $(document).ready(function () {
             beforeSend: function () {
                 // 禁用按钮防止重复提交
                 $("#addCrontabButton").attr({disabled: "disabled"});
-                $("#page_loading").show();
+                // $("#page_loading").show();
             },
             success: function (result) {
                 if (result.code === 0) {
@@ -42,12 +42,12 @@ $(document).ready(function () {
                     alert(result.msg);
                     $("#addCrontabButton").removeAttr("disabled");
                 }
-                $("#page_loading").hide();
+                // $("#page_loading").hide();
             },
             error: function () {
                 alert('失败');
                 $("#addCrontabButton").removeAttr("disabled");
-                $("#page_loading").hide();
+                // $("#page_loading").hide();
             }
         });
     });
@@ -55,7 +55,9 @@ $(document).ready(function () {
     $('#deleteCrontabButton').click(function () {
         let del_svn_ids = [];
         $("#editable").find(":checkbox:checked").each(function () {
+            alert('find each');
             let salt_id = $(this).val();
+            alert(salt_id);
             if (salt_id != 'checkall') {
                 del_svn_ids.push(salt_id);
             }
