@@ -231,6 +231,33 @@ def pause_cron():
     return jsonify(data)
 
 
+@app.route('/cron/listall', methods=['GET'])
+# @login_author
+def listall_cron():
+    errcode = 0
+    msg = 'ok'
+    cron_objs = models.CrontabCmd.objects.all().order_by('-create_time')
+    my_cron = CronTab(tabfile='/etc/crontab', user=False)
+    for cron_obj in cron_objs:
+        auto_cmd = cron_obj.auto_cmd.strip()
+        for job in my_cron:
+            if job.command == auto_cmd:
+                job_frequency = str(job).split(cron_obj.svn.project)[0].strip('#').strip()
+                if job_frequency == '@hourly':
+                    job_frequency = '0 * * * *'
+                elif job_frequency == '@daily':
+                    job_frequency = '0 0 * * *'
+                elif job_frequency == '@yearly':
+                    job_frequency = '0 0 1 1 *'
+                if job_frequency == cron_obj.frequency:
+                    last_run_time = job.schedule().get_prev()
+                    cron_obj.last_run_time = last_run_time
+                    cron_obj.save()
+
+    data = dict(code=errcode, msg=msg)
+    return jsonify(data)
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
     # app.run(host='127.0.0.1', port=5001)

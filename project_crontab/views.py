@@ -16,6 +16,13 @@ from mico.settings import svn_username, svn_password, go_local_path, svn_repo_ur
 @login_required
 def crontabList(request):
     page = request.GET.get('page', 1)
+
+    response = requests.get('http://116.196.87.93:5001/cron/listall')
+    res_json = response.json()
+    errcode = res_json['code']
+    msg = res_json['msg']
+
+
     minion_objs = asset_models.minion.objects.all().order_by('saltname')
     minion_list = [
         {'id': minion_obj.id,
@@ -23,7 +30,6 @@ def crontabList(request):
          'ip': minion_obj.ip,
          }
         for minion_obj in minion_objs]
-
     crontab_objs = models.CrontabCmd.objects.all().order_by('-create_time')
     paginator = Paginator(crontab_objs, 20)
     try:
