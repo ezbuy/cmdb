@@ -136,14 +136,19 @@ def add_cron():
                         log_name = '_'.join(cmd_list) + '.log'
                         auto_cmd += ' >> ' + log_path + log_name + ' 2>&1' + '\n'
 
-                    print 'auto_cmd : ', auto_cmd
+                    print 'add_cron--------auto_cmd : '
+                    print auto_cmd
+                    print '************'
                     # 机器上创建
                     my_cron = CronTab(tabfile='/etc/crontab', user=False)
-
                     create_res = False
                     # 判断是否已经存在，已存在则不用新建
+                    print my_cron
+                    print type(my_cron)
                     for job in my_cron:
+                        print job.command
                         if job.command == auto_cmd:
+                            print 'already exist'
                             job.enable(False)
                             my_cron.write()
                             create_res = True
