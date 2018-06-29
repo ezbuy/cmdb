@@ -115,6 +115,10 @@ def multi_del_cron():
     cron_ids_list = cron_ids.strip().strip('[').strip(']').split(',')
     del_cron_ids = [int(i) for i in cron_ids_list]
     cron_objs = models.CrontabCmd.objects.filter(id__in=del_cron_ids)
+    print 'del_cron_ids : '
+    print del_cron_ids
+    print 'cron_objs : '
+    print cron_objs
 
     # 在机器上暂停任务
     my_cron = CronTab(tabfile='/etc/crontab', user=False)
