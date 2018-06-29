@@ -56,9 +56,7 @@ $(document).ready(function () {
         let del_svn_ids = [];
         $("#editable").find(":checkbox:checked").each(function () {
             let salt_id = $(this).val();
-            alert(salt_id);
-            alert(isNaN(salt_id);
-            if (!isNaN(salt_id)) {
+            if (salt_id != 'checkall') {
                 del_svn_ids.push(salt_id);
             }
         });
