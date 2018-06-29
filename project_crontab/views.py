@@ -74,44 +74,9 @@ def addCrontab(request):
                 models.CrontabCmd.objects.get(svn=svn_obj, cmd=cmd, frequency=frequency)
             except models.CrontabCmd.DoesNotExist:
                 # 自动补全命令auto_cmd
-                # args_list = []
-                # opts_dict = {}
                 auto_cmd = localpath + '/' + cmd + ' -c ' + '/srv/gotemplate/' + project_name + '/conf.ctmpl'
-                # if ' -' not in cmd:
-                #     # 没有参数的命令
-                #     auto_cmd = localpath + '/' + cmd
-                # else:
-                #     # 有参数的命令
-                #     options, args = getopt.getopt(cmd_list, "hc:f:d:s:n:")
-                #     for opt in args:
-                #         if opt.startswith('-'):
-                #             index = args.index(opt)
-                #             args_list = args[:index]
-                #             key_list = args[index::2]
-                #             value_list = args[index + 1::2]
-                #             opts_dict = dict(zip(key_list, value_list))
-                #             break
-                #     auto_cmd = localpath + '/' + ' '.join(args_list) + ' '
                 log_path = '/var/log/' + project_name + '/'
-                # if opts_dict:
-                #     if '-d' in opts_dict.keys():
-                #         log_name = opts_dict['-d'].split('.')[0] + '.log'
-                #     elif '-c' in opts_dict.keys():
-                #         log_name = args_list[0] + '_conf.log'
-                #     else:
-                #         log_name = args_list[0] + '.log'
-                #     for k, v in opts_dict.items():
-                #         if k == '-c':
-                #             auto_cmd += k + ' ' + localpath + '/' + 'conf/' + v + ' '
-                #         elif k == '-d':
-                #             auto_cmd += k + ' ' + localpath + '/' + 'conf/' + v + ' '
-                #         else:
-                #             auto_cmd += k + ' ' + v + ' '
-                #     auto_cmd += '>> ' + log_path + log_name + ' 2>&1' + '\n'
-                # else:
-                #     log_name = '_'.join(cmd_list) + '.log'
-                #     auto_cmd += ' >> ' + log_path + log_name + ' 2>&1' + '\n'
-                log_name = project_name + cmd_list[1] + '.log'
+                log_name = project_name + '_' + cmd_list[1] + '.log'
                 auto_cmd += ' >> ' + log_path + log_name + ' 2>&1' + '\n'
                 print 'add_cron--------auto_cmd : '
                 print auto_cmd
@@ -123,6 +88,7 @@ def addCrontab(request):
                     postData = {
                         'auto_cmd': auto_cmd,
                         'frequency': frequency,
+                        'project_name': project_name,
                     }
                     response = requests.post('http://116.196.87.93:5001/cron/add', data=postData)
                     res_json = response.json()
@@ -153,12 +119,14 @@ def modifyCrontab(request):
         errcode = 500
         msg = u'所选Crontab在数据库中不存在'
     else:
+        project_name = crontab_obj.cmd.strip().split(' ')[0]
         # 在机器上暂停任务
         auto_cmd = crontab_obj.auto_cmd.strip()
         frequency = crontab_obj.frequency
         postData = {
             'auto_cmd': auto_cmd,
             'frequency': frequency,
+            'project_name': project_name,
         }
         response = requests.post('http://116.196.87.93:5001/cron/del', data=postData)
         res_json = response.json()
@@ -166,7 +134,6 @@ def modifyCrontab(request):
         msg = res_json['msg']
         if errcode == 0:
             # 暂停成功后
-            project_name = crontab_obj.cmd.strip().split(' ')[0]
             try:
                 minion_obj = asset_models.minion.objects.get(id=int(minion_id))
             except asset_models.minion.DoesNotExist:
@@ -189,6 +156,7 @@ def modifyCrontab(request):
                         postData = {
                             'auto_cmd': auto_cmd,
                             'frequency': frequency,
+                            'project_name': project_name,
                         }
                         response = requests.post('http://116.196.87.93:5001/cron/add', data=postData)
                         res_json = response.json()
@@ -207,7 +175,7 @@ def modifyCrontab(request):
 
 
 @login_required
-def delCrontab(request):
+def multiDelCrontab(request):
     cron_ids = request.POST.getlist('cron_ids', [])
     cron_objs = models.CrontabCmd.objects.filter(id__in=cron_ids)
     cron_ids_str = ','.join(cron_ids)

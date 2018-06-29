@@ -57,6 +57,7 @@ def add_cron():
     msg = 'ok'
     auto_cmd = request.form.get('auto_cmd').strip()
     frequency = request.form.get('frequency').strip()
+    project_name = request.form.get('project_name').strip()
 
     # 机器上/etc/crontab中试图创建
     my_cron = CronTab(tabfile='/etc/crontab', user=False)
@@ -78,7 +79,7 @@ def add_cron():
                 create_res = True
                 break
     if not create_res:
-        job = my_cron.new(command=auto_cmd, user='root')
+        job = my_cron.new(command=auto_cmd, user=project_name)
         job.setall(frequency.strip())
         job.enable(False)
         my_cron.write()
@@ -94,6 +95,7 @@ def del_cron():
     msg = 'ok'
     auto_cmd = request.form.get('auto_cmd')
     frequency = request.form.get('frequency').strip()
+    project_name = request.form.get('project_name').strip()
 
     # 在机器上暂停任务
     my_cron = CronTab(tabfile='/etc/crontab', user=False)
