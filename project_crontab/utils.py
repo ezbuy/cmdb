@@ -20,7 +20,8 @@ def salt_run_sls(login_user, svnrepo, projectname, salt_hostname, login_ip):
             print 'result : '
             print result
             errcode = 501
-            msg = result.split('\n')[0]
+            msg = u'salt执行不成功：\n'
+            msg += result.split('\n')[0]
         else:
             utils.logs(login_user, login_ip, 'pull svn ' + projectname, 'Successful')
     except Exception as e:
