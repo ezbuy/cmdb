@@ -57,6 +57,7 @@ $(document).ready(function () {
         $("#editable").find(":checkbox:checked").each(function () {
             let salt_id = $(this).val();
             if (!isNaN(salt_id)) {
+                console.log(salt_id);
                 del_svn_ids.push(salt_id);
             }
         });
