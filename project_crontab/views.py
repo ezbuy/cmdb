@@ -42,6 +42,7 @@ def addCrontab(request):
     minion_id = request.POST['minion_id']
     cmd = request.POST['cmd'].strip()
     frequency = request.POST['frequency'].strip()
+    print 'addCrontab----frequency : ', frequency
     login_ip = request.META['REMOTE_ADDR']
 
     try:
@@ -62,6 +63,7 @@ def addCrontab(request):
             try:
                 models.CrontabCmd.objects.get(svn=svn_obj, cmd=cmd, frequency=frequency)
             except models.CrontabCmd.DoesNotExist:
+                print 'add Cron----not exist----handle start'
                 # 自动补全命令
                 path = svn_obj.localpath
                 cmd_list = cmd.strip().split(' ')
@@ -197,6 +199,8 @@ def modifyCrontab(request):
 @login_required
 def delCrontab(request):
     cron_ids = request.POST.getlist('cron_ids', [])
+    print 'delCrontab view cron_ids : '
+    print cron_ids
     cron_objs = models.CrontabCmd.objects.filter(id__in=cron_ids)
 
     if len(cron_objs) == 0:
