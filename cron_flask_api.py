@@ -239,7 +239,7 @@ def modify_cron():
                 # DB只修改crontab的svn
                 crontab_obj.svn = svn_obj
                 user_obj = user_obj
-                crontab_obj.cmd_status = 2
+                crontab_obj.cmd_status = 1
                 crontab_obj.updater = user_obj
                 crontab_obj.save()
     data = dict(code=errcode, msg=msg)
