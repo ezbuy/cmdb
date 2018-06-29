@@ -49,15 +49,9 @@ def addCrontab(request):
         'frequency': frequency,
     }
     response = requests.post('http://116.196.87.93:5001/cron/add', data=postData)
-    print 'response.text'
-    print response.text
-    print type(response.text)
-
     res_json = response.json()
-    print 'res_json'
-    print res_json
-    print type(res_json)
-    errcode, msg = 0, 'ok'
+    errcode = res_json['code']
+    msg = res_json['msg']
 
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
