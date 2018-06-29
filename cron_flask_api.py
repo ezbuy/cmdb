@@ -68,6 +68,13 @@ def add_cron():
         if job.command.strip() == auto_cmd.strip():
             job_frequency = str(job).split('root')[0].strip('#').strip()
             print 'job_frequency : ', job_frequency
+            if job_frequency == '@hourly':
+                job_frequency = '0 * * * *'
+            elif job_frequency == '@daily':
+                job_frequency = '0 0 * * *'
+            elif job_frequency == '@yearly':
+                job_frequency = '0 0 1 1 *'
+
             if job_frequency == frequency:
                 job.enable(False)
                 my_cron.write()
@@ -99,6 +106,13 @@ def del_cron():
     for job in my_cron:
         if job.command == auto_cmd:
             job_frequency = str(job).split('root')[0].strip('#').strip()
+            if job_frequency == '@hourly':
+                job_frequency = '0 * * * *'
+            elif job_frequency == '@daily':
+                job_frequency = '0 0 * * *'
+            elif job_frequency == '@yearly':
+                job_frequency = '0 0 1 1 *'
+
             if job_frequency == frequency:
                 job.enable(False)
                 my_cron.write()
@@ -128,6 +142,12 @@ def multi_del_cron():
             if job.command == auto_cmd:
                 job_frequency = str(job).split('root')[0].strip('#').strip()
                 print 'job_frequency : ', job_frequency
+                if job_frequency == '@hourly':
+                    job_frequency = '0 * * * *'
+                elif job_frequency == '@daily':
+                    job_frequency = '0 0 * * *'
+                elif job_frequency == '@yearly':
+                    job_frequency = '0 0 1 1 *'
                 if job_frequency == cron_obj.frequency:
                     job.enable(False)
                     my_cron.write()
@@ -158,6 +178,12 @@ def start_cron():
         for job in my_cron:
             if job.command == auto_cmd:
                 job_frequency = str(job).split('root')[0].strip('#').strip()
+                if job_frequency == '@hourly':
+                    job_frequency = '0 * * * *'
+                elif job_frequency == '@daily':
+                    job_frequency = '0 0 * * *'
+                elif job_frequency == '@yearly':
+                    job_frequency = '0 0 1 1 *'
                 if job_frequency == crontab_obj.frequency:
                     job.enable()
                     print 'start_cron----enable---done'
@@ -195,6 +221,12 @@ def pause_cron():
         for job in my_cron:
             if job.command == auto_cmd:
                 job_frequency = str(job).split('root')[0].strip('#').strip()
+                if job_frequency == '@hourly':
+                    job_frequency = '0 * * * *'
+                elif job_frequency == '@daily':
+                    job_frequency = '0 0 * * *'
+                elif job_frequency == '@yearly':
+                    job_frequency = '0 0 1 1 *'
                 if job_frequency == crontab_obj.frequency:
                     job.enable(False)
                     print 'pause_cron----enable---done'

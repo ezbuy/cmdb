@@ -42,6 +42,7 @@ def addCrontab(request):
     minion_id = request.POST['minion_id']
     cmd = request.POST['cmd'].strip()
     frequency = request.POST['frequency'].strip()
+    frequency.replace('*/1', '*')
     print 'addCrontab----frequency : ', frequency
     login_ip = request.META['REMOTE_ADDR']
 
