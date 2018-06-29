@@ -87,9 +87,10 @@ def add_cron():
                 models.CrontabCmd.objects.get(svn=svn_obj, cmd=cmd, frequency=frequency)
             except models.CrontabCmd.DoesNotExist:
                 # salt机器上拉svn目录
+                user_obj = User.objects.get(username=username)
                 repo = svn_repo_url + project_name
                 print 'repo : ', repo
-                errcode, msg = utils.salt_run_sls(username, repo, project_name, salt_hostname, login_ip)
+                errcode, msg = utils.salt_run_sls(user_obj, repo, project_name, salt_hostname, login_ip)
                 print 'errcode, msg : '
                 print errcode, msg
                 if errcode == 0:
@@ -145,7 +146,6 @@ def add_cron():
                     my_cron.write()
                     print 'my cron done'
                     # DB中创建
-                    user_obj = User.objects.get(username=username)
                     models.CrontabCmd.objects.create(svn=svn_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency,
                                                      creator=user_obj)
                     print 'objects create done'
@@ -201,8 +201,9 @@ def modify_cron():
             else:
                 # 在新机器上拉svn，添加crontab
                 # 新机器上拉svn目录
+                user_obj = User.objects.get(username=username)
                 repo = svn_repo_url + project_name
-                errcode, msg = utils.salt_run_sls(username, repo, project_name, salt_hostname, login_ip)
+                errcode, msg = utils.salt_run_sls(user_obj, repo, project_name, salt_hostname, login_ip)
                 if errcode == 0:
                     # 新机器上创建
                     my_cron = CronTab(tabfile='/etc/crontab', user=False)
@@ -212,7 +213,7 @@ def modify_cron():
                     my_cron.write()
                 # DB只修改crontab的svn
                 crontab_obj.svn = svn_obj
-                user_obj = User.objects.get(username=username)
+                user_obj = user_obj
                 crontab_obj.updater = user_obj
                 crontab_obj.save()
     data = dict(code=errcode, msg=msg)
