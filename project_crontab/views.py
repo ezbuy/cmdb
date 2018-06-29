@@ -1,8 +1,8 @@
 # coding:utf8
 import requests
-import getopt
+# import getopt
 
-from django.shortcuts import render, render_to_response, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -43,8 +43,17 @@ def addCrontab(request):
     cmd = request.POST['cmd'].strip()
     frequency = request.POST['frequency'].strip()
     frequency = frequency.replace('*/1', '*')
-    print 'addCrontab----frequency : ', frequency
     login_ip = request.META['REMOTE_ADDR']
+
+    cmd_list = cmd.strip().split(' ')
+    project_name = cmd_list[0]
+    go_group = asset_models.gogroup.objects.filter(name=project_name)
+    # 检查crontab cmd命令格式
+    if ';' in cmd or '&&' in cmd or '||' in cmd or '>' in cmd or len(go_group) == 0:
+        errcode = 500
+        msg = u'命令格式有误'
+        data = dict(code=errcode, msg=msg)
+        return HttpResponse(json.dumps(data), content_type='application/json')
 
     try:
         minion_obj = asset_models.minion.objects.get(id=int(minion_id))
@@ -53,57 +62,57 @@ def addCrontab(request):
         msg = u'所选Salt机器不存在'
     else:
         salt_hostname = minion_obj.saltname
-        project_name = cmd.strip().split(' ')[0]
         repo = svn_repo_url + project_name
+        localpath = go_local_path + project_name
+        svn_obj = None
         try:
-            svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj)
+            svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj, username=svn_username, password=svn_password, repo=repo, localpath=localpath)
         except asset_models.crontab_svn.DoesNotExist:
-            errcode = 500
-            msg = u'Crontab Svn不存在'
-        else:
+            svn_obj = asset_models.crontab_svn.objects.create(project=project_name, hostname=minion_obj, username=svn_username, password=svn_password, repo=repo, localpath=localpath)
+        finally:
             try:
                 models.CrontabCmd.objects.get(svn=svn_obj, cmd=cmd, frequency=frequency)
             except models.CrontabCmd.DoesNotExist:
-                print 'add Cron----not exist----handle start'
-                # 自动补全命令
-                path = svn_obj.localpath
-                cmd_list = cmd.strip().split(' ')
-                args_list = []
-                opts_dict = {}
-                if ' -' not in cmd:
-                    # 没有参数的命令
-                    auto_cmd = path + '/' + cmd
-                else:
-                    # 有参数的命令
-                    options, args = getopt.getopt(cmd_list, "hc:f:d:s:n:")
-                    for opt in args:
-                        if opt.startswith('-'):
-                            index = args.index(opt)
-                            args_list = args[:index]
-                            key_list = args[index::2]
-                            value_list = args[index + 1::2]
-                            opts_dict = dict(zip(key_list, value_list))
-                            break
-                    auto_cmd = path + '/' + ' '.join(args_list) + ' '
+                # 自动补全命令auto_cmd
+                # args_list = []
+                # opts_dict = {}
+                auto_cmd = localpath + '/' + cmd + ' -c ' + '/srv/gotemplate/' + project_name + '/conf.ctmpl'
+                # if ' -' not in cmd:
+                #     # 没有参数的命令
+                #     auto_cmd = localpath + '/' + cmd
+                # else:
+                #     # 有参数的命令
+                #     options, args = getopt.getopt(cmd_list, "hc:f:d:s:n:")
+                #     for opt in args:
+                #         if opt.startswith('-'):
+                #             index = args.index(opt)
+                #             args_list = args[:index]
+                #             key_list = args[index::2]
+                #             value_list = args[index + 1::2]
+                #             opts_dict = dict(zip(key_list, value_list))
+                #             break
+                #     auto_cmd = localpath + '/' + ' '.join(args_list) + ' '
                 log_path = '/var/log/' + project_name + '/'
-                if opts_dict:
-                    if '-d' in opts_dict.keys():
-                        log_name = opts_dict['-d'].split('.')[0] + '.log'
-                    elif '-c' in opts_dict.keys():
-                        log_name = args_list[0] + '_conf.log'
-                    else:
-                        log_name = args_list[0] + '.log'
-                    for k, v in opts_dict.items():
-                        if k == '-c':
-                            auto_cmd += k + ' ' + path + '/' + 'conf/' + v + ' '
-                        elif k == '-d':
-                            auto_cmd += k + ' ' + path + '/' + 'conf/' + v + ' '
-                        else:
-                            auto_cmd += k + ' ' + v + ' '
-                    auto_cmd += '>> ' + log_path + log_name + ' 2>&1' + '\n'
-                else:
-                    log_name = '_'.join(cmd_list) + '.log'
-                    auto_cmd += ' >> ' + log_path + log_name + ' 2>&1' + '\n'
+                # if opts_dict:
+                #     if '-d' in opts_dict.keys():
+                #         log_name = opts_dict['-d'].split('.')[0] + '.log'
+                #     elif '-c' in opts_dict.keys():
+                #         log_name = args_list[0] + '_conf.log'
+                #     else:
+                #         log_name = args_list[0] + '.log'
+                #     for k, v in opts_dict.items():
+                #         if k == '-c':
+                #             auto_cmd += k + ' ' + localpath + '/' + 'conf/' + v + ' '
+                #         elif k == '-d':
+                #             auto_cmd += k + ' ' + localpath + '/' + 'conf/' + v + ' '
+                #         else:
+                #             auto_cmd += k + ' ' + v + ' '
+                #     auto_cmd += '>> ' + log_path + log_name + ' 2>&1' + '\n'
+                # else:
+                #     log_name = '_'.join(cmd_list) + '.log'
+                #     auto_cmd += ' >> ' + log_path + log_name + ' 2>&1' + '\n'
+                log_name = project_name + cmd_list[1] + '.log'
+                auto_cmd += ' >> ' + log_path + log_name + ' 2>&1' + '\n'
                 print 'add_cron--------auto_cmd : '
                 print auto_cmd
                 print '************'
@@ -200,10 +209,7 @@ def modifyCrontab(request):
 @login_required
 def delCrontab(request):
     cron_ids = request.POST.getlist('cron_ids', [])
-    print 'delCrontab view cron_ids : '
-    print cron_ids
     cron_objs = models.CrontabCmd.objects.filter(id__in=cron_ids)
-
     cron_ids_str = ','.join(cron_ids)
 
     if len(cron_objs) == 0:

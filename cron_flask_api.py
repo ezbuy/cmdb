@@ -47,7 +47,6 @@ def login_author(func):
 @app.route('/', methods=['POST'])
 # @login_author
 def message():
-    print request.form.get('env')
     return jsonify({'hi': 'hello world!!'})
 
 
@@ -58,7 +57,6 @@ def add_cron():
     msg = 'ok'
     auto_cmd = request.form.get('auto_cmd').strip()
     frequency = request.form.get('frequency').strip()
-    print 'frequency : ', frequency
 
     # 机器上/etc/crontab中试图创建
     my_cron = CronTab(tabfile='/etc/crontab', user=False)
@@ -67,7 +65,6 @@ def add_cron():
     for job in my_cron:
         if job.command.strip() == auto_cmd.strip():
             job_frequency = str(job).split('root')[0].strip('#').strip()
-            print 'job_frequency : ', job_frequency
             if job_frequency == '@hourly':
                 job_frequency = '0 * * * *'
             elif job_frequency == '@daily':
@@ -101,8 +98,6 @@ def del_cron():
     # 在机器上暂停任务
     my_cron = CronTab(tabfile='/etc/crontab', user=False)
     auto_cmd = auto_cmd
-    print 'modify_cron---auto_cmd : '
-    print auto_cmd
     for job in my_cron:
         if job.command == auto_cmd:
             job_frequency = str(job).split('root')[0].strip('#').strip()
@@ -128,10 +123,8 @@ def multi_del_cron():
     errcode = 0
     msg = 'ok'
     cron_ids_str = request.form.get('cron_ids_str')
-    print 'cron_ids_str : ', cron_ids_str
     cron_ids_list = cron_ids_str.strip().split(',')
     del_cron_ids = [int(i) for i in cron_ids_list]
-    print 'del_cron_ids : ', del_cron_ids
     cron_objs = models.CrontabCmd.objects.filter(id__in=del_cron_ids)
 
     # 在机器上暂停任务
@@ -141,7 +134,6 @@ def multi_del_cron():
         for job in my_cron:
             if job.command == auto_cmd:
                 job_frequency = str(job).split('root')[0].strip('#').strip()
-                print 'job_frequency : ', job_frequency
                 if job_frequency == '@hourly':
                     job_frequency = '0 * * * *'
                 elif job_frequency == '@daily':
@@ -173,8 +165,6 @@ def start_cron():
         # 修改机器上crontab状态为启动
         my_cron = CronTab(tabfile='/etc/crontab', user=False)
         auto_cmd = crontab_obj.auto_cmd.strip()
-        print 'start_cron---auto_cmd : '
-        print auto_cmd
         for job in my_cron:
             if job.command == auto_cmd:
                 job_frequency = str(job).split('root')[0].strip('#').strip()
@@ -186,7 +176,6 @@ def start_cron():
                     job_frequency = '0 0 1 1 *'
                 if job_frequency == crontab_obj.frequency:
                     job.enable()
-                    print 'start_cron----enable---done'
                     my_cron.write()
                     break
 
@@ -216,8 +205,6 @@ def pause_cron():
         # 修改机器上crontab状态为启动
         my_cron = CronTab(tabfile='/etc/crontab', user=False)
         auto_cmd = crontab_obj.auto_cmd.strip()
-        print 'pause_cron---auto_cmd : '
-        print auto_cmd
         for job in my_cron:
             if job.command == auto_cmd:
                 job_frequency = str(job).split('root')[0].strip('#').strip()
@@ -229,7 +216,6 @@ def pause_cron():
                     job_frequency = '0 0 1 1 *'
                 if job_frequency == crontab_obj.frequency:
                     job.enable(False)
-                    print 'pause_cron----enable---done'
                     my_cron.write()
                     break
 
