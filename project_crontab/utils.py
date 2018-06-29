@@ -24,14 +24,16 @@ def salt_run_sls(login_user, svnrepo, projectname, salt_hostname, login_ip):
         print '**************************'
         if result.find('Failed:    0') < 0:
             log_content = login_user, login_ip, 'pull svn ' + projectname, 'Failed'
+            print 'if log_content : '
             print log_content
             logs(log_content)
-            print 'logs Failed done'
+            print 'if logs done'
         else:
             log_content = login_user, login_ip, 'pull svn ' + projectname, 'Successful'
+            print 'else log_content : '
             print log_content
             logs(log_content)
-            print 'logs Successful done'
+            print 'else logs done'
     except Exception as e:
         errcode = 500
         msg = u'salt执行失败'
