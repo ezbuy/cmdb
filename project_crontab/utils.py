@@ -21,8 +21,8 @@ def salt_run_sls(login_user, svnrepo, projectname, salt_hostname):
         print '--------------------------'
         print pull_svn_cmd
         s, result = commands.getstatusoutput(pull_svn_cmd)
-        print s
-        print result
+        print 's : ', s
+        print 'result : ', result
         print '--------------------------'
         if result.find('Failed:    0') < 0:
             log_content = login_user, 'pull svn ' + projectname, 'Failed'
