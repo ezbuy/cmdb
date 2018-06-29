@@ -56,11 +56,9 @@ $(document).ready(function () {
         let del_svn_ids = [];
         $("#editable").find(":checkbox:checked").each(function () {
             let salt_id = $(this).val();
-            alert(salt_id);
             if (salt_id != 'checkall') {
                 del_svn_ids.push(salt_id);
             }
-            alert(del_svn_ids);
         });
 
         if (del_svn_ids.length === 0) {
