@@ -65,7 +65,7 @@ def add_cron():
     # 判断是否已经存在，已存在则不用新建
     for job in my_cron:
         if job.command.strip() == auto_cmd.strip():
-            job_frequency = str(job).split('root')[0].strip('#').strip()
+            job_frequency = str(job).split(project_name)[0].strip('#').strip()
             if job_frequency == '@hourly':
                 job_frequency = '0 * * * *'
             elif job_frequency == '@daily':
@@ -102,7 +102,7 @@ def del_cron():
     auto_cmd = auto_cmd
     for job in my_cron:
         if job.command == auto_cmd:
-            job_frequency = str(job).split('root')[0].strip('#').strip()
+            job_frequency = str(job).split(project_name)[0].strip('#').strip()
             if job_frequency == '@hourly':
                 job_frequency = '0 * * * *'
             elif job_frequency == '@daily':
@@ -135,7 +135,7 @@ def multi_del_cron():
         auto_cmd = cron_obj.auto_cmd.strip()
         for job in my_cron:
             if job.command == auto_cmd:
-                job_frequency = str(job).split('root')[0].strip('#').strip()
+                job_frequency = str(job).split(cron_obj.svn.project)[0].strip('#').strip()
                 if job_frequency == '@hourly':
                     job_frequency = '0 * * * *'
                 elif job_frequency == '@daily':
@@ -169,7 +169,7 @@ def start_cron():
         auto_cmd = crontab_obj.auto_cmd.strip()
         for job in my_cron:
             if job.command == auto_cmd:
-                job_frequency = str(job).split('root')[0].strip('#').strip()
+                job_frequency = str(job).split(crontab_obj.svn.project)[0].strip('#').strip()
                 if job_frequency == '@hourly':
                     job_frequency = '0 * * * *'
                 elif job_frequency == '@daily':
@@ -209,7 +209,7 @@ def pause_cron():
         auto_cmd = crontab_obj.auto_cmd.strip()
         for job in my_cron:
             if job.command == auto_cmd:
-                job_frequency = str(job).split('root')[0].strip('#').strip()
+                job_frequency = str(job).split(crontab_obj.svn.project)[0].strip('#').strip()
                 if job_frequency == '@hourly':
                     job_frequency = '0 * * * *'
                 elif job_frequency == '@daily':
