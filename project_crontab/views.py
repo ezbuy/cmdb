@@ -52,6 +52,11 @@ def addCrontab(request):
     print 'response.text'
     print response.text
     print type(response.text)
+
+    res_json = response.json()
+    print 'res_json'
+    print res_json
+    print type(res_json)
     errcode, msg = 0, 'ok'
 
     data = dict(code=errcode, msg=msg)
