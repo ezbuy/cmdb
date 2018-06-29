@@ -113,9 +113,9 @@ def del_cron():
 def multi_del_cron():
     errcode = 0
     msg = 'ok'
-    cron_ids = request.form.get('cron_ids')
-    print 'cron_ids : ', cron_ids
-    cron_ids_list = cron_ids.strip().strip('[').strip(']').split(',')
+    cron_ids_str = request.form.get('cron_ids_str')
+    print 'cron_ids_str : ', cron_ids_str
+    cron_ids_list = cron_ids_str.strip().split(',')
     del_cron_ids = [int(i) for i in cron_ids_list]
     print 'del_cron_ids : ', del_cron_ids
     cron_objs = models.CrontabCmd.objects.filter(id__in=del_cron_ids)

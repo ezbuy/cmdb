@@ -203,13 +203,15 @@ def delCrontab(request):
     print cron_ids
     cron_objs = models.CrontabCmd.objects.filter(id__in=cron_ids)
 
+    cron_ids_str = ','.join(cron_ids)
+
     if len(cron_objs) == 0:
         errcode = 500
         msg = u'选中的项目在数据库中不存在'
     else:
         # 机器上暂停
         postData = {
-            'cron_ids': cron_ids,
+            'cron_ids_str': cron_ids_str,
         }
         response = requests.post('http://116.196.87.93:5001/cron/multidel', data=postData)
         res_json = response.json()
