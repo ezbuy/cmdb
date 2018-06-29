@@ -4,112 +4,139 @@
         <ul class="nav" id="side-menu">
 
             <li id="index">
-               <a href="/"><i class="fa fa-dashboard"></i> <span class="nav-label">Dashboard</span><span class="label label-info pull-right"></span></a>
+                <a href="/"><i class="fa fa-dashboard"></i> <span class="nav-label">Dashboard</span><span
+                        class="label label-info pull-right"></span></a>
             </li>
 
 
-        {% if request.user|has_group:'admin' %}
-            <li>
-                <a href="#"><i class="fa fa-group"></i> <span class="nav-label">Go Project</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <!--li class="group"><a href="{% url 'gobuild' %}">部署</a></li-->
-                    <li class="group"><a href="{% url 'get' %}">发布</a></li>
-                    <li class="user"><a href="{% url 'goConf' %}">更新配置文件<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'go_template' %}">GOTemplate更新<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'goServices' %}">重启服务<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'goRevert' %}">版本回滚<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'go_status' %}">服务状态<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'crontab_update' %}">crontab更新<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'cronjob_list' %}">cron job列表<span class="label pull-right"></span></a></li>
-                </ul>
-            </li>
-             <li>
-                <a href="#"><i class="fa fa-bars"></i> <span class="nav-label">Windows Services</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li><a href="{% url 'winservices' %}">发布</a></li>
-                    <li><a href="{% url 'winServicesList' %}">重启服务<span class="label pull-right"></span></a></li>
-                </ul>
-            </li>
-            <li>
-                <a><i class="fa fa-play-circle-o"></i> <span class="nav-label">Cache</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
+            {% if request.user|has_group:'admin' %}
+                <li>
+                    <a href="#"><i class="fa fa-group"></i> <span class="nav-label">Go Project</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <!--li class="group"><a href="{% url 'gobuild' %}">部署</a></li-->
+                        <li class="group"><a href="{% url 'get' %}">发布</a></li>
+                        <li class="user"><a href="{% url 'goConf' %}">更新配置文件<span class="label pull-right"></span></a>
+                        </li>
+                        <li class="user"><a href="{% url 'go_template' %}">GOTemplate更新<span
+                                class="label pull-right"></span></a></li>
+                        <li class="user"><a href="{% url 'goServices' %}">重启服务<span class="label pull-right"></span></a>
+                        </li>
+                        <li class="user"><a href="{% url 'goRevert' %}">版本回滚<span class="label pull-right"></span></a>
+                        </li>
+                        <li class="user"><a href="{% url 'go_status' %}">服务状态<span class="label pull-right"></span></a>
+                        </li>
+                        <li class="user"><a href="{% url 'crontab_update' %}">crontab svn更新<span
+                                class="label pull-right"></span></a></li>
+                        <li class="user"><a href="{% url 'cronjob_list' %}">cron job列表<span
+                                class="label pull-right"></span></a></li>
+                        <li class="user"><a href="{% url 'crontabList' %}">crontab管理<span class="label pull-right"></span></a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-bars"></i> <span class="nav-label">Windows Services</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li><a href="{% url 'winservices' %}">发布</a></li>
+                        <li><a href="{% url 'winServicesList' %}">重启服务<span class="label pull-right"></span></a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a><i class="fa fa-play-circle-o"></i> <span class="nav-label">Cache</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
 
-                    <li class="asset"> <a href="{% url 'memcache' %}">Memcache flush_all</a></li>
+                        <li class="asset"><a href="{% url 'memcache' %}">Memcache flush_all</a></li>
 
-                </ul>
-            </li>
-            <li>
-                <a><i class="fa fa-file-o"></i> <span class="nav-label">Subversion</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li class="asset"> <a href="{% url 'subversionCreate' %}">创建svn</a></li>
-                    <li class="asset"> <a href="{% url 'subversionAddUserHtml' %}">添加用户</a></li>
-                </ul>
-            </li>
-            <li>
-                <a><i class="fa fa-inbox"></i> <span class="nav-label">Asset</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li class="group"><a href="#">查看资产组</a></li>
-                    <li class="asset"> <a href="{% url 'asset_list' %}">查看资产</a></li>
-                    <li class="idc"> <a href="#">查看机房</a></li>
-                </ul>
-            </li>
-            <li>
-                <a><i class="fa fa-inbox"></i> <span class="nav-label">Kettle</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li class="asset"> <a href="{% url 'kettle_index' %}">运行kettle</a></li>
-                </ul>
-            </li>
-            <li>
-                <a><i class="fa fa-inbox"></i> <span class="nav-label">Users</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li class="asset"> <a href="{% url 'user_list' %}">查看用户</a></li>
-                    <li class="asset"> <a href="{% url 'user_add_html' %}">添加用户</a></li>
-                </ul>
-            </li>
-        {% endif %}
-        {% if request.user|has_group:'go' %}
-            <li>
-                <a href="#"><i class="fa fa-group"></i> <span class="nav-label">Go Project</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li class="group"><a href="{% url 'get' %}">发布</a></li>
-                    <li class="user"><a href="{% url 'goServices' %}">重启服务<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'goRevert' %}">版本回滚<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'go_status' %}">服务状态<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'go_template' %}">GOTemplate更新<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'crontab_update' %}">crontab更新<span class="label pull-right"></span></a></li>
-                    <li class="user"><a href="{% url 'cronjob_list' %}">cron job列表<span class="label pull-right"></span></a></li>
-                </ul>
-            </li>
+                    </ul>
+                </li>
+                <li>
+                    <a><i class="fa fa-file-o"></i> <span class="nav-label">Subversion</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li class="asset"><a href="{% url 'subversionCreate' %}">创建svn</a></li>
+                        <li class="asset"><a href="{% url 'subversionAddUserHtml' %}">添加用户</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a><i class="fa fa-inbox"></i> <span class="nav-label">Asset</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li class="group"><a href="{% url 'group_list' %}">查看资产组</a></li>
+                        <li class="asset"><a href="{% url 'asset_list' %}">查看资产</a></li>
+                        <li class="idc"><a href="{% url 'idc_list' %}">查看机房</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a><i class="fa fa-inbox"></i> <span class="nav-label">Kettle</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li class="asset"><a href="{% url 'kettle_index' %}">运行kettle</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a><i class="fa fa-inbox"></i> <span class="nav-label">Users</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li class="asset"><a href="{% url 'user_list' %}">查看用户</a></li>
+                        <li class="asset"><a href="{% url 'user_add_html' %}">添加用户</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+            {% if request.user|has_group:'go' %}
+                <li>
+                    <a href="#"><i class="fa fa-group"></i> <span class="nav-label">Go Project</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li class="group"><a href="{% url 'get' %}">发布</a></li>
+                        <li class="user"><a href="{% url 'goServices' %}">重启服务<span class="label pull-right"></span></a>
+                        </li>
+                        <li class="user"><a href="{% url 'goRevert' %}">版本回滚<span class="label pull-right"></span></a>
+                        </li>
+                        <li class="user"><a href="{% url 'go_status' %}">服务状态<span class="label pull-right"></span></a>
+                        </li>
+                        <li class="user"><a href="{% url 'go_template' %}">GOTemplate更新<span
+                                class="label pull-right"></span></a></li>
+                        <li class="user"><a href="{% url 'crontab_update' %}">crontab svn更新<span
+                                class="label pull-right"></span></a></li>
+                        <li class="user"><a href="{% url 'cronjob_list' %}">cron job列表<span
+                                class="label pull-right"></span></a></li>
+                    </ul>
+                </li>
 
-        {% endif %}
+            {% endif %}
 
-        {% if request.user|has_group:'qa' %}
+            {% if request.user|has_group:'qa' %}
+                <li>
+                    <a><i class="fa fa-play-circle-o"></i> <span class="nav-label">Cache</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li class="asset"><a href="{% url 'memcache' %}">Memcache flush_all</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+            {% if request.user|has_group:'bi' %}
+                <li>
+                    <a><i class="fa fa-inbox"></i> <span class="nav-label">Kettle</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li class="asset"><a href="{% url 'kettle_index' %}">运行kettle</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+            {% if request.user|has_group:'winservices' %}
+                <li>
+                    <a href="#"><i class="fa fa-bars"></i> <span class="nav-label">Windows Services</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li><a href="{% url 'winservices' %}">发布</a></li>
+                        <li><a href="{% url 'winServicesList' %}">重启服务<span class="label pull-right"></span></a></li>
+                    </ul>
+                </li>
+            {% endif %}
             <li>
-                <a><i class="fa fa-play-circle-o"></i> <span class="nav-label">Cache</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li class="asset"> <a href="{% url 'memcache' %}">Memcache flush_all</a></li>
-                </ul>
-            </li>
-        {% endif %}
-        {% if request.user|has_group:'bi' %}
-            <li>
-                <a><i class="fa fa-inbox"></i> <span class="nav-label">Kettle</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li class="asset"> <a href="{% url 'kettle_index' %}">运行kettle</a></li>
-                </ul>
-            </li>
-        {% endif %}
-        {% if request.user|has_group:'winservices' %}
-            <li>
-                <a href="#"><i class="fa fa-bars"></i> <span class="nav-label">Windows Services</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li><a href="{% url 'winservices' %}">发布</a></li>
-                    <li><a href="{% url 'winServicesList' %}">重启服务<span class="label pull-right"></span></a></li>
-                </ul>
-            </li>
-        {% endif %}
-            <li>
-                <a href="#"><i class="fa fa-paperclip"></i> <span class="nav-label">Web IIS</span><span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-paperclip"></i> <span class="nav-label">Web IIS</span><span
+                        class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li><a href="{% url 'wwwList' %}">站点发布</a></li>
                     <li><a href="{% url 'getGroup' %}">站点组发布</a></li>
@@ -120,56 +147,61 @@
             <li>
                 <a><i class="fa fa-inbox"></i> <span class="nav-label">WorkFlow</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
-                    <li> <a href="{% url 'my_tickets' %}">我的工单</a></li>
-                    <li> <a href="{% url 'workflow_index' %}">工单提交</a></li>
-                    <li> <a href="{% url 'get_ticket_tasks' %}">未处理工单</a></li>
-                    <li> <a href="{% url 'handled_tasks' %}">已处理工单</a></li>
+                    <li><a href="{% url 'my_tickets' %}">我的工单</a></li>
+                    <li><a href="{% url 'workflow_index' %}">工单提交</a></li>
+                    <li><a href="{% url 'get_ticket_tasks' %}">未处理工单</a></li>
+                    <li><a href="{% url 'handled_tasks' %}">已处理工单</a></li>
                 </ul>
             </li>
             <li>
                 <a><i class="fa fa-inbox"></i> <span class="nav-label">Alert</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
-                    <li class="asset"> <a href="{% url 'project_view' %}">告警项目</a></li>
+                    <li class="asset"><a href="{% url 'project_view' %}">告警项目</a></li>
                 </ul>
             </li>
             <li>
-                <a><i class="fa fa-inbox"></i> <span class="nav-label">Config Center</span><span class="fa arrow"></span></a>
+                <a><i class="fa fa-inbox"></i> <span class="nav-label">Config Center</span><span
+                        class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
-                    <li class="asset"> <a href="{% url 'service_list' %}">服务信息</a></li>
-                    <li class="asset"> <a href="{% url 'resource_list' %}">资源信息</a></li>
+                    <li class="asset"><a href="{% url 'service_list' %}">服务信息</a></li>
+                    <li class="asset"><a href="{% url 'resource_list' %}">资源信息</a></li>
                 </ul>
             </li>
             <li>
                 <a><i class="fa fa-inbox"></i> <span class="nav-label">Command</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
-                    <li class="asset"> <a href="{% url 'command_index' %}">执行命令</a></li>
-                    <li class="asset"> <a href="{% url 'mautic_index' %}">重启 Mautic</a></li>
+                    <li class="asset"><a href="{% url 'command_index' %}">执行命令</a></li>
+                    <li class="asset"><a href="{% url 'mautic_index' %}">重启 Mautic</a></li>
                 </ul>
             </li>
             <li>
                 <a><i class="fa fa-inbox"></i> <span class="nav-label">Consul</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
-                    <li class="asset"> <a href="{% url 'consul_kv_index' %}">KV</a></li>
+                    <li class="asset"><a href="{% url 'consul_kv_index' %}">KV</a></li>
                 </ul>
             </li>
             <li>
-               <a href="#"><i class="fa fa-inbox"></i> <span class="nav-label">Disque</span><span class="fa arrow"></span></a>
-               <ul class="nav nav-second-level">
-                   <li class="group"><a href="{% url 'ackjob' %}">ack job</a></li>
-                   <li class="group"><a href="{% url 'addjob' %}">add job</a></li>
-               </ul>
-           </li>
+                <a href="#"><i class="fa fa-inbox"></i> <span class="nav-label">Disque</span><span
+                        class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li class="group"><a href="{% url 'ackjob' %}">ack job</a></li>
+                    <li class="group"><a href="{% url 'addjob' %}">add job</a></li>
+                </ul>
+            </li>
             <li>
-                <a href="{% url 'logs' %}" ><i class="fa fa-files-o"></i> <span class="nav-label">Logs</span><span class="label label-info pull-right"></span></a>
+                <a href="{% url 'logs' %}"><i class="fa fa-files-o"></i> <span class="nav-label">Logs</span><span
+                        class="label label-info pull-right"></span></a>
             </li>
-        {% if request.user|has_group:'admin' %}
-            <li id="setting">
-                   <a target="_blank" href="/admin"><i class="fa fa-gears"></i> <span class="nav-label">Setting</span><span class="label label-info pull-right"></span></a>
-            </li>
-        {% endif %}
+            {% if request.user|has_group:'admin' %}
+                <li id="setting">
+                    <a target="_blank" href="/admin"><i class="fa fa-gears"></i> <span
+                            class="nav-label">Setting</span><span class="label label-info pull-right"></span></a>
+                </li>
+            {% endif %}
         </ul>
 
     </div>
 </nav>
 
+<script src="/static/js/custom/bar.js"></script>
 
