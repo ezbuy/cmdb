@@ -139,11 +139,21 @@ def add_cron():
                     print 'auto_cmd : ', auto_cmd
                     # 机器上创建
                     my_cron = CronTab(tabfile='/etc/crontab', user=False)
-                    job = my_cron.new(command=auto_cmd, user='root')
-                    job.setall(frequency.strip())
-                    job.enable(False)
-                    my_cron.write()
-                    print 'my cron done'
+
+                    create_res = False
+                    # 判断是否已经存在，已存在则不用新建
+                    for job in my_cron:
+                        if job.command == auto_cmd:
+                            job.enable(False)
+                            my_cron.write()
+                            create_res = True
+                            break
+
+                    if not create_res:
+                        job = my_cron.new(command=auto_cmd, user='root')
+                        job.setall(frequency.strip())
+                        job.enable(False)
+                        my_cron.write()
                     # DB中创建
                     models.CrontabCmd.objects.create(svn=svn_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency,
                                                      creator=user_obj)
