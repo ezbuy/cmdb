@@ -91,8 +91,7 @@ def add_cron():
                 repo = svn_repo_url + project_name
                 print 'repo : ', repo
                 errcode, msg = utils.salt_run_sls(user_obj, repo, project_name, salt_hostname, login_ip)
-                print 'errcode, msg : '
-                print errcode, msg
+
                 if errcode == 0:
                     # 自动补全命令
                     path = svn_obj.localpath
@@ -177,7 +176,7 @@ def modify_cron():
         auto_cmd = crontab_obj.auto_cmd.strip()
         print 'modify_cron---auto_cmd : '
         print auto_cmd
-        for job in my_cron[4:]:
+        for job in my_cron:
             if job.command == auto_cmd:
                 job.enable(False)
                 print 'del_cron----disable---done'
@@ -236,7 +235,7 @@ def del_cron():
         auto_cmd = cron_obj.auto_cmd.strip()
         print 'del_cron---auto_cmd : '
         print auto_cmd
-        for job in my_cron[4:]:
+        for job in my_cron:
             if job.command == auto_cmd:
                 job.enable(False)
                 print 'del_cron----disable---done'
@@ -271,7 +270,7 @@ def start_cron():
         auto_cmd = crontab_obj.auto_cmd.strip()
         print 'start_cron---auto_cmd : '
         print auto_cmd
-        for job in my_cron[4:]:
+        for job in my_cron:
             if job.command == auto_cmd:
                 job.enable()
                 print 'start_cron----enable---done'
@@ -306,7 +305,7 @@ def pause_cron():
         auto_cmd = crontab_obj.auto_cmd.strip()
         print 'start_cron---auto_cmd : '
         print auto_cmd
-        for job in my_cron[4:]:
+        for job in my_cron:
             if job.command == auto_cmd:
                 job.enable(False)
                 print 'start_cron----enable---done'
