@@ -224,7 +224,6 @@ def modify_cron():
                     for job in my_cron:
                         print job.command
                         if job.command.strip() == auto_cmd.strip():
-                            print 'already exist'
                             job.enable(False)
                             my_cron.write()
                             create_res = True
