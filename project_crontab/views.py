@@ -51,6 +51,7 @@ def addCrontab(request):
     response = requests.post('http://116.196.87.93:5001/cron/add', data=postData)
     print 'response.text'
     print response.text
+    print type(response.text)
     errcode, msg = 0, 'ok'
 
     data = dict(code=errcode, msg=msg)
