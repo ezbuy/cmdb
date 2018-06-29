@@ -192,7 +192,7 @@ def modify_cron():
         for job in my_cron:
             if job.command == auto_cmd:
                 job.enable(False)
-                print 'del_cron----disable---done'
+                print 'modify_cron----disable---done'
                 my_cron.write()
                 break
 
@@ -219,13 +219,27 @@ def modify_cron():
                 if errcode == 0:
                     # 新机器上创建
                     my_cron = CronTab(tabfile='/etc/crontab', user=False)
-                    job = my_cron.new(command=auto_cmd, user='root')
-                    job.setall(crontab_obj.frequency.strip())
-                    job.enable(False)
-                    my_cron.write()
+                    create_res = False
+                    # 判断是否已经存在，已存在则不用新建
+                    for job in my_cron:
+                        print job.command
+                        if job.command.strip() == auto_cmd.strip():
+                            print 'already exist'
+                            job.enable(False)
+                            my_cron.write()
+                            create_res = True
+                            break
+
+                    if not create_res:
+                        job = my_cron.new(command=auto_cmd, user='root')
+                        job.setall(crontab_obj.frequency.strip())
+                        job.enable(False)
+                        my_cron.write()
+
                 # DB只修改crontab的svn
                 crontab_obj.svn = svn_obj
                 user_obj = user_obj
+                crontab_obj.cmd_status = 2
                 crontab_obj.updater = user_obj
                 crontab_obj.save()
     data = dict(code=errcode, msg=msg)
