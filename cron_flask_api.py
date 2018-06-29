@@ -58,6 +58,7 @@ def add_cron():
     msg = 'ok'
     auto_cmd = request.form.get('auto_cmd').strip()
     frequency = request.form.get('frequency').strip()
+    print 'frequency : ', frequency
 
     # 机器上/etc/crontab中试图创建
     my_cron = CronTab(tabfile='/etc/crontab', user=False)
@@ -66,6 +67,7 @@ def add_cron():
     for job in my_cron:
         if job.command.strip() == auto_cmd.strip():
             job_frequency = str(job).split('root')[0].strip('#').strip()
+            print 'job_frequency : ', job_frequency
             if job_frequency == frequency:
                 job.enable(False)
                 my_cron.write()
