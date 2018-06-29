@@ -6,8 +6,6 @@ import os
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mico.settings')
 django.setup()
-import requests
-import getopt
 import functools
 from datetime import datetime
 from crontab import CronTab
@@ -17,7 +15,6 @@ from django.contrib.auth.models import User
 
 from asset import models as asset_models
 from project_crontab import models
-from project_crontab import utils
 from mico.settings import svn_username, svn_password, go_local_path, svn_repo_url
 
 app = Flask(__name__)
@@ -59,188 +56,25 @@ def message():
 def add_cron():
     errcode = 0
     msg = 'ok'
-    username = request.form.get('username')
-    minion_id = request.form.get('minion_id')
-    cmd = request.form.get('cmd').strip()
+    auto_cmd = request.form.get('auto_cmd').strip()
     frequency = request.form.get('frequency').strip()
-    login_ip = request.form.get('login_ip').strip()
-    try:
-        minion_obj = asset_models.minion.objects.get(id=int(minion_id))
-    except asset_models.minion.DoesNotExist:
-        errcode = 500
-        msg = u'所选Salt机器不存在'
-    else:
-        salt_hostname = minion_obj.saltname
-        project_name = cmd.strip().split(' ')[0]
-        print 'project_name : ', project_name
-        try:
-            svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj)
-        except asset_models.crontab_svn.DoesNotExist:
-            print 'svn_obj not exist'
-            errcode = 500
-            msg = u'Crontab Svn不存在'
-            data = dict(code=errcode, msg=msg)
-            return jsonify(data)
-        else:
-            # 创建Crontab CMD
-            try:
-                models.CrontabCmd.objects.get(svn=svn_obj, cmd=cmd, frequency=frequency)
-            except models.CrontabCmd.DoesNotExist:
-                # salt机器上拉svn目录
-                user_obj = User.objects.get(username=username)
-                repo = svn_repo_url + project_name
-                print 'repo : ', repo
-                errcode, msg = utils.salt_run_sls(user_obj, repo, project_name, salt_hostname, login_ip)
 
-                if errcode == 0:
-                    # 自动补全命令
-                    path = svn_obj.localpath
-                    cmd_list = cmd.strip().split(' ')
-                    args_list = []
-                    opts_dict = {}
-                    if ' -' not in cmd:
-                        # 没有参数的命令
-                        auto_cmd = path + '/' + cmd
-                    else:
-                        # 有参数的命令
-                        options, args = getopt.getopt(cmd_list, "hc:f:d:s:n:")
-                        for opt in args:
-                            if opt.startswith('-'):
-                                index = args.index(opt)
-                                args_list = args[:index]
-                                key_list = args[index::2]
-                                value_list = args[index + 1::2]
-                                opts_dict = dict(zip(key_list, value_list))
-                                break
-                        auto_cmd = path + '/' + ' '.join(args_list) + ' '
+    # 机器上/etc/crontab中试图创建
+    my_cron = CronTab(tabfile='/etc/crontab', user=False)
+    create_res = False
+    # 判断是否已经存在，已存在则不用新建
+    for job in my_cron:
+        if job.command.strip() == auto_cmd.strip():
+            job.enable(False)
+            my_cron.write()
+            create_res = True
+            break
+    if not create_res:
+        job = my_cron.new(command=auto_cmd, user='root')
+        job.setall(frequency.strip())
+        job.enable(False)
+        my_cron.write()
 
-                    log_path = '/var/log/' + project_name + '/'
-                    if opts_dict:
-                        if '-d' in opts_dict.keys():
-                            log_name = opts_dict['-d'].split('.')[0] + '.log'
-                        elif '-c' in opts_dict.keys():
-                            log_name = args_list[0] + '_conf.log'
-                        else:
-                            log_name = args_list[0] + '.log'
-
-                        for k, v in opts_dict.items():
-                            if k == '-c':
-                                auto_cmd += k + ' ' + path + '/' + 'conf/' + v + ' '
-                            elif k == '-d':
-                                auto_cmd += k + ' ' + path + '/' + 'conf/' + v + ' '
-                            else:
-                                auto_cmd += k + ' ' + v + ' '
-
-                        auto_cmd += '>> ' + log_path + log_name + ' 2>&1' + '\n'
-                    else:
-                        log_name = '_'.join(cmd_list) + '.log'
-                        auto_cmd += ' >> ' + log_path + log_name + ' 2>&1' + '\n'
-
-                    print 'add_cron--------auto_cmd : '
-                    print auto_cmd
-                    print '************'
-                    # 机器上创建
-                    my_cron = CronTab(tabfile='/etc/crontab', user=False)
-                    create_res = False
-                    # 判断是否已经存在，已存在则不用新建
-                    for job in my_cron:
-                        print job.command
-                        if job.command.strip() == auto_cmd.strip():
-                            print 'already exist'
-                            job.enable(False)
-                            my_cron.write()
-                            create_res = True
-                            break
-
-                    if not create_res:
-                        job = my_cron.new(command=auto_cmd, user='root')
-                        job.setall(frequency.strip())
-                        job.enable(False)
-                        my_cron.write()
-                    # DB中创建
-                    models.CrontabCmd.objects.create(svn=svn_obj, cmd=cmd, auto_cmd=auto_cmd, frequency=frequency,
-                                                     creator=user_obj)
-                    print 'objects create done'
-            else:
-                print 'else --- msg'
-                errcode = 500
-                msg = u'相同Crontab Cmd已存在'
-    data = dict(code=errcode, msg=msg)
-    return jsonify(data)
-
-
-@app.route('/cron/modify', methods=['POST'])
-# @login_author
-def modify_cron():
-    errcode = 0
-    msg = 'ok'
-    username = request.form.get('username')
-    crontab_id = request.form.get('crontab_id')
-    minion_id = request.form.get('minion_id')
-    login_ip = request.form.get('login_ip').strip()
-    try:
-        crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
-    except models.CrontabCmd.DoesNotExist:
-        errcode = 500
-        msg = u'所选Crontab在数据库中不存在'
-    else:
-        # 在机器上暂停任务
-        my_cron = CronTab(tabfile='/etc/crontab', user=False)
-        auto_cmd = crontab_obj.auto_cmd.strip()
-        print 'modify_cron---auto_cmd : '
-        print auto_cmd
-        for job in my_cron:
-            if job.command == auto_cmd:
-                job.enable(False)
-                print 'modify_cron----disable---done'
-                my_cron.write()
-                break
-
-        project_name = crontab_obj.cmd.strip().split(' ')[0]
-        try:
-            minion_obj = asset_models.minion.objects.get(id=int(minion_id))
-        except asset_models.minion.DoesNotExist:
-            errcode = 500
-            msg = u'所选Salt机器不存在'
-        else:
-            salt_hostname = minion_obj.saltname
-            try:
-                svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj)
-            except asset_models.crontab_svn.DoesNotExist:
-                errcode = 500
-                msg = u'Crontab Svn不存在'
-                return errcode, msg
-            else:
-                # 在新机器上拉svn，添加crontab
-                # 新机器上拉svn目录
-                user_obj = User.objects.get(username=username)
-                repo = svn_repo_url + project_name
-                errcode, msg = utils.salt_run_sls(user_obj, repo, project_name, salt_hostname, login_ip)
-                if errcode == 0:
-                    # 新机器上创建
-                    my_cron = CronTab(tabfile='/etc/crontab', user=False)
-                    create_res = False
-                    # 判断是否已经存在，已存在则不用新建
-                    for job in my_cron:
-                        print job.command
-                        if job.command.strip() == auto_cmd.strip():
-                            job.enable(False)
-                            my_cron.write()
-                            create_res = True
-                            break
-
-                    if not create_res:
-                        job = my_cron.new(command=auto_cmd, user='root')
-                        job.setall(crontab_obj.frequency.strip())
-                        job.enable(False)
-                        my_cron.write()
-
-                # DB只修改crontab的svn
-                crontab_obj.svn = svn_obj
-                user_obj = user_obj
-                crontab_obj.cmd_status = 1
-                crontab_obj.updater = user_obj
-                crontab_obj.save()
     data = dict(code=errcode, msg=msg)
     return jsonify(data)
 
@@ -248,6 +82,29 @@ def modify_cron():
 @app.route('/cron/del', methods=['POST'])
 # @login_author
 def del_cron():
+    errcode = 0
+    msg = 'ok'
+    auto_cmd = request.form.get('auto_cmd')
+
+    # 在机器上暂停任务
+    my_cron = CronTab(tabfile='/etc/crontab', user=False)
+    auto_cmd = auto_cmd
+    print 'modify_cron---auto_cmd : '
+    print auto_cmd
+    for job in my_cron:
+        if job.command == auto_cmd:
+            job.enable(False)
+            print 'modify_cron----disable---done'
+            my_cron.write()
+            break
+
+    data = dict(code=errcode, msg=msg)
+    return jsonify(data)
+
+
+@app.route('/cron/multidel', methods=['POST'])
+# @login_author
+def multi_del_cron():
     errcode = 0
     msg = 'ok'
     cron_ids = request.form.get('cron_ids')
@@ -259,21 +116,14 @@ def del_cron():
     my_cron = CronTab(tabfile='/etc/crontab', user=False)
     for cron_obj in cron_objs:
         auto_cmd = cron_obj.auto_cmd.strip()
-        print 'del_cron---auto_cmd : '
-        print auto_cmd
         for job in my_cron:
             if job.command == auto_cmd:
                 job.enable(False)
-                print 'del_cron----disable---done'
                 my_cron.write()
+                # DB中删除
+                cron_obj.delete()
                 break
 
-    # 在DB中删除任务
-    if len(cron_objs) == 0:
-        errcode = 500
-        msg = u'选中的项目在数据库中不存在'
-    else:
-        cron_objs.delete()
     data = dict(code=errcode, msg=msg)
     return jsonify(data)
 
