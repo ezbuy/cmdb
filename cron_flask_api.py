@@ -126,10 +126,9 @@ def multi_del_cron():
                 if job_frequency == cron_obj.frequency:
                     job.enable(False)
                     my_cron.write()
-                    # DB中删除
-                    cron_obj.delete()
                     break
-
+    # DB中删除
+    cron_objs.delete()
     data = dict(code=errcode, msg=msg)
     return jsonify(data)
 
