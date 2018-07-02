@@ -113,10 +113,17 @@ class AssetRecord(models.Model):
 class minion(models.Model):
     saltname = models.CharField(max_length=32, verbose_name=u'salt minion name')
     ip = models.GenericIPAddressField()
-    alias_name = models.CharField(max_length=32, verbose_name=u'alias name show to users', blank=True, null=True)
 
     def __unicode__(self):
         return self.saltname
+
+
+class cron_minion(models.Model):
+    name = models.CharField(max_length=32, verbose_name=u'alias name show to users', blank=True, null=True)
+    saltminion = models.ForeignKey(minion)
+
+    def __unicode__(self):
+        return self.name
 
 
 class goservices(models.Model):
@@ -195,7 +202,7 @@ class gostatus(models.Model):
         return self.supervisor_host
 
 class crontab_svn(models.Model):
-    hostname = models.ForeignKey(minion)
+    hostname = models.ForeignKey(cron_minion)
     username = models.CharField(max_length=32)
     password = models.CharField(max_length=32)
     repo = models.CharField(max_length=128,default="http://svn.abc.com/svn/test")

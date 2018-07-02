@@ -16,19 +16,19 @@ from mico.settings import svn_username, svn_password, go_local_path, svn_repo_ur
 @login_required
 def crontabList(request):
     page = request.GET.get('page', 1)
-    minion_objs = asset_models.minion.objects.all().order_by('saltname')
+    minion_objs = asset_models.cron_minion.objects.all().order_by('name')
     minion_list = []
 
     for minion_obj in minion_objs:
-        flask_url = 'http://' + minion_obj.ip + ':' + crontab_flask_port + '/cron/listall'
+        flask_url = 'http://' + minion_obj.saltminion.ip + ':' + crontab_flask_port + '/cron/listall'
         try:
             response = requests.get(flask_url + '')
         except Exception as e:
             print e.message
         finally:
             minion_list.append({'id': minion_obj.id,
-                            'alias_name': minion_obj.alias_name,
-                            })
+                                'alias_name': minion_obj.name,
+                                })
 
     crontab_objs = models.CrontabCmd.objects.all().order_by('-create_time')
     paginator = Paginator(crontab_objs, 20)
@@ -63,12 +63,12 @@ def addCrontab(request):
         return HttpResponse(json.dumps(data), content_type='application/json')
 
     try:
-        minion_obj = asset_models.minion.objects.get(id=int(minion_id))
-    except asset_models.minion.DoesNotExist:
+        minion_obj = asset_models.cron_minion.objects.get(id=int(minion_id))
+    except asset_models.cron_minion.DoesNotExist:
         errcode = 500
         msg = u'所选Salt机器不存在'
     else:
-        salt_hostname = minion_obj.saltname
+        salt_hostname = minion_obj.saltminion.saltname
         repo = svn_repo_url + project_name
         localpath = go_local_path + project_name
         svn_obj = None
@@ -102,7 +102,7 @@ def addCrontab(request):
                         'project_name': project_name,
                     }
                     try:
-                        flask_url = 'http://' + minion_obj.ip + ':' + crontab_flask_port + '/cron/add'
+                        flask_url = 'http://' + minion_obj.saltminion.ip + ':' + crontab_flask_port + '/cron/add'
                         response = requests.post(flask_url, data=postData)
                         res_json = response.json()
                     except Exception as e:
@@ -131,8 +131,8 @@ def modifyCrontab(request):
     minion_id = int(request.POST['minion_id'])
     login_ip = request.META['REMOTE_ADDR']
     try:
-        minion_obj = asset_models.minion.objects.get(id=int(minion_id))
-    except asset_models.minion.DoesNotExist:
+        minion_obj = asset_models.cron_minion.objects.get(id=int(minion_id))
+    except asset_models.cron_minion.DoesNotExist:
         errcode = 500
         msg = u'所选Salt机器不存在'
     else:
@@ -152,7 +152,7 @@ def modifyCrontab(request):
                 'project_name': project_name,
             }
             try:
-                flask_url = 'http://' + minion_obj.ip + ':' + crontab_flask_port + '/cron/del'
+                flask_url = 'http://' + minion_obj.saltminion.ip + ':' + crontab_flask_port + '/cron/del'
                 response = requests.post(flask_url, data=postData)
             except Exception as e:
                 errcode = 500
@@ -163,7 +163,7 @@ def modifyCrontab(request):
                 msg = res_json['msg']
             if errcode == 0:
                 # 暂停成功后
-                salt_hostname = minion_obj.saltname
+                salt_hostname = minion_obj.saltminion.saltname
                 try:
                     svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj)
                 except asset_models.crontab_svn.DoesNotExist:
@@ -183,7 +183,7 @@ def modifyCrontab(request):
                         }
 
                         try:
-                            flask_url = 'http://' + minion_obj.ip + ':' + crontab_flask_port + '/cron/add'
+                            flask_url = 'http://' + minion_obj.saltminion.ip + ':' + crontab_flask_port + '/cron/add'
                             response = requests.post(flask_url, data=postData)
                         except Exception as e:
                             errcode = 500
@@ -221,7 +221,7 @@ def multiDelCrontab(request):
         }
         for cron_obj in cron_objs:
             try:
-                flask_url = 'http://' + cron_obj.svn.hostname.ip + ':' + crontab_flask_port + '/cron/multidel'
+                flask_url = 'http://' + cron_obj.svn.hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/multidel'
                 response = requests.post(flask_url, data=postData)
             except Exception as e:
                 errcode = 500
@@ -252,7 +252,7 @@ def startCrontab(request):
         msg = u'所选Crontab在数据库中不存在'
     else:
         try:
-            flask_url = 'http://' + crontab_obj.svn.hostname.ip + ':' + crontab_flask_port + '/cron/start'
+            flask_url = 'http://' + crontab_obj.svn.hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/start'
             response = requests.post(flask_url, data=postData)
         except Exception as e:
             errcode = 500
@@ -280,7 +280,7 @@ def pauseCrontab(request):
         msg = u'所选Crontab在数据库中不存在'
     else:
         try:
-            flask_url = 'http://' + crontab_obj.svn.hostname.ip + ':' + crontab_flask_port + '/cron/pause'
+            flask_url = 'http://' + crontab_obj.svn.hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/pause'
             response = requests.post(flask_url, data=postData)
         except Exception as e:
             errcode = 500
