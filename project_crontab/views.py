@@ -23,7 +23,6 @@ def crontabList(request):
         flask_url = 'http://' + minion_obj.ip + ':' + crontab_flask_port + '/cron/listall'
         try:
             response = requests.get(flask_url + '')
-            res_json = response.json()
         except Exception as e:
             print e.message
         finally:
