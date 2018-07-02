@@ -90,7 +90,7 @@
                                                 <div class="col-lg-10">
                                                     <select class="form-control" id="minion_modify">
                                                         {% for minion in minion_list %}
-                                                            <option value={{ minion.id }}>{{ minion.hostname }}&nbsp;&nbsp;&nbsp;&nbsp;{{ minion.ip }}</option>
+                                                            <option value={{ minion.id }}>{{ minion.alias_name }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>
@@ -153,7 +153,7 @@
                                 <tr>
                                     <th class="text-center">
                                         <input id="checkall" type="checkbox" class="i-checks" name="checkall"
-                                               value="checkall" data-editable='false' onclick="check_all('asset_form')">
+                                               value="checkall" data-ediƒtable='false' onclick="check_all('asset_form')">
                                     </th>
                                     <th class="text-center"> 部署机器</th>
                                     <th class="text-center"> 输入CMD</th>
