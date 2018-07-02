@@ -28,7 +28,9 @@ def crontabList(request):
         minion_crontab_objs = crontab_objs.filter(svn__minion_hostname=minion_obj)
         postData = {}
         if len(minion_crontab_objs) > 0:
-            postData.update({minion_crontab_objs.id: minion_crontab_objs.auto_cmd})
+            for minion_cron in minion_crontab_objs:
+                postData.update({minion_cron.id: minion_cron.auto_cmd})
+
             try:
                 # 获取last_run_time
                 flask_url = 'http://' + minion_obj.saltminion.ip + ':' + crontab_flask_port + '/cron/last_run_time'
