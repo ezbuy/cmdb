@@ -155,12 +155,14 @@ def modifyCrontab(request):
     login_ip = request.META['REMOTE_ADDR']
     try:
         minion_obj = asset_models.cron_minion.objects.get(id=int(minion_id))
+        print 'minion_obj ok'
     except asset_models.cron_minion.DoesNotExist:
         errcode = 500
         msg = u'所选Salt机器不存在'
     else:
         try:
             crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
+            print 'crontab obj ok'
         except models.CrontabCmd.DoesNotExist:
             errcode = 500
             msg = u'所选Crontab在数据库中不存在'
@@ -177,6 +179,7 @@ def modifyCrontab(request):
             try:
                 flask_url = 'http://' + minion_obj.saltminion.ip + ':' + crontab_flask_port + '/cron/del'
                 response = requests.post(flask_url, data=postData)
+                print 'flask url ok'
             except Exception as e:
                 errcode = 500
                 msg = u'删除异常'
@@ -208,6 +211,7 @@ def modifyCrontab(request):
                         try:
                             flask_url = 'http://' + minion_obj.saltminion.ip + ':' + crontab_flask_port + '/cron/add'
                             response = requests.post(flask_url, data=postData)
+                            print'pull svn ok'
                         except Exception as e:
                             errcode = 500
                             msg = u'添加异常'
@@ -218,10 +222,10 @@ def modifyCrontab(request):
                         if errcode == 0:
                             # DB只修改crontab的svn
                             crontab_obj.svn = svn_obj
-                            user_obj = login_user
                             crontab_obj.cmd_status = 1
-                            crontab_obj.updater = user_obj
+                            crontab_obj.updater = login_user
                             crontab_obj.save()
+                            print 'crontab save ok'
 
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
