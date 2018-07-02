@@ -10,24 +10,25 @@ from asset.utils import *
 from asset import models as asset_models
 from project_crontab import utils
 from project_crontab import models
-from mico.settings import svn_username, svn_password, go_local_path, svn_repo_url, crontab_flask_api
+from mico.settings import svn_username, svn_password, go_local_path, svn_repo_url, crontab_flask_port
 
 
 @login_required
 def crontabList(request):
     page = request.GET.get('page', 1)
-
-    response = requests.get(crontab_flask_api + '/cron/listall')
-    res_json = response.json()
-    errcode = res_json['code']
-    msg = res_json['msg']
-
     minion_objs = asset_models.minion.objects.all().order_by('saltname')
-    minion_list = [
-        {'id': minion_obj.id,
-         'alias_name': minion_obj.alias_name,
-         }
-        for minion_obj in minion_objs]
+    minion_list = []
+
+    for minion_obj in minion_objs:
+        flask_url = 'http://' + minion_obj.ip + ':' + crontab_flask_port + '/cron/listall'
+        response = requests.get(flask_url + '')
+        res_json = response.json()
+        errcode = res_json['code']
+        msg = res_json['msg']
+        minion_list.append({'id': minion_obj.id,
+                            'alias_name': minion_obj.alias_name,
+                            })
+
     crontab_objs = models.CrontabCmd.objects.all().order_by('-create_time')
     paginator = Paginator(crontab_objs, 20)
     try:
@@ -37,7 +38,8 @@ def crontabList(request):
     except EmptyPage:
         crontab_list = paginator.page(paginator.num_pages)
 
-    return render(request, 'project_crontab/crontab_list.html', {'crontab_list': crontab_list, 'minion_list': minion_list})
+    return render(request, 'project_crontab/crontab_list.html',
+                  {'crontab_list': crontab_list, 'minion_list': minion_list})
 
 
 @login_required
@@ -70,9 +72,13 @@ def addCrontab(request):
         localpath = go_local_path + project_name
         svn_obj = None
         try:
-            svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj, username=svn_username, password=svn_password, repo=repo, localpath=localpath)
+            svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj,
+                                                           username=svn_username, password=svn_password, repo=repo,
+                                                           localpath=localpath)
         except asset_models.crontab_svn.DoesNotExist:
-            svn_obj = asset_models.crontab_svn.objects.create(project=project_name, hostname=minion_obj, username=svn_username, password=svn_password, repo=repo, localpath=localpath)
+            svn_obj = asset_models.crontab_svn.objects.create(project=project_name, hostname=minion_obj,
+                                                              username=svn_username, password=svn_password, repo=repo,
+                                                              localpath=localpath)
         finally:
             try:
                 models.CrontabCmd.objects.get(svn=svn_obj, cmd=cmd, frequency=frequency)
@@ -94,7 +100,8 @@ def addCrontab(request):
                         'frequency': frequency,
                         'project_name': project_name,
                     }
-                    response = requests.post(crontab_flask_api + '/cron/add', data=postData)
+                    flask_url = 'http://' + minion_obj.ip + ':' + crontab_flask_port + '/cron/add'
+                    response = requests.post(flask_url, data=postData)
                     res_json = response.json()
                     errcode = res_json['code']
                     msg = res_json['msg']
@@ -116,34 +123,34 @@ def modifyCrontab(request):
     crontab_id = int(request.POST['crontab_id'])
     minion_id = int(request.POST['minion_id'])
     login_ip = request.META['REMOTE_ADDR']
-
     try:
-        crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
-    except models.CrontabCmd.DoesNotExist:
+        minion_obj = asset_models.minion.objects.get(id=int(minion_id))
+    except asset_models.minion.DoesNotExist:
         errcode = 500
-        msg = u'所选Crontab在数据库中不存在'
+        msg = u'所选Salt机器不存在'
     else:
-        project_name = crontab_obj.cmd.strip().split(' ')[0]
-        # 在机器上暂停任务
-        auto_cmd = crontab_obj.auto_cmd.strip()
-        frequency = crontab_obj.frequency
-        postData = {
-            'auto_cmd': auto_cmd,
-            'frequency': frequency,
-            'project_name': project_name,
-        }
-        response = requests.post(crontab_flask_api + '/cron/del', data=postData)
-        res_json = response.json()
-        errcode = res_json['code']
-        msg = res_json['msg']
-        if errcode == 0:
-            # 暂停成功后
-            try:
-                minion_obj = asset_models.minion.objects.get(id=int(minion_id))
-            except asset_models.minion.DoesNotExist:
-                errcode = 500
-                msg = u'所选Salt机器不存在'
-            else:
+        try:
+            crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
+        except models.CrontabCmd.DoesNotExist:
+            errcode = 500
+            msg = u'所选Crontab在数据库中不存在'
+        else:
+            project_name = crontab_obj.cmd.strip().split(' ')[0]
+            # 在机器上暂停任务
+            auto_cmd = crontab_obj.auto_cmd.strip()
+            frequency = crontab_obj.frequency
+            postData = {
+                'auto_cmd': auto_cmd,
+                'frequency': frequency,
+                'project_name': project_name,
+            }
+            flask_url = 'http://' + minion_obj.ip + ':' + crontab_flask_port + '/cron/del'
+            response = requests.post(flask_url, data=postData)
+            res_json = response.json()
+            errcode = res_json['code']
+            msg = res_json['msg']
+            if errcode == 0:
+                # 暂停成功后
                 salt_hostname = minion_obj.saltname
                 try:
                     svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj)
@@ -162,7 +169,8 @@ def modifyCrontab(request):
                             'frequency': frequency,
                             'project_name': project_name,
                         }
-                        response = requests.post(crontab_flask_api + '/cron/add', data=postData)
+                        flask_url = 'http://' + minion_obj.ip + ':' + crontab_flask_port + '/cron/add'
+                        response = requests.post(flask_url, data=postData)
                         res_json = response.json()
                         errcode = res_json['code']
                         msg = res_json['msg']
@@ -183,7 +191,8 @@ def multiDelCrontab(request):
     cron_ids = request.POST.getlist('cron_ids', [])
     cron_objs = models.CrontabCmd.objects.filter(id__in=cron_ids)
     cron_ids_str = ','.join(cron_ids)
-
+    errcode = 0
+    msg = 'ok'
     if len(cron_objs) == 0:
         errcode = 500
         msg = u'选中的项目在数据库中不存在'
@@ -192,11 +201,15 @@ def multiDelCrontab(request):
         postData = {
             'cron_ids_str': cron_ids_str,
         }
-        response = requests.post(crontab_flask_api + '/cron/multidel', data=postData)
-        res_json = response.json()
-        errcode = res_json['code']
-        msg = res_json['msg']
-
+        for cron_obj in cron_objs:
+            flask_url = 'http://' + cron_obj.svn.hostname.ip + ':' + crontab_flask_port + '/cron/multidel'
+            response = requests.post(flask_url, data=postData)
+            res_json = response.json()
+            errcode = res_json['code']
+            msg = res_json['msg']
+            if errcode != 0:
+                data = dict(code=errcode, msg=msg)
+                return HttpResponse(json.dumps(data), content_type='application/json')
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -209,10 +222,17 @@ def startCrontab(request):
         'username': login_user.username,
         'crontab_id': crontab_id,
     }
-    response = requests.post(crontab_flask_api + '/cron/start', data=postData)
-    res_json = response.json()
-    errcode = res_json['code']
-    msg = res_json['msg']
+    try:
+        crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
+    except models.CrontabCmd.DoesNotExist:
+        errcode = 500
+        msg = u'所选Crontab在数据库中不存在'
+    else:
+        flask_url = 'http://' + crontab_obj.svn.hostname.ip + ':' + crontab_flask_port + '/cron/start'
+        response = requests.post(flask_url, data=postData)
+        res_json = response.json()
+        errcode = res_json['code']
+        msg = res_json['msg']
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -225,10 +245,17 @@ def pauseCrontab(request):
         'username': login_user.username,
         'crontab_id': crontab_id,
     }
-    response = requests.post(crontab_flask_api + '/cron/pause', data=postData)
-    res_json = response.json()
-    errcode = res_json['code']
-    msg = res_json['msg']
+    try:
+        crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
+    except models.CrontabCmd.DoesNotExist:
+        errcode = 500
+        msg = u'所选Crontab在数据库中不存在'
+    else:
+        flask_url = 'http://' + crontab_obj.svn.hostname.ip + ':' + crontab_flask_port + '/cron/pause'
+        response = requests.post(flask_url, data=postData)
+        res_json = response.json()
+        errcode = res_json['code']
+        msg = res_json['msg']
+
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
-
