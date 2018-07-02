@@ -42,7 +42,7 @@ class GoServiceRevisionAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 class CronMinionAdmin(admin.ModelAdmin):
-    list_display = ('name','saltminion__saltname', 'saltminion__ip')
+    list_display = ('name','saltminion')
     search_fields = ['name']
 
 admin.site.register(IDC)
