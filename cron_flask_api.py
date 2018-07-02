@@ -127,8 +127,12 @@ def start_cron():
                 job_frequency = '0 0 * * *'
             elif job_frequency == '@yearly':
                 job_frequency = '0 0 1 1 *'
+            print 'job_frequency : ', job_frequency
+            print 'frequency : ', frequency
             if job_frequency == frequency:
+                print 'start ok'
                 job.enable()
+                print 'start done'
                 my_cron.write()
                 break
 
