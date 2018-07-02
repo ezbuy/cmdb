@@ -1,6 +1,7 @@
 # coding:utf8
 import requests
 # import getopt
+from datetime import datetime
 
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -17,20 +18,41 @@ from mico.settings import svn_username, svn_password, go_local_path, svn_repo_ur
 def crontabList(request):
     page = request.GET.get('page', 1)
     minion_objs = asset_models.cron_minion.objects.all().order_by('name')
+    crontab_objs = models.CrontabCmd.objects.all().order_by('-create_time')
     minion_list = []
 
     for minion_obj in minion_objs:
-        flask_url = 'http://' + minion_obj.saltminion.ip + ':' + crontab_flask_port + '/cron/listall'
-        try:
-            response = requests.get(flask_url + '')
-        except Exception as e:
-            print e.message
-        finally:
-            minion_list.append({'id': minion_obj.id,
-                                'alias_name': minion_obj.name,
-                                })
+        minion_list.append({'id': minion_obj.id,
+                            'alias_name': minion_obj.name,
+                            })
+        minion_crontab_objs = crontab_objs.filter(svn__minion_hostname=minion_obj)
+        postData = {}
+        if len(minion_crontab_objs) > 0:
+            postData.update({minion_crontab_objs.id: minion_crontab_objs.auto_cmd})
+            try:
+                # 获取last_run_time
+                flask_url = 'http://' + minion_obj.saltminion.ip + ':' + crontab_flask_port + '/cron/last_run_time'
+                response = requests.post(flask_url, data=postData)
+                res_json = response.json()
+            except Exception as e:
+                print e.message
+                errcode = 500
+                msg = u'获取last_run_time异常'
+            else:
+                errcode = res_json['code']
+                msg = res_json['msg']
+                data = res_json['data']
+                if errcode == 0:
+                    # 更新crontab的last_run_time
+                    for crontab_id in data.keys():
+                        try:
+                            cron_obj = minion_crontab_objs.get(id=int(crontab_id))
+                        except Exception as e:
+                            print 'not exist : ', e.message
+                        else:
+                            cron_obj.last_run_time = data[crontab_id]
+                            cron_obj.save()
 
-    crontab_objs = models.CrontabCmd.objects.all().order_by('-create_time')
     paginator = Paginator(crontab_objs, 20)
     try:
         crontab_list = paginator.page(page)
@@ -208,20 +230,25 @@ def modifyCrontab(request):
 def multiDelCrontab(request):
     cron_ids = request.POST.getlist('cron_ids', [])
     cron_objs = models.CrontabCmd.objects.filter(id__in=cron_ids)
-    cron_ids_str = ','.join(cron_ids)
+
     errcode = 0
     msg = 'ok'
     if len(cron_objs) == 0:
         errcode = 500
         msg = u'选中的项目在数据库中不存在'
     else:
-        # 机器上暂停
-        postData = {
-            'cron_ids_str': cron_ids_str,
-        }
         for cron_obj in cron_objs:
+            # 机器上暂停
+            auto_cmd = cron_obj.auto_cmd
+            frequency = cron_obj.frequency
+            project_name = cron_obj.svn.project
+            postData = {
+                'auto_cmd': auto_cmd,
+                'frequency': frequency,
+                'project_name': project_name,
+            }
             try:
-                flask_url = 'http://' + cron_obj.svn.minion_hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/multidel'
+                flask_url = 'http://' + cron_obj.svn.minion_hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/del'
                 response = requests.post(flask_url, data=postData)
             except Exception as e:
                 errcode = 500
@@ -230,6 +257,9 @@ def multiDelCrontab(request):
                 res_json = response.json()
                 errcode = res_json['code']
                 msg = res_json['msg']
+                if errcode == 0:
+                    # DB中删除
+                    cron_obj.delete()
             if errcode != 0:
                 data = dict(code=errcode, msg=msg)
                 return HttpResponse(json.dumps(data), content_type='application/json')
@@ -241,16 +271,17 @@ def multiDelCrontab(request):
 def startCrontab(request):
     login_user = request.user
     crontab_id = int(request.POST['crontab_id'])
-    postData = {
-        'username': login_user.username,
-        'crontab_id': crontab_id,
-    }
     try:
         crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
     except models.CrontabCmd.DoesNotExist:
         errcode = 500
         msg = u'所选Crontab在数据库中不存在'
     else:
+        postData = {
+            'auto_cmd': crontab_obj.auto_cmd,
+            'frequency': crontab_obj.frequency,
+            'project_name': crontab_obj.svn.project,
+        }
         try:
             flask_url = 'http://' + crontab_obj.svn.minion_hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/start'
             response = requests.post(flask_url, data=postData)
@@ -261,6 +292,13 @@ def startCrontab(request):
             res_json = response.json()
             errcode = res_json['code']
             msg = res_json['msg']
+            if errcode == 0:
+                # 修改数据库中cmd状态
+                user_obj = login_user
+                crontab_obj.cmd_status = 2
+                crontab_obj.updater = user_obj
+                crontab_obj.update_time = datetime.now()
+                crontab_obj.save()
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -269,16 +307,17 @@ def startCrontab(request):
 def pauseCrontab(request):
     login_user = request.user
     crontab_id = int(request.POST['crontab_id'])
-    postData = {
-        'username': login_user.username,
-        'crontab_id': crontab_id,
-    }
     try:
         crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
     except models.CrontabCmd.DoesNotExist:
         errcode = 500
         msg = u'所选Crontab在数据库中不存在'
     else:
+        postData = {
+            'auto_cmd': crontab_obj.auto_cmd,
+            'frequency': crontab_obj.frequency,
+            'project_name': crontab_obj.svn.project,
+        }
         try:
             flask_url = 'http://' + crontab_obj.svn.minion_hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/pause'
             response = requests.post(flask_url, data=postData)
@@ -289,6 +328,13 @@ def pauseCrontab(request):
             res_json = response.json()
             errcode = res_json['code']
             msg = res_json['msg']
+            if errcode == 0:
+                # 修改数据库中cmd状态
+                user_obj = login_user
+                crontab_obj.cmd_status = 1
+                crontab_obj.updater = user_obj
+                crontab_obj.update_time = datetime.now()
+                crontab_obj.save()
 
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
