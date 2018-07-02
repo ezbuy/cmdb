@@ -113,11 +113,11 @@ def del_cron():
 def start_cron():
     errcode = 0
     msg = 'ok'
-    auto_cmd = request.form.get('auto_cmd')
+    auto_cmd = request.form.get('auto_cmd').strip()
     print 'auto_cmd : ', auto_cmd
-    frequency = request.form.get('frequency')
+    frequency = request.form.get('frequency').strip()
     print 'frequency : ', frequency
-    project_name = request.form.get('project_name')
+    project_name = request.form.get('project_name').strip()
     print 'project_name : ', project_name
     # 修改机器上crontab状态为启动
     my_cron = CronTab(tabfile='/etc/crontab', user=False)
