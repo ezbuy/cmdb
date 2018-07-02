@@ -27,8 +27,8 @@ class crontabSVNAdmin(admin.ModelAdmin):
     list_display = ('hostname','username','password','repo','localpath','project')
 
 class minionAdmin(admin.ModelAdmin):
-    list_display = ('saltname','ip')
-    search_fields = ['saltname']
+    list_display = ('alias_name','saltname','ip')
+    search_fields = ['alias_name','saltname']
 
 class gotemplateAdmin(admin.ModelAdmin):
     list_display = ('username','password','repo','localpath','env','project','hostname')

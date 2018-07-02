@@ -35,12 +35,16 @@ class SaltApi(object):
                    'X-Auth-Token': '%s' % self.__token_id
                    }
         obj = requests.post(self.__url,headers=headers,data=self.data,verify=False)
+        print 'salt_cmd---obj : '
         print obj
         obj = obj.content
+        print 'salt_cmd---obj.content : '
         print obj
         try:
+            print 'salt_cmd---yaml.load(obj) : '
             print yaml.load(obj)
             return yaml.load(obj)
         except Exception, e:
+            print 'salt_cmd---Exception : '
             print e
             return 0

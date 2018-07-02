@@ -23,6 +23,7 @@ salt_api = SaltApi()
 def logs(user,ip,action,result):
     goLog.objects.create(user=user, remote_ip=ip, goAction=action, result=result)
 
+
 def publish_logs(user,ip,url,result):
     publishLog.objects.create(user=user, remote_ip=ip, publish_url=url, publish_result=result)
 
@@ -471,6 +472,8 @@ class crontab_svn_status(object):
         obj = crontab_svn.objects.get(hostname=host,project=self.project)
 
         cmd = ["svn checkout %s %s --username=%s --password=%s --non-interactive " % (obj.repo,obj.localpath,obj.username, obj.password),'env={"LC_ALL": "en_US.UTF-8"}']
+        print 'cmd : '
+        print cmd
         data = {
             'client': 'local',
             'tgt': self.hostname,
@@ -508,7 +511,7 @@ def get_cronjob_list():
         return obj['result']
     except Exception, e:
         print e
-        return 0
+        return [0]
 
 class go_action(object):   #go "start,stop,restart" action
     def __init__(self,service,user,ip):
