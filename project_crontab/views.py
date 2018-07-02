@@ -155,14 +155,12 @@ def modifyCrontab(request):
     login_ip = request.META['REMOTE_ADDR']
     try:
         minion_obj = asset_models.cron_minion.objects.get(id=int(minion_id))
-        print 'minion_obj ok'
     except asset_models.cron_minion.DoesNotExist:
         errcode = 500
         msg = u'所选Salt机器不存在'
     else:
         try:
             crontab_obj = models.CrontabCmd.objects.get(id=crontab_id)
-            print 'crontab obj ok'
         except models.CrontabCmd.DoesNotExist:
             errcode = 500
             msg = u'所选Crontab在数据库中不存在'
@@ -190,8 +188,10 @@ def modifyCrontab(request):
             if errcode == 0:
                 # 暂停成功后
                 salt_hostname = minion_obj.saltminion.saltname
+                print 'salt_hostname ok'
                 try:
                     svn_obj = asset_models.crontab_svn.objects.get(project=project_name, minion_hostname=minion_obj)
+                    print 'svn obj ok'
                 except asset_models.crontab_svn.DoesNotExist:
                     errcode = 500
                     msg = u'Crontab Svn不存在'
@@ -200,6 +200,7 @@ def modifyCrontab(request):
                     # 新机器上拉svn目录
                     repo = svn_repo_url + project_name
                     errcode, msg = utils.salt_run_sls(login_user, repo, project_name, salt_hostname, login_ip)
+                    print 'run salt ok'
                     if errcode == 0:
                         # 新机器上创建
                         postData = {
