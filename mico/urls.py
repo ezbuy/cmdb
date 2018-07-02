@@ -18,7 +18,7 @@ from django.contrib import admin
 from cmdb.views import index
 from web.views import login, logout
 
-import asset, logs, winservices, cache, www, subversion, kettle, workflow, users
+import asset, logs, winservices, cache, www, subversion, kettle, workflow, users, project_crontab
 import disque
 
 urlpatterns = [
@@ -40,4 +40,5 @@ urlpatterns = [
     url(r'^command/', include('command_job.urls')),
     url(r'^consul_kv/', include('consul_kv.urls')),
     url(r'^disque/', include('disque.urls')),
+    url(r'^asset/', include('project_crontab.urls')),
 ]

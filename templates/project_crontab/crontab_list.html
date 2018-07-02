@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins" id="all">
+                    <div class="ibox-title">
+                        <h5> CRONTAB列表</h5>
+                        <div class="ibox-tools">
+                            <a>
+                                <i class="fa fa-plus" data-toggle="modal" data-target="#addCrontabModal"></i>
+                            </a>
+                            <a>
+                                <i class="fa fa-minus" data-toggle="modal" data-target="#deleteCrontabModal"></i>
+                            </a>
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="ibox-content">
+                        {# 新增项目的弹框 #}
+                        <div class="modal inmodal fade" id="addCrontabModal" tabindex="-1" role="dialog"
+                             aria-labelledby="addModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content animated fadeIn">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"><span
+                                                aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                        <i class="fa fa-clock-o modal-icon"></i>
+                                        <h4 class="modal-title">CRONTAB配置</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label"><span style="color: red;">*</span>部署机器</label>
+                                                <div class="col-lg-10">
+                                                    <select class="form-control" id="minion_select">
+                                                        {% for minion in minion_list %}
+                                                            <option value={{ minion.id }}>{{ minion.alias_name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label"><span style="color: red;">*</span>输入CMD</label>
+                                                <div class="col-lg-10">
+                                                    <input type="text" class="form-control" id="cmd">
+                                                    <span class="help-block m-b-none">eg. ugm job updater_defined</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label"><span style="color: red;">*</span>执行频率</label>
+                                                <div class="col-lg-10">
+                                                    <input type="text" class="form-control" id="frequency">
+                                                    <span class="help-block m-b-none">eg. 0 */2 * * *</span>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                                        <button type="button" class="btn btn-primary" id="addCrontabButton">保存</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {# 新增项目的弹框--end #}
+
+                        {# 修改项目的弹框 #}
+                        <div class="modal inmodal fade" id="modifyCrontabModal" tabindex="-1" role="dialog"
+                             aria-labelledby="addModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content animated fadeIn">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"><span
+                                                aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                        <i class="fa fa-clock-o modal-icon"></i>
+                                        <h4 class="modal-title" id="minion_old">修改CRONTAB配置</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label" id="crontab_modify"><span style="color: red;">*</span>部署机器</label>
+                                                <div class="col-lg-10">
+                                                    <select class="form-control" id="minion_modify">
+                                                        {% for minion in minion_list %}
+                                                            <option value={{ minion.id }}>{{ minion.alias_name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+{#                                            <div class="form-group">#}
+{#                                                <label class="col-lg-2 control-label"><span style="color: red;">*</span>输入CMD</label>#}
+{#                                                <div class="col-lg-10">#}
+{#                                                    <input type="text" class="form-control" id="cmd">#}
+{#                                                    <span class="help-block m-b-none">eg. ugm job updater_defined -c conf.ctmpl</span>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label class="col-lg-2 control-label"><span style="color: red;">*</span>执行频率</label>#}
+{#                                                <div class="col-lg-10">#}
+{#                                                    <input type="text" class="form-control" id="frequency">#}
+{#                                                    <span class="help-block m-b-none">eg. 0 */1 * * *</span>#}
+{#                                                </div>#}
+{#                                            </div>#}
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                                        <button type="button" class="btn btn-primary" id="modifyCrontabButton">保存</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {# 修改项目的弹框--end #}
+
+                        {# 删除项目的弹框 #}
+                        <div class="modal inmodal fade" id="deleteCrontabModal" tabindex="-1" role="dialog"
+                             aria-labelledby="deleteModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content animated fadeIn">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"><span
+                                                aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                        <i class="fa fa-warning modal-icon" style="color: red"></i>
+                                        <h4 class="modal-title text-danger">确定删除所选CRONTAB？</h4>
+                                        <br>
+                                        <small class="text-warning">请小心操作！</small>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                                        <button type="button" class="btn btn-danger" id="deleteCrontabButton">删除
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {# 删除项目的弹框--end #}
+
+                        <form id="asset_form">
+                            <div id="page_loading" class="page-loading" hidden="">Loading...</div>
+
+                            <table class="table table-striped table-bordered table-hover " id="editable"
+                                   name="editable">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">
+                                        <input id="checkall" type="checkbox" class="i-checks" name="checkall"
+                                               value="checkall" data-ediƒtable='false' onclick="check_all('asset_form')">
+                                    </th>
+                                    <th class="text-center"> 部署机器</th>
+                                    <th class="text-center"> 输入CMD</th>
+                                    <th class="text-center"> 执行频率</th>
+                                    <th class="text-center"> 自动补全CMD</th>
+                                    <th class="text-center"> 上次执行时间</th>
+                                    <th class="text-center"> 执行状态</th>
+                                    <th class="text-center"> 操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for crontab in crontab_list %}
+                                    <tr class="gradeX">
+                                        <td class="text-center" name="id" value="{{ crontab.id }}"
+                                            data-editable='false'>
+                                            <input name="id" value="{{ crontab.id }}" type="checkbox" class="i-checks">
+                                        </td>
+                                        <td class="text-center hostname">
+                                            <a data-toggle="modal" data-target="#modifyCrontabModal" onclick="SendValue({{ crontab.id }}, {{ crontab.svn.hostname.id }})">
+                                                {{ crontab.svn.hostname.alias_name }}
+                                            </a>
+                                        </td>
+                                        <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
+                                            width="200px">
+                                            {{ crontab.cmd }}
+                                        </td>
+                                        <td class="text-center">{{ crontab.frequency }}</td>
+                                        <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
+                                            width="450px">{{ crontab.auto_cmd }}</td>
+                                        <td class="text-center" width="80px">{% if crontab.last_run_time %}
+                                            {{ crontab.last_run_time|date:"Y-m-d H:i:s" }} {% else %}
+                                            --:--:-- {% endif %}
+                                        </td>
+                                        <td class="text-center" width="30px">
+                                            {% if crontab.cmd_status == 2 or crontab.cmd_status == '2' %}
+                                                <label class="label label-primary">running</label>
+                                            {% else %}
+                                                <label class="label label-warning">pause</label>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center" width="30px">
+                                            {% if crontab.cmd_status == 2 or crontab.cmd_status == '2' %}
+                                                <a href="javascript:void(0);"
+                                                   onclick="pauseCrontab({{ crontab.id }})"><i class="fa fa-pause"
+                                                                                               style="color: orange;"></i></a>
+                                            {% else %}
+                                                <a href="javascript:void(0);"
+                                                   onclick="startCrontab({{ crontab.id }})"><i class="fa fa-play"
+                                                                                               style="color: #1ab394;"></i></a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <ul class="pager">
+                                {% if crontab_list.has_previous %}
+                                    <li><a href="?page={{ crontab_list.previous_page_number }}">Previous</a></li>
+                                {% endif %}
+                                <li>Page {{ crontab_list.number }} of {{ crontab_list.paginator.num_pages }}.</li>
+                                {% if crontab_list.has_next %}
+                                    <li><a href="?page={{ crontab_list.next_page_number }}">Next</a></li>
+                                {% endif %}
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/custom/cron_valid.js"></script>
+    <script src="/static/js/custom/crontab.js"></script>
+{% endblock %}
+
