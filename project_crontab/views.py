@@ -221,7 +221,7 @@ def multiDelCrontab(request):
         }
         for cron_obj in cron_objs:
             try:
-                flask_url = 'http://' + cron_obj.svn.hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/multidel'
+                flask_url = 'http://' + cron_obj.svn.minion_hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/multidel'
                 response = requests.post(flask_url, data=postData)
             except Exception as e:
                 errcode = 500
@@ -252,7 +252,7 @@ def startCrontab(request):
         msg = u'所选Crontab在数据库中不存在'
     else:
         try:
-            flask_url = 'http://' + crontab_obj.svn.hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/start'
+            flask_url = 'http://' + crontab_obj.svn.minion_hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/start'
             response = requests.post(flask_url, data=postData)
         except Exception as e:
             errcode = 500
@@ -280,7 +280,7 @@ def pauseCrontab(request):
         msg = u'所选Crontab在数据库中不存在'
     else:
         try:
-            flask_url = 'http://' + crontab_obj.svn.hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/pause'
+            flask_url = 'http://' + crontab_obj.svn.minion_hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/pause'
             response = requests.post(flask_url, data=postData)
         except Exception as e:
             errcode = 500
