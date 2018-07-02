@@ -162,6 +162,7 @@ dingding_api = 'http://dlog.abc.me/dlog'
 
 ##project_crontab api
 crontab_api = 'http://192.168.199.64:5000'
+crontab_flask_api = 'http://116.196.87.93:5001'
 
 ##kettle setting
 kettle_host = 't-slq-web-1'

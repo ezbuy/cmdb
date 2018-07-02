@@ -10,14 +10,14 @@ from asset.utils import *
 from asset import models as asset_models
 from project_crontab import utils
 from project_crontab import models
-from mico.settings import svn_username, svn_password, go_local_path, svn_repo_url
+from mico.settings import svn_username, svn_password, go_local_path, svn_repo_url, crontab_flask_api
 
 
 @login_required
 def crontabList(request):
     page = request.GET.get('page', 1)
 
-    response = requests.get('http://116.196.87.93:5001/cron/listall')
+    response = requests.get(crontab_flask_api + '/cron/listall')
     res_json = response.json()
     errcode = res_json['code']
     msg = res_json['msg']
@@ -94,7 +94,7 @@ def addCrontab(request):
                         'frequency': frequency,
                         'project_name': project_name,
                     }
-                    response = requests.post('http://116.196.87.93:5001/cron/add', data=postData)
+                    response = requests.post(crontab_flask_api + '/cron/add', data=postData)
                     res_json = response.json()
                     errcode = res_json['code']
                     msg = res_json['msg']
@@ -132,7 +132,7 @@ def modifyCrontab(request):
             'frequency': frequency,
             'project_name': project_name,
         }
-        response = requests.post('http://116.196.87.93:5001/cron/del', data=postData)
+        response = requests.post(crontab_flask_api + '/cron/del', data=postData)
         res_json = response.json()
         errcode = res_json['code']
         msg = res_json['msg']
@@ -162,7 +162,7 @@ def modifyCrontab(request):
                             'frequency': frequency,
                             'project_name': project_name,
                         }
-                        response = requests.post('http://116.196.87.93:5001/cron/add', data=postData)
+                        response = requests.post(crontab_flask_api + '/cron/add', data=postData)
                         res_json = response.json()
                         errcode = res_json['code']
                         msg = res_json['msg']
@@ -192,7 +192,7 @@ def multiDelCrontab(request):
         postData = {
             'cron_ids_str': cron_ids_str,
         }
-        response = requests.post('http://116.196.87.93:5001/cron/multidel', data=postData)
+        response = requests.post(crontab_flask_api + '/cron/multidel', data=postData)
         res_json = response.json()
         errcode = res_json['code']
         msg = res_json['msg']
@@ -209,7 +209,7 @@ def startCrontab(request):
         'username': login_user.username,
         'crontab_id': crontab_id,
     }
-    response = requests.post('http://116.196.87.93:5001/cron/start', data=postData)
+    response = requests.post(crontab_flask_api + '/cron/start', data=postData)
     res_json = response.json()
     errcode = res_json['code']
     msg = res_json['msg']
@@ -225,7 +225,7 @@ def pauseCrontab(request):
         'username': login_user.username,
         'crontab_id': crontab_id,
     }
-    response = requests.post('http://116.196.87.93:5001/cron/pause', data=postData)
+    response = requests.post(crontab_flask_api + '/cron/pause', data=postData)
     res_json = response.json()
     errcode = res_json['code']
     msg = res_json['msg']
