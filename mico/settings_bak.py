@@ -102,9 +102,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cmdb',
         'USER': 'zyl',
-        'PASSWORD': '123456',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'PASSWORD': '888888',
+        'HOST': '116.196.110.16',
+        'PORT': '9036',
     }
 }
 
