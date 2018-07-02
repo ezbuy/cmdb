@@ -1,7 +1,6 @@
 # coding:utf8
 import requests
 # import getopt
-from datetime import datetime
 
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -299,7 +298,6 @@ def startCrontab(request):
                 user_obj = login_user
                 crontab_obj.cmd_status = 2
                 crontab_obj.updater = user_obj
-                crontab_obj.update_time = datetime.now()
                 crontab_obj.save()
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
@@ -335,7 +333,6 @@ def pauseCrontab(request):
                 user_obj = login_user
                 crontab_obj.cmd_status = 1
                 crontab_obj.updater = user_obj
-                crontab_obj.update_time = datetime.now()
                 crontab_obj.save()
 
     data = dict(code=errcode, msg=msg)
