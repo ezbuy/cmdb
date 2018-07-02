@@ -22,12 +22,10 @@ def crontabList(request):
     errcode = res_json['code']
     msg = res_json['msg']
 
-
     minion_objs = asset_models.minion.objects.all().order_by('saltname')
     minion_list = [
         {'id': minion_obj.id,
-         'hostname': minion_obj.saltname,
-         'ip': minion_obj.ip,
+         'alias_name': minion_obj.alias_name,
          }
         for minion_obj in minion_objs]
     crontab_objs = models.CrontabCmd.objects.all().order_by('-create_time')

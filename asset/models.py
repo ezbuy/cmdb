@@ -113,7 +113,7 @@ class AssetRecord(models.Model):
 class minion(models.Model):
     saltname = models.CharField(max_length=32, verbose_name=u'salt minion name')
     ip = models.GenericIPAddressField()
-    alias_name = models.CharField(max_length=32, verbose_name=u'alias name show to users')
+    alias_name = models.CharField(max_length=32, verbose_name=u'alias name show to users', blank=True, null=True)
 
     def __unicode__(self):
         return self.saltname
