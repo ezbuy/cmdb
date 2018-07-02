@@ -41,7 +41,7 @@
                                                 <div class="col-lg-10">
                                                     <select class="form-control" id="minion_select">
                                                         {% for minion in minion_list %}
-                                                            <option value={{ minion.id }}>{{ minion.hostname }}&nbsp;&nbsp;&nbsp;&nbsp;{{ minion.ip }}</option>
+                                                            <option value={{ minion.id }}>{{ minion.alias_name }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>
