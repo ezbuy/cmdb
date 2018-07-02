@@ -114,12 +114,17 @@ def start_cron():
     errcode = 0
     msg = 'ok'
     auto_cmd = request.form.get('auto_cmd')
+    print 'auto_cmd : ', auto_cmd
     frequency = request.form.get('frequency')
+    print 'frequency : ', frequency
     project_name = request.form.get('project_name')
+    print 'project_name : ', project_name
     # 修改机器上crontab状态为启动
     my_cron = CronTab(tabfile='/etc/crontab', user=False)
     for job in my_cron:
+        print 'job.command : ', job.command
         if job.command == auto_cmd:
+            print 'if'
             job_frequency = str(job).split(project_name)[0].strip('#').strip()
             if job_frequency == '@hourly':
                 job_frequency = '0 * * * *'
@@ -128,7 +133,6 @@ def start_cron():
             elif job_frequency == '@yearly':
                 job_frequency = '0 0 1 1 *'
             print 'job_frequency : ', job_frequency
-            print 'frequency : ', frequency
             if job_frequency == frequency:
                 print 'start ok'
                 job.enable()
