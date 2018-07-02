@@ -155,7 +155,7 @@
                                         <input id="checkall" type="checkbox" class="i-checks" name="checkall"
                                                value="checkall" data-editable='false' onclick="check_all('asset_form')">
                                     </th>
-                                    <th class="text-center"> 部署主机名</th>
+                                    <th class="text-center"> 部署机器</th>
                                     <th class="text-center"> 输入CMD</th>
                                     <th class="text-center"> 执行频率</th>
                                     <th class="text-center"> 自动补全CMD</th>
@@ -173,7 +173,7 @@
                                         </td>
                                         <td class="text-center hostname">
                                             <a data-toggle="modal" data-target="#modifyCrontabModal" onclick="SendValue({{ crontab.id }}, {{ crontab.svn.hostname.id }})">
-                                                {{ crontab.svn.hostname.saltname }}
+                                                {{ crontab.svn.hostname.alias_name }}
                                             </a>
                                         </td>
                                         <td class="text-center" style="word-wrap:break-word;word-break:break-all;"
