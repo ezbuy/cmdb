@@ -118,6 +118,14 @@ class minion(models.Model):
         return self.saltname
 
 
+class cron_minion(models.Model):
+    name = models.CharField(max_length=32, verbose_name=u'alias name show to users', blank=True, null=True)
+    saltminion = models.ForeignKey(minion)
+
+    def __unicode__(self):
+        return self.name
+
+
 class goservices(models.Model):
     ip = models.GenericIPAddressField()
     name = models.CharField(max_length=128, verbose_name=u'goservices services name')
@@ -195,6 +203,7 @@ class gostatus(models.Model):
 
 class crontab_svn(models.Model):
     hostname = models.ForeignKey(minion)
+    minion_hostname = models.ForeignKey(cron_minion)
     username = models.CharField(max_length=32)
     password = models.CharField(max_length=32)
     repo = models.CharField(max_length=128,default="http://svn.abc.com/svn/test")
