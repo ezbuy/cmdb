@@ -73,11 +73,11 @@ def addCrontab(request):
         localpath = go_local_path + project_name
         svn_obj = None
         try:
-            svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj,
+            svn_obj = asset_models.crontab_svn.objects.get(project=project_name, minion_hostname=minion_obj,
                                                            username=svn_username, password=svn_password, repo=repo,
                                                            localpath=localpath)
         except asset_models.crontab_svn.DoesNotExist:
-            svn_obj = asset_models.crontab_svn.objects.create(project=project_name, hostname=minion_obj,
+            svn_obj = asset_models.crontab_svn.objects.create(project=project_name, minion_hostname=minion_obj,
                                                               username=svn_username, password=svn_password, repo=repo,
                                                               localpath=localpath)
         finally:
@@ -165,7 +165,7 @@ def modifyCrontab(request):
                 # 暂停成功后
                 salt_hostname = minion_obj.saltminion.saltname
                 try:
-                    svn_obj = asset_models.crontab_svn.objects.get(project=project_name, hostname=minion_obj)
+                    svn_obj = asset_models.crontab_svn.objects.get(project=project_name, minion_hostname=minion_obj)
                 except asset_models.crontab_svn.DoesNotExist:
                     errcode = 500
                     msg = u'Crontab Svn不存在'

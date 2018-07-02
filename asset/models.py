@@ -202,7 +202,8 @@ class gostatus(models.Model):
         return self.supervisor_host
 
 class crontab_svn(models.Model):
-    hostname = models.ForeignKey(cron_minion)
+    hostname = models.ForeignKey(minion)
+    minion_hostname = models.ForeignKey(cron_minion)
     username = models.CharField(max_length=32)
     password = models.CharField(max_length=32)
     repo = models.CharField(max_length=128,default="http://svn.abc.com/svn/test")
