@@ -55,7 +55,7 @@ def add_cron():
 def del_cron():
     errcode = 0
     msg = 'ok'
-    auto_cmd = request.form.get('auto_cmd')
+    auto_cmd = request.form.get('auto_cmd').strip()
     frequency = request.form.get('frequency').strip()
     project_name = request.form.get('project_name').strip()
 
@@ -148,9 +148,9 @@ def start_cron():
 def pause_cron():
     errcode = 0
     msg = 'ok'
-    auto_cmd = request.form.get('auto_cmd')
-    frequency = request.form.get('frequency')
-    project_name = request.form.get('project_name')
+    auto_cmd = request.form.get('auto_cmd').strip()
+    frequency = request.form.get('frequency').strip()
+    project_name = request.form.get('project_name').strip()
     # 修改机器上crontab状态为启动
     my_cron = CronTab(tabfile='/etc/crontab', user=False)
     for job in my_cron:
