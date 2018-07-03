@@ -177,7 +177,6 @@ def modifyCrontab(request):
             try:
                 flask_url = 'http://' + minion_obj.saltminion.ip + ':' + crontab_flask_port + '/cron/del'
                 response = requests.post(flask_url, data=postData)
-                print 'flask url ok'
             except Exception as e:
                 errcode = 500
                 msg = u'删除异常'
@@ -188,11 +187,10 @@ def modifyCrontab(request):
             if errcode == 0:
                 # 暂停成功后
                 salt_hostname = minion_obj.saltminion.saltname
-                print 'salt_hostname ok'
                 try:
                     print 'try start'
-                    print asset_models.crontab_svn.objects
-                    print type(asset_models.crontab_svn.objects)
+                    print minion_obj
+                    print minion_obj.id
                     svn_obj = asset_models.crontab_svn.objects.get(project=project_name, minion_hostname=minion_obj)
                     print 'svn obj ok'
                 except asset_models.crontab_svn.DoesNotExist:
