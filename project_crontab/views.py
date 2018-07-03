@@ -191,7 +191,9 @@ def modifyCrontab(request):
                     print 'try start'
                     print minion_obj
                     print minion_obj.id
-                    svn_obj = asset_models.crontab_svn.objects.get(project=project_name, minion_hostname=minion_obj)
+                    svn_obj = asset_models.crontab_svn.objects.filter(project=project_name, minion_hostname=minion_obj)
+                    print len(svn_obj)
+                    print svn_obj
                     print 'svn obj ok'
                 except asset_models.crontab_svn.DoesNotExist:
                     errcode = 500
