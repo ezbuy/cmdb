@@ -53,21 +53,22 @@ $(document).ready(function () {
     });
 
     $('#deleteCrontabButton').click(function () {
-        let del_svn_ids = [];
-        $("#editable").find(":checkbox:checked").each(function () {
-            let salt_id = $(this).val();
-            if (salt_id != 'checkall') {
-                del_svn_ids.push(salt_id);
-            }
-        });
+        let del_cron_id = $("#crontab_modify").val();
+        // let del_svn_ids = [];
+        // $("#editable").find(":checkbox:checked").each(function () {
+        //     let salt_id = $(this).val();
+        //     if (salt_id != 'checkall') {
+        //         del_svn_ids.push(salt_id);
+        //     }
+        // });
 
-        if (del_svn_ids.length === 0) {
-            alert("请选择要删除的crontab");
-            return false;
-        }
+        // if (del_svn_ids.length === 0) {
+        //     alert("请选择要删除的crontab");
+        //     return false;
+        // }
         let url = "/asset/cronList/del/";
         let data = {
-            'cron_ids': del_svn_ids,
+            'del_cron_id': del_cron_id,
         };
         $.ajax({
             url: url,
@@ -146,6 +147,10 @@ function SendValue(crontab_id, minion_id){
     $("#minion_modify").val(minion_id);
 }
 
+function SendDeleteValue(crontab_id) {
+    $("#deleteCrontabButton").val(crontab_id);
+}
+
 function startCrontab(crontab_id) {
     let url = '/asset/cronList/start/';
     let data = {
@@ -157,22 +162,16 @@ function startCrontab(crontab_id) {
         data: data,
         contentType: 'application/x-www-form-urlencoded',
         traditional: true,
-        // beforeSend: function () {
-        //     // 禁用按钮防止重复提交
-        //     $("#deleteCrontabButton").attr({disabled: "disabled"});
-        // },
         success: function (result) {
             if (result.code === 0) {
                 window.location.reload();
             }
             else {
                 alert(result.msg);
-                $("#deleteCrontabButton").removeAttr("disabled");
             }
         },
         error: function () {
             alert('失败');
-            $("#deleteCrontabButton").removeAttr("disabled");
         }
     });
 }
@@ -188,22 +187,16 @@ function pauseCrontab(crontab_id) {
         data: data,
         contentType: 'application/x-www-form-urlencoded',
         traditional: true,
-        // beforeSend: function () {
-        //     // 禁用按钮防止重复提交
-        //     $("#deleteCrontabButton").attr({disabled: "disabled"});
-        // },
         success: function (result) {
             if (result.code === 0) {
                 window.location.reload();
             }
             else {
                 alert(result.msg);
-                $("#deleteCrontabButton").removeAttr("disabled");
             }
         },
         error: function () {
             alert('失败');
-            $("#deleteCrontabButton").removeAttr("disabled");
         }
     });
 }

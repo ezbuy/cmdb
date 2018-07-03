@@ -238,42 +238,43 @@ def modifyCrontab(request):
 
 
 @login_required
-def multiDelCrontab(request):
-    cron_ids = request.POST.getlist('cron_ids', [])
-    cron_objs = models.CrontabCmd.objects.filter(id__in=cron_ids)
-
-    errcode = 0
-    msg = 'ok'
-    if len(cron_objs) == 0:
+def delCrontab(request):
+    del_cron_id = request.POST.get('del_cron_id')
+    # cron_ids = request.POST.getlist('cron_ids', [])
+    # cron_objs = models.CrontabCmd.objects.filter(id__in=cron_ids)
+    # errcode = 0
+    # msg = 'ok'
+    try:
+        cron_obj = models.CrontabCmd.objects.get(id=int(del_cron_id))
+    except models.CrontabCmd.DoesNotExist:
         errcode = 500
-        msg = u'选中的项目在数据库中不存在'
+        msg = u'所选Crontab在DB中不存在'
     else:
-        for cron_obj in cron_objs:
-            # 机器上暂停
-            auto_cmd = cron_obj.auto_cmd
-            frequency = cron_obj.frequency
-            project_name = cron_obj.svn.project
-            postData = {
-                'auto_cmd': auto_cmd,
-                'frequency': frequency,
-                'project_name': project_name,
-            }
-            try:
-                flask_url = 'http://' + cron_obj.svn.minion_hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/del'
-                response = requests.post(flask_url, data=postData)
-            except Exception as e:
-                errcode = 500
-                msg = u'批量删除异常'
-            else:
-                res_json = response.json()
-                errcode = res_json['code']
-                msg = res_json['msg']
-                if errcode == 0:
-                    # DB中删除
-                    cron_obj.delete()
-            if errcode != 0:
-                data = dict(code=errcode, msg=msg)
-                return HttpResponse(json.dumps(data), content_type='application/json')
+        # 机器上暂停
+        auto_cmd = cron_obj.auto_cmd
+        frequency = cron_obj.frequency
+        project_name = cron_obj.svn.project
+        postData = {
+            'auto_cmd': auto_cmd,
+            'frequency': frequency,
+            'project_name': project_name,
+        }
+        try:
+            flask_url = 'http://' + cron_obj.svn.minion_hostname.saltminion.ip + ':' + crontab_flask_port + '/cron/del'
+            response = requests.post(flask_url, data=postData)
+        except Exception as e:
+            errcode = 500
+            msg = u'删除异常'
+        else:
+            res_json = response.json()
+            errcode = res_json['code']
+            msg = res_json['msg']
+            if errcode == 0:
+                # DB中删除
+                cron_obj.delete()
+        if errcode != 0:
+            data = dict(code=errcode, msg=msg)
+            return HttpResponse(json.dumps(data), content_type='application/json')
     data = dict(code=errcode, msg=msg)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
