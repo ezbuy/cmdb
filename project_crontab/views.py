@@ -191,6 +191,8 @@ def modifyCrontab(request):
                 print 'salt_hostname ok'
                 try:
                     print 'try start------project_name : ', project_name
+                    print type(project_name)
+                    print type(minion_obj)
                     svn_obj = asset_models.crontab_svn.objects.get(project=project_name, minion_hostname=minion_obj)
                     print 'svn obj ok'
                 except asset_models.crontab_svn.DoesNotExist:
