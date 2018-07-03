@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+    <p class="text-center">
+        <a target="_blank"
+           href="https://tower.im/projects/ddff17a6dd0a44dda7217658fed1621b/docs/4f67b116a9b645df8d24018ab1a69722/"
+           class="center-block">帮助文档</a>
+    </p>
     <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
             <div class="col-sm-12">
@@ -83,7 +87,8 @@
                                     <div class="modal-body">
                                         <form class="form-horizontal">
                                             <div class="form-group">
-                                                <label class="col-lg-2 control-label" id="crontab_modify"><span style="color: red;">*</span>部署机器</label>
+                                                <label class="col-lg-2 control-label" id="crontab_modify"><span
+                                                        style="color: red;">*</span>部署机器</label>
                                                 <div class="col-lg-10">
                                                     <select class="form-control" id="minion_modify">
                                                         {% for minion in minion_list %}
@@ -96,7 +101,8 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
-                                        <button type="button" class="btn btn-primary" id="modifyCrontabButton">保存</button>
+                                        <button type="button" class="btn btn-primary" id="modifyCrontabButton">保存
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -136,7 +142,8 @@
                                 <tr>
                                     <th class="text-center">
                                         <input id="checkall" type="checkbox" class="i-checks" name="checkall"
-                                               value="checkall" data-ediƒtable='false' onclick="check_all('asset_form')">
+                                               value="checkall" data-ediƒtable='false'
+                                               onclick="check_all('asset_form')">
                                     </th>
                                     <th class="text-center"> 部署机器</th>
                                     <th class="text-center"> 输入CMD</th>
@@ -155,7 +162,8 @@
                                             <input name="id" value="{{ crontab.id }}" type="checkbox" class="i-checks">
                                         </td>
                                         <td class="text-center hostname">
-                                            <a data-toggle="modal" data-target="#modifyCrontabModal" onclick="SendValue({{ crontab.id }}, {{ crontab.svn.minion_hostname.id }})">
+                                            <a data-toggle="modal" data-target="#modifyCrontabModal"
+                                               onclick="SendValue({{ crontab.id }}, {{ crontab.svn.minion_hostname.id }})">
                                                 {{ crontab.svn.minion_hostname.name }}
                                             </a>
                                         </td>
@@ -188,8 +196,9 @@
                                                                                                style="color: #1ab394;"></i></a>
                                             {% endif %}
                                             &nbsp;
-                                            <a data-toggle="modal" data-target="#deleteCrontabModal" onclick="SendDeleteValue({{ crontab.id }})"><i class="fa fa-times-circle"
-                                                                                               style="color: red;"></i></a>
+                                            <a data-toggle="modal" data-target="#deleteCrontabModal"
+                                               onclick="SendDeleteValue({{ crontab.id }})"><i class="fa fa-times-circle"
+                                                                                              style="color: red;"></i></a>
                                         </td>
                                     </tr>
                                 {% endfor %}
