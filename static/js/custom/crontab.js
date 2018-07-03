@@ -4,7 +4,7 @@
  *********************************/
 
 $(document).ready(function () {
-    $('#deleteCron').tooltip('删除');
+    // $('#deleteCron').tooltip('删除');
 
     $('#addCrontabButton').click(function () {
         let minion_id = $("#minion_select").val();
