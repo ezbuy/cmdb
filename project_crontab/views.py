@@ -165,7 +165,7 @@ def modifyCrontab(request):
             errcode = 500
             msg = u'所选Crontab在数据库中不存在'
         else:
-            project_name = crontab_obj.cmd.strip().split(' ')[0]
+            project_name = str(crontab_obj.cmd.strip().split(' ')[0].strip())
             # 在机器上暂停任务
             auto_cmd = crontab_obj.auto_cmd.strip()
             frequency = crontab_obj.frequency
