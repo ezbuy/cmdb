@@ -56,18 +56,6 @@ $(document).ready(function () {
 
     $('#deleteCrontabButton').click(function () {
         let del_cron_id = $("#deleteCrontabButton").val();
-        // let del_svn_ids = [];
-        // $("#editable").find(":checkbox:checked").each(function () {
-        //     let salt_id = $(this).val();
-        //     if (salt_id != 'checkall') {
-        //         del_svn_ids.push(salt_id);
-        //     }
-        // });
-
-        // if (del_svn_ids.length === 0) {
-        //     alert("请选择要删除的crontab");
-        //     return false;
-        // }
         let url = "/asset/cronList/del/";
         let data = {
             'del_cron_id': del_cron_id,
@@ -83,6 +71,7 @@ $(document).ready(function () {
                 $("#deleteCrontabButton").attr({disabled: "disabled"});
             },
             success: function (result) {
+                $("#deleteCrontabButton").val('');
                 if (result.code === 0) {
                     window.location.reload();
                 }
