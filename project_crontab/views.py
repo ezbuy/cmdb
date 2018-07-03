@@ -152,6 +152,7 @@ def modifyCrontab(request):
     login_user = request.user
     crontab_id = int(request.POST['crontab_id'])
     minion_id = int(request.POST['minion_id'])
+    print 'minion_id : ', minion_id
     login_ip = request.META['REMOTE_ADDR']
     try:
         minion_obj = asset_models.cron_minion.objects.get(id=int(minion_id))
@@ -187,19 +188,20 @@ def modifyCrontab(request):
             if errcode == 0:
                 # 暂停成功后
                 salt_hostname = minion_obj.saltminion.saltname
+                repo = svn_repo_url + project_name
+                localpath = go_local_path + project_name
+
                 try:
-                    print 'try start'
-                    print minion_obj
-                    print minion_obj.id
-                    svn_obj = asset_models.crontab_svn.objects.filter(project=project_name, minion_hostname=minion_obj)
-                    print len(svn_obj)
-                    print svn_obj
-                    print 'svn obj ok'
+                    svn_obj = asset_models.crontab_svn.objects.get(project=project_name, minion_hostname=minion_obj,
+                                                                   username=svn_username, password=svn_password,
+                                                                   repo=repo,
+                                                                   localpath=localpath)
                 except asset_models.crontab_svn.DoesNotExist:
-                    errcode = 500
-                    msg = u'Crontab Svn不存在'
-                    return errcode, msg
-                else:
+                    svn_obj = asset_models.crontab_svn.objects.create(project=project_name, minion_hostname=minion_obj,
+                                                                      username=svn_username, password=svn_password,
+                                                                      repo=repo,
+                                                                      localpath=localpath)
+                finally:
                     # 新机器上拉svn目录
                     repo = svn_repo_url + project_name
                     errcode, msg = utils.salt_run_sls(login_user, repo, project_name, salt_hostname, login_ip)
