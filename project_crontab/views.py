@@ -102,7 +102,7 @@ def addCrontab(request):
         except asset_models.crontab_svn.DoesNotExist:
             svn_obj = asset_models.crontab_svn.objects.create(project=project_name, minion_hostname=minion_obj,
                                                               username=svn_username, password=svn_password, repo=repo,
-                                                              localpath=localpath)
+                                                              localpath=localpath, hostname=minion_obj.saltminion)
         finally:
             try:
                 models.CrontabCmd.objects.get(svn=svn_obj, cmd=cmd, frequency=frequency)
@@ -200,7 +200,7 @@ def modifyCrontab(request):
                     svn_obj = asset_models.crontab_svn.objects.create(project=project_name, minion_hostname=minion_obj,
                                                                       username=svn_username, password=svn_password,
                                                                       repo=repo,
-                                                                      localpath=localpath)
+                                                                      localpath=localpath, hostname=minion_obj.saltminion)
                 finally:
                     # 新机器上拉svn目录
                     repo = svn_repo_url + project_name
