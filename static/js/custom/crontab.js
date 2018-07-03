@@ -53,7 +53,7 @@ $(document).ready(function () {
     });
 
     $('#deleteCrontabButton').click(function () {
-        let del_cron_id = $("#crontab_modify").val();
+        let del_cron_id = $("#deleteCrontabButton").val();
         // let del_svn_ids = [];
         // $("#editable").find(":checkbox:checked").each(function () {
         //     let salt_id = $(this).val();

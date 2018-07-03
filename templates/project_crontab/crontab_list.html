@@ -177,7 +177,7 @@
                                                 <label class="label label-warning">pause</label>
                                             {% endif %}
                                         </td>
-                                        <td class="text-center" width="30px">
+                                        <td class="text-center" width="60px">
                                             {% if crontab.cmd_status == 2 or crontab.cmd_status == '2' %}
                                                 <a href="javascript:void(0);"
                                                    onclick="pauseCrontab({{ crontab.id }})"><i class="fa fa-pause"
@@ -188,7 +188,7 @@
                                                                                                style="color: #1ab394;"></i></a>
                                             {% endif %}
                                             <a data-toggle="modal" data-target="#deleteCrontabModal" onclick="SendDeleteValue({{ crontab.id }})"><i class="fa fa-times-circle"
-                                                                                               style="color: darkred;"></i></a>
+                                                                                               style="color: red;"></i></a>
                                         </td>
                                     </tr>
                                 {% endfor %}
