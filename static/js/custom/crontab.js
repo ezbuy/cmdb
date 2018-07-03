@@ -4,6 +4,8 @@
  *********************************/
 
 $(document).ready(function () {
+    $('#deleteCron').tooltip('删除');
+
     $('#addCrontabButton').click(function () {
         let minion_id = $("#minion_select").val();
         let cmd = $("#cmd").val().trim();
