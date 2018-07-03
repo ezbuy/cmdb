@@ -41,6 +41,10 @@ class GoServiceRevisionAdmin(admin.ModelAdmin):
     list_display = ('name','last_rev','last_clock', 'gotemplate_last_rev')
     search_fields = ['name']
 
+class CronMinionAdmin(admin.ModelAdmin):
+    list_display = ('name','saltminion')
+    search_fields = ['name']
+
 admin.site.register(IDC)
 admin.site.register(Asset,assetAdmin)
 admin.site.register(AssetRecord)
@@ -56,3 +60,4 @@ admin.site.register(crontab_svn,crontabSVNAdmin)
 admin.site.register(GOTemplate,gotemplateAdmin)
 admin.site.register(UserProfile,UserProfileAdmin)
 admin.site.register(GoServiceRevision,GoServiceRevisionAdmin)
+admin.site.register(cron_minion,CronMinionAdmin)
