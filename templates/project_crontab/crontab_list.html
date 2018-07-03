@@ -172,7 +172,7 @@
                                             <input name="id" value="{{ crontab.id }}" type="checkbox" class="i-checks">
                                         </td>
                                         <td class="text-center hostname">
-                                            <a data-toggle="modal" data-target="#modifyCrontabModal" onclick="SendValue({{ crontab.id }}, {{ crontab.svn.hostname.id }})">
+                                            <a data-toggle="modal" data-target="#modifyCrontabModal" onclick="SendValue({{ crontab.id }}, {{ crontab.svn.minion_hostname.id }})">
                                                 {{ crontab.svn.minion_hostname.name }}
                                             </a>
                                         </td>
