@@ -284,7 +284,7 @@ def go_status(request):
 
 
 @login_required
-@deny_resubmit(page_key='crontab')
+@deny_resubmit(page_key='project_crontab')
 def crontab_update(request):
     login_user = request.user
     ip = request.META['REMOTE_ADDR']
