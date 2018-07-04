@@ -171,7 +171,7 @@ def last_run_time():
     my_cron = CronTab(tabfile='/etc/crontab', user=False)
     crontab_ids = request.form.keys()
     for crontab_id in crontab_ids:
-        auto_cmd = request.form.get(crontab_id)
+        auto_cmd = request.form.get(crontab_id).strip()
         print 'auto_cmd : ', auto_cmd
         for job in my_cron:
             print job.command
