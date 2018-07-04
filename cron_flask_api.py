@@ -172,7 +172,9 @@ def last_run_time():
     crontab_ids = request.form.keys()
     for crontab_id in crontab_ids:
         auto_cmd = request.form.get(crontab_id)
+        print 'auto_cmd : ', auto_cmd
         for job in my_cron:
+            print job.command
             if job.command == auto_cmd:
                 log_cmd = "grep '%s' /var/log/cron.log | tail -n 1 | awk \'{print $1,$2,$3}\'" % job.command
                 print '**************'
