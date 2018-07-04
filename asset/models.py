@@ -203,7 +203,7 @@ class gostatus(models.Model):
 
 class crontab_svn(models.Model):
     hostname = models.ForeignKey(minion,blank=True,null=True)
-    minion_hostname = models.ForeignKey(cron_minion)
+    minion_hostname = models.ForeignKey(cron_minion,blank=True,null=True)
     username = models.CharField(max_length=32)
     password = models.CharField(max_length=32)
     repo = models.CharField(max_length=128,default="http://svn.abc.com/svn/test")
@@ -228,4 +228,3 @@ class GOTemplate(models.Model):
 class UserProfile(models.Model):
     phone_number = models.CharField(max_length=11)
     user = models.OneToOneField(User)
-
