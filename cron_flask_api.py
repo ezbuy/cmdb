@@ -174,7 +174,12 @@ def last_run_time():
         auto_cmd = request.form.get(crontab_id)
         for job in my_cron:
             if job.command == auto_cmd:
-                status, last_run_time = commands.getstatusoutput("grep '%s' /var/log/cron.log | tail -n 1 | awk \'{print $1,$2,$3}\'" % job.command)
+                log_cmd = "grep '%s' /var/log/cron.log | tail -n 1 | awk \'{print $1,$2,$3}\'" % job.command
+                print '**************'
+                print log_cmd
+                status, last_run_time = commands.getstatusoutput(log_cmd)
+                print status, last_run_time
+                print '^^^^^^^^^^^^^^^^^'
                 if last_run_time:
                     data[crontab_id] = last_run_time
 
