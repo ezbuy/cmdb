@@ -6,7 +6,7 @@ billiard==3.3.0.23
 celery==3.1.17
 certifi==2017.4.17
 chardet==3.0.4
-Django==1.9
+Django==1.11.28
 django-celery==3.1.17
 future==0.16.0
 futures==3.1.1
