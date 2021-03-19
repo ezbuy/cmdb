@@ -13,7 +13,7 @@ futures==3.1.1
 idna==2.5
 ipaddress==1.0.18
 jenkinsapi==0.3.4
-Jinja2==2.9.6
+Jinja2==2.11.3
 kombu==3.0.37
 MarkupSafe==1.0
 msgpack-python==0.4.8
