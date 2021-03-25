@@ -25,7 +25,7 @@ pyOpenSSL==17.5.0
 python-consul==0.7.2
 python-gitlab==0.21.2
 pytz==2017.2
-PyYAML==3.12
+PyYAML==5.4
 pyzabbix==0.7.4
 pyzmq==16.0.2
 qcloudapi-sdk-python==2.0.10
