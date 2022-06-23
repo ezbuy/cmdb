@@ -32,7 +32,7 @@ qcloudapi-sdk-python==2.0.10
 qingcloud-sdk==1.2
 redis==2.10.5
 requests==2.18.1
-salt==2016.11.6
+salt==3002.7
 singledispatch==3.4.0.3
 tornado==4.5.1
 urllib3==1.21.1
