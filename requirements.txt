@@ -4,7 +4,7 @@ backports-abc==0.5
 beautifulsoup4==4.6.0
 billiard==3.3.0.23
 celery==3.1.17
-certifi==2017.4.17
+certifi==2022.12.7
 chardet==3.0.4
 Django==1.9
 django-celery==3.1.17
